@@ -26,14 +26,14 @@ export function FeaturedSections({
   onFavorite,
   onVisit,
 }: FeaturedSectionsProps) {
-  // 固定取前 5 个
+  // 固定取前 4 个
   const topHotResources = React.useMemo(() => 
-    hotResources.slice(0, 5),
+    hotResources.slice(0, 4),
     [hotResources]
   )
 
   const topLatestResources = React.useMemo(() => 
-    latestResources.slice(0, 5),
+    latestResources.slice(0, 4),
     [latestResources]
   )
 

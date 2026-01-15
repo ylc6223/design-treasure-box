@@ -44,11 +44,7 @@ export default function ExpandableCards({
     controlledSelected !== undefined ? controlledSelected : internalSelected;
 
   useEffect(() => {
-    if (scrollRef.current) {
-      const scrollWidth = scrollRef.current.scrollWidth;
-      const clientWidth = scrollRef.current.clientWidth;
-      scrollRef.current.scrollLeft = (scrollWidth - clientWidth) / 2;
-    }
+    // 移除自动居中滚动，保持靠左对齐
   }, []);
 
   const handleCardClick = (id: string) => {
@@ -81,11 +77,10 @@ export default function ExpandableCards({
       className={`flex w-full flex-col gap-4 p-4 ${className}`}
     >
       <div
-        className="scrollbar-hide mx-auto flex overflow-x-auto pt-4 pb-8"
+        className="flex overflow-x-auto pt-4 pb-8 scrollbar-hide"
         ref={scrollRef}
         style={{
           scrollSnapType: "x mandatory",
-          scrollPaddingLeft: "20%",
         }}
       >
         {resources.map((resource) => (

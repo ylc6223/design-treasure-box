@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Masonry, useInfiniteLoader, usePositioner, useResizeObserver } from 'masonic'
+import { Masonry, useInfiniteLoader } from 'masonic'
 import { ResourceCard } from './resource-card'
 import { Loader2 } from 'lucide-react'
 import type { Resource } from '@/types'
@@ -29,18 +29,17 @@ interface MasonryCardProps {
  * MasonryCard 组件
  * 
  * 用于 masonic 库的单个卡片渲染组件
+ * 垂直间距由 usePositioner 的 rowGutter 参数控制
  */
 const MasonryCard = React.memo<MasonryCardProps>(
   ({ data, width, isFavorited, onFavorite, onVisit }) => {
     return (
-      <div style={{ width }}>
-        <ResourceCard
-          resource={data}
-          isFavorited={isFavorited}
-          onFavorite={onFavorite}
-          onVisit={onVisit}
-        />
-      </div>
+      <ResourceCard
+        resource={data}
+        isFavorited={isFavorited}
+        onFavorite={onFavorite}
+        onVisit={onVisit}
+      />
     )
   }
 )
@@ -68,20 +67,6 @@ export function MasonicGrid({
   onVisit,
   className,
 }: MasonicGridProps) {
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  const { width } = useResizeObserver(containerRef)
-
-  // 使用 masonic 的 usePositioner 计算列布局
-  // columnGutter: 24px (gap-6) 保持与设计系统一致
-  const positioner = usePositioner(
-    {
-      width,
-      columnWidth: 280,
-      columnGutter: 24, // Tailwind gap-6 (1.5rem)
-    },
-    [resources]
-  )
-
   // 使用 masonic 的 useInfiniteLoader 处理无限滚动
   const maybeLoadMore = useInfiniteLoader(onLoadMore, {
     isItemLoaded: (index) => index < resources.length,
@@ -105,10 +90,12 @@ export function MasonicGrid({
   }
 
   return (
-    <div ref={containerRef} className={className}>
+    <div className={className}>
       <Masonry
         items={resources}
-        positioner={positioner}
+        columnWidth={280}
+        columnGutter={24}
+        rowGutter={24}
         overscanBy={2}
         onRender={maybeLoadMore}
         render={({ data, width }) => (
