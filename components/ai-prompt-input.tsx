@@ -75,7 +75,7 @@ export function AIPromptInput({
           placeholder={placeholder}
           disabled={isLoading}
           className={cn(
-            'h-auto flex-1 border-0 bg-transparent px-0 text-base',
+            'h-auto flex-1 border-0 bg-transparent px-0 text-base shadow-none',
             'placeholder:text-[var(--text-muted)]',
             'focus-visible:ring-0 focus-visible:ring-offset-0',
             'disabled:cursor-not-allowed disabled:opacity-50'

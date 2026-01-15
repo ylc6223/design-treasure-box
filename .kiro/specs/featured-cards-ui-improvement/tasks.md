@@ -23,14 +23,14 @@ This implementation plan breaks down the featured resource cards UI improvements
     - Add `e.stopPropagation()` to onClick handler
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 4.1_
 
-  - [ ] 2.2 Write property test for favorite button visibility
+  - [x] 2.2 Write property test for favorite button visibility
     - **Property 1: Favorite Button Visibility**
     - **Validates: Requirements 1.1, 1.2, 1.4**
     - Generate random resource data with varying isFeatured and isFavorited states
     - Assert favorite button is rendered with correct positioning classes
     - Assert button has semi-transparent background and backdrop blur
 
-  - [ ] 2.3 Write property test for event isolation
+  - [x] 2.3 Write property test for event isolation
     - **Property 2: Favorite Button Interaction Isolation**
     - **Validates: Requirements 1.3, 5.1**
     - Generate random resource data
@@ -45,7 +45,7 @@ This implementation plan breaks down the featured resource cards UI improvements
     - Update flex layout to accommodate single button
     - _Requirements: 4.3_
 
-  - [ ] 3.2 Write unit test for right panel buttons
+  - [x] 3.2 Write unit test for right panel buttons
     - Test that right panel only contains visit button
     - Test that favorite button is not present in right panel
     - Test visit button functionality
@@ -58,7 +58,7 @@ This implementation plan breaks down the featured resource cards UI improvements
     - Maintain existing border color `var(--border)`
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 4.2 Write property test for border styling
+  - [x] 4.2 Write property test for border styling
     - **Property 5: Border Styling Correctness**
     - **Validates: Requirements 3.1, 3.2, 3.3**
     - Generate random resource data
