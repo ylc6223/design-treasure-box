@@ -1,0 +1,58 @@
+[
+  {
+    "id": "color",
+    "name": "配色工具",
+    "icon": "Palette",
+    "description": "调色板、配色方案生成器",
+    "color": "#E94560"
+  },
+  {
+    "id": "css",
+    "name": "CSS模板",
+    "icon": "Code",
+    "description": "CSS框架、样式库、动画效果",
+    "color": "#00D9FF"
+  },
+  {
+    "id": "font",
+    "name": "字体资源",
+    "icon": "Type",
+    "description": "免费字体、字体配对工具",
+    "color": "#F8B500"
+  },
+  {
+    "id": "icon",
+    "name": "图标库",
+    "icon": "Shapes",
+    "description": "图标集、SVG资源",
+    "color": "#7B68EE"
+  },
+  {
+    "id": "inspiration",
+    "name": "设计灵感",
+    "icon": "Sparkles",
+    "description": "优秀设计案例、灵感画廊",
+    "color": "#FF6B6B"
+  },
+  {
+    "id": "website",
+    "name": "网站案例",
+    "icon": "Globe",
+    "description": "优秀网站设计展示",
+    "color": "#4ECDC4"
+  },
+  {
+    "id": "ui-kit",
+    "name": "UI组件",
+    "icon": "Layout",
+    "description": "UI Kit、设计系统",
+    "color": "#95E1D3"
+  },
+  {
+    "id": "mockup",
+    "name": "样机素材",
+    "icon": "Smartphone",
+    "description": "设备样机、场景模板",
+    "color": "#DDA0DD"
+  }
+]
