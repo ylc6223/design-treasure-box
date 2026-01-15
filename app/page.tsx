@@ -1,31 +1,43 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import { Header } from '@/components/header'
-import { MasonryGrid } from '@/components/masonry-grid'
-import { ResourceCard } from '@/components/resource-card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Button } from '@/components/ui/button'
-import { useFavorites } from '@/hooks/use-favorites'
-import { useFeaturedResources, useResources } from '@/hooks/use-resources'
-import { Sparkles, TrendingUp, Clock, ArrowRight } from 'lucide-react'
+import { MasonicGrid } from '@/components/masonic-grid'
+import { CategoryFilter } from '@/components/category-filter'
+import { FeaturedSections } from '@/components/featured-sections'
+import { useFavorites, useResources, useInfiniteResources } from '@/hooks'
+import { Loader2 } from 'lucide-react'
 import categories from '@/data/categories.json'
 
 export default function HomePage() {
-  const { data: featuredResources, isLoading: isFeaturedLoading } = useFeaturedResources()
-  const { data: allResources, isLoading: isAllLoading } = useResources()
+  const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined)
+  const { data: allResources, isLoading } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 
-  // 热门资源 (按收藏数排序，取前8个)
-  const popularResources = allResources
-    ?.slice()
-    .sort((a, b) => b.favoriteCount - a.favoriteCount)
-    .slice(0, 8)
+  // 热门资源：按收藏数和浏览量排序，取前8个
+  const hotResources = useMemo(() => {
+    if (!allResources) return []
+    return [...allResources]
+      .sort((a, b) => {
+        const scoreA = a.favoriteCount * 2 + a.viewCount
+        const scoreB = b.favoriteCount * 2 + b.viewCount
+        return scoreB - scoreA
+      })
+      .slice(0, 8)
+  }, [allResources])
 
-  // 最新收录 (按创建时间排序，取前8个)
-  const latestResources = allResources
-    ?.slice()
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 8)
+  // 最新收录：按创建时间排序，取前8个
+  const latestResources = useMemo(() => {
+    if (!allResources) return []
+    return [...allResources]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 8)
+  }, [allResources])
+
+  // 使用无限滚动 hook (基于 TanStack Query useInfiniteQuery)
+  const { resources, hasMore, loadMore, isFetchingNextPage } = useInfiniteResources({
+    categoryId: activeCategory,
+  })
 
   const handleFavorite = (resourceId: string) => {
     if (isFavorited(resourceId)) {
@@ -39,6 +51,18 @@ export default function HomePage() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  const handleCategoryChange = (categoryId: string | undefined) => {
+    setActiveCategory(categoryId)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--text-muted)]" />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -47,91 +71,45 @@ export default function HomePage() {
       {/* 主内容区 */}
       <div className="container px-4 py-8">
         {/* 欢迎区域 */}
-        <div className="mb-12 text-center">
+        <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             设计百宝箱
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
             精选设计资源聚合入口，为设计师和开发者提供高质量的设计美学参考
           </p>
         </div>
 
-        {/* 编辑精选 - 横向滚动 */}
-        {!isFeaturedLoading && featuredResources && featuredResources.length > 0 && (
-          <section className="mb-16">
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-highlight" />
-                <h2 className="text-2xl font-bold">编辑精选</h2>
-              </div>
-              <Button variant="ghost" size="sm" className="gap-1">
-                查看全部
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <ScrollArea className="w-full whitespace-nowrap">
-              <div className="flex gap-4 pb-4">
-                {featuredResources.map((resource) => (
-                  <div key={resource.id} className="w-[320px] flex-shrink-0">
-                    <ResourceCard
-                      resource={resource}
-                      isFavorited={isFavorited(resource.id)}
-                      onFavorite={() => handleFavorite(resource.id)}
-                      onVisit={() => handleVisit(resource.url)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </section>
+        {/* 热门资源和最新收录 - 仅在未选择分类时显示 */}
+        {!activeCategory && (
+          <FeaturedSections
+            hotResources={hotResources}
+            latestResources={latestResources}
+            isFavorited={isFavorited}
+            onFavorite={handleFavorite}
+            onVisit={handleVisit}
+          />
         )}
 
-        {/* 热门资源 */}
-        {!isAllLoading && popularResources && popularResources.length > 0 && (
-          <section className="mb-16">
-            <div className="mb-6 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-highlight" />
-              <h2 className="text-2xl font-bold">热门资源</h2>
-            </div>
-            <MasonryGrid
-              resources={popularResources}
-              isFavorited={isFavorited}
-              onFavorite={handleFavorite}
-              onVisit={handleVisit}
-            />
-          </section>
-        )}
+        {/* 分类筛选 */}
+        <div className="mb-8">
+          <CategoryFilter
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+        </div>
 
-        {/* 最新收录 */}
-        {!isAllLoading && latestResources && latestResources.length > 0 && (
-          <section className="mb-16">
-            <div className="mb-6 flex items-center gap-2">
-              <Clock className="h-5 w-5 text-highlight" />
-              <h2 className="text-2xl font-bold">最新收录</h2>
-            </div>
-            <MasonryGrid
-              resources={latestResources}
-              isFavorited={isFavorited}
-              onFavorite={handleFavorite}
-              onVisit={handleVisit}
-            />
-          </section>
-        )}
-
-        {/* 全部资源 */}
-        {!isAllLoading && allResources && (
-          <section>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">全部资源</h2>
-            </div>
-            <MasonryGrid
-              resources={allResources}
-              isFavorited={isFavorited}
-              onFavorite={handleFavorite}
-              onVisit={handleVisit}
-            />
-          </section>
-        )}
+        {/* 瀑布流网格 */}
+        <MasonicGrid
+          resources={resources}
+          hasMore={hasMore}
+          isLoading={isFetchingNextPage}
+          onLoadMore={loadMore}
+          isFavorited={isFavorited}
+          onFavorite={handleFavorite}
+          onVisit={handleVisit}
+        />
       </div>
     </div>
   )

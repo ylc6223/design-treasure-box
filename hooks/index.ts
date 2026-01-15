@@ -17,3 +17,5 @@ export {
   usePopularTags,
 } from './use-search'
 export { useScrollVisibility } from './use-scroll-visibility'
+export { useInfiniteResources } from './use-infinite-resources'
+export { useIntersectionObserver } from './use-intersection-observer'
