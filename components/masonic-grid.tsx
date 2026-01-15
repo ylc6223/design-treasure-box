@@ -72,11 +72,12 @@ export function MasonicGrid({
   const { width } = useResizeObserver(containerRef)
 
   // 使用 masonic 的 usePositioner 计算列布局
+  // columnGutter: 24px (gap-6) 保持与设计系统一致
   const positioner = usePositioner(
     {
       width,
       columnWidth: 280,
-      columnGutter: 24,
+      columnGutter: 24, // Tailwind gap-6 (1.5rem)
     },
     [resources]
   )

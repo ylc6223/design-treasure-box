@@ -60,7 +60,7 @@ export function MasonryGrid({
   return (
     <div
       className={cn(
-        'grid gap-6',
+        'grid gap-6', // Tailwind gap-6 (24px / 1.5rem) 与设计系统保持一致
         // 响应式列数
         'grid-cols-2', // Mobile: 2列
         'md:grid-cols-3', // Tablet: 3列
