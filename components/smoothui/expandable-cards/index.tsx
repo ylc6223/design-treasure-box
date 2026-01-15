@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RatingStars } from "@/components/rating-stars";
+import { cn } from "@/lib/utils";
 import type { Resource } from "@/types";
 
 const AVATAR_SIZE = 96;
@@ -111,7 +112,7 @@ export default function ExpandableCards({
               />
               
               {/* 图片上的叠加信息 */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
               
               {/* 精选标识 */}
               {resource.isFeatured && (
@@ -120,6 +121,25 @@ export default function ExpandableCards({
                   <span className="text-xs font-medium text-white">精选</span>
                 </div>
               )}
+
+              {/* 收藏按钮 */}
+              <div className="absolute top-2 right-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onFavorite(resource.id)
+                  }}
+                  className={cn(
+                    "h-8 w-8 bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors",
+                    isFavorited(resource.id) && "text-red-500 hover:text-red-600"
+                  )}
+                  aria-label={isFavorited(resource.id) ? "取消收藏" : "收藏"}
+                >
+                  <Heart className={cn("h-4 w-4", isFavorited(resource.id) && "fill-current")} />
+                </Button>
+              </div>
 
               {/* 底部信息 */}
               <div className="absolute bottom-0 left-0 right-0 p-3 space-y-2">
@@ -191,22 +211,6 @@ export default function ExpandableCards({
 
                     {/* 操作按钮 */}
                     <div className="flex flex-col gap-1.5">
-                      <Button
-                        variant={isFavorited(resource.id) ? "default" : "outline"}
-                        size="sm"
-                        className="w-full h-8 text-xs"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onFavorite(resource.id)
-                        }}
-                      >
-                        <Heart
-                          className={`h-3 w-3 mr-1 ${
-                            isFavorited(resource.id) ? 'fill-current' : ''
-                          }`}
-                        />
-                        {isFavorited(resource.id) ? '已收藏' : '收藏'}
-                      </Button>
                       <Button
                         variant="default"
                         size="sm"
