@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { DockSidebar } from './dock-sidebar'
 import { AIPromptInput } from './ai-prompt-input'
+import { AIChatInterface } from './ai-chat-interface'
 import { Header } from './header'
 import type { Category } from '@/types'
 import type { Database } from '@/types/database'
@@ -23,6 +25,8 @@ interface LayoutWrapperProps {
 export function LayoutWrapper({ categories, children, profile }: LayoutWrapperProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined)
 
   // 从路径中提取当前分类
   const activeCategory = pathname.startsWith('/category/')
@@ -41,8 +45,13 @@ export function LayoutWrapper({ categories, children, profile }: LayoutWrapperPr
 
   const handleAIPromptSubmit = (prompt: string) => {
     console.log('AI Prompt:', prompt)
-    // TODO: 实现 AI 搜索功能
-    // router.push(`/search?q=${encodeURIComponent(prompt)}`)
+    setInitialQuery(prompt)
+    setIsChatOpen(true)
+  }
+
+  const handleChatClose = () => {
+    setIsChatOpen(false)
+    setInitialQuery(undefined)
   }
 
   return (
@@ -64,6 +73,13 @@ export function LayoutWrapper({ categories, children, profile }: LayoutWrapperPr
 
       {/* 底部 AI Prompt 输入框 */}
       <AIPromptInput onSubmit={handleAIPromptSubmit} />
+
+      {/* AI Chat Interface - 右侧滑出聊天界面 */}
+      <AIChatInterface
+        isOpen={isChatOpen}
+        onClose={handleChatClose}
+        initialQuery={initialQuery}
+      />
     </div>
   )
 }
