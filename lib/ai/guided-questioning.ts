@@ -71,15 +71,23 @@ export class GuidedQuestioningEngine {
   }
 
   /**
-   * 生成澄清问题
+   * 生成澄清问题（结构化格式，支持步骤式提问）
    */
-  generateClarificationQuestions(analysis: QueryAnalysis): string[] {
-    const questions: string[] = [];
+  generateClarificationQuestions(analysis: QueryAnalysis): Array<{
+    question: string;
+    options: string[];
+    aspect: 'category' | 'style' | 'audience' | 'purpose';
+  }> {
+    const questions: Array<{
+      question: string;
+      options: string[];
+      aspect: 'category' | 'style' | 'audience' | 'purpose';
+    }> = [];
 
     for (const aspect of analysis.missingAspects) {
-      const question = this.getQuestionForAspect(aspect);
-      if (question) {
-        questions.push(question);
+      const questionData = this.getQuestionForAspect(aspect);
+      if (questionData) {
+        questions.push(questionData);
       }
     }
 
@@ -201,19 +209,63 @@ export class GuidedQuestioningEngine {
   }
 
   /**
-   * 根据缺失方面生成问题
+   * 根据缺失方面生成问题（包含选项）
    */
   private getQuestionForAspect(
     aspect: 'category' | 'style' | 'audience' | 'purpose'
-  ): string | null {
-    const questions: Record<string, string> = {
-      category: '您需要哪个类别的资源？（例如：配色工具、CSS框架、字体、图标等）',
-      style: '您偏好什么风格的设计？（例如：简约、现代、复古等）',
-      audience: '这个资源主要面向什么人群？（例如：新手、专业设计师、开发者等）',
-      purpose: '您使用这个资源的主要目的是什么？（例如：学习、项目开发、快速参考等）',
+  ): { question: string; options: string[]; aspect: typeof aspect } | null {
+    const questionData: Record<string, { question: string; options: string[] }> = {
+      category: {
+        question: '您需要哪个类别的资源？',
+        options: [
+          '我需要配色工具',
+          '我需要CSS框架或模板',
+          '我需要字体资源',
+          '我需要图标库',
+          '我需要设计灵感',
+          '我需要UI组件或工具包',
+        ],
+      },
+      style: {
+        question: '您偏好什么风格的设计？',
+        options: [
+          '我偏好简约/极简风格',
+          '我偏好现代/时尚风格',
+          '我偏好复古/经典风格',
+          '我偏好专业/商务风格',
+          '我偏好创意/个性风格',
+        ],
+      },
+      audience: {
+        question: '这个资源主要面向什么人群？',
+        options: [
+          '主要面向新手/初学者',
+          '主要面向专业设计师',
+          '主要面向开发者/程序员',
+          '主要面向学生',
+          '主要面向企业/商业用途',
+        ],
+      },
+      purpose: {
+        question: '您使用这个资源的主要目的是什么？',
+        options: [
+          '用于学习和练习',
+          '用于实际项目开发',
+          '用于快速参考和灵感',
+          '需要免费商用',
+          '需要详细的文档和教程',
+        ],
+      },
     };
 
-    return questions[aspect] || null;
+    const data = questionData[aspect];
+    if (!data) return null;
+
+    return {
+      question: data.question,
+      options: data.options,
+      aspect,
+    };
   }
 
   /**

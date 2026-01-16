@@ -25,7 +25,11 @@ export interface RAGResponse {
   searchResults: SearchResult[];
   processingTime: number;
   needsClarification?: boolean;
-  clarificationQuestions?: string[];
+  clarificationQuestions?: Array<{
+    question: string;
+    options: string[];
+    aspect: 'category' | 'style' | 'audience' | 'purpose';
+  }>;
 }
 
 /**
@@ -111,7 +115,16 @@ export class VercelAIRAGEngine {
     query: string,
     filters?: SearchFilters,
     options: RAGResponseOptions = {}
-  ): AsyncIterable<{ chunk: string; searchResults?: SearchResult[]; needsClarification?: boolean; clarificationQuestions?: string[] }> {
+  ): AsyncIterable<{ 
+    chunk: string; 
+    searchResults?: SearchResult[]; 
+    needsClarification?: boolean; 
+    clarificationQuestions?: Array<{
+      question: string;
+      options: string[];
+      aspect: 'category' | 'style' | 'audience' | 'purpose';
+    }>;
+  }> {
     // 1. 分析查询清晰度
     const queryAnalysis = this.guidedQuestioning.analyzeQueryClarity(query);
 
@@ -281,14 +294,15 @@ ${context}
   }
 
   /**
-   * 构建澄清消息
+   * 构建澄清消息（不再需要，因为前端会处理步骤式显示）
    */
-  private buildClarificationMessage(questions: string[]): string {
-    return `为了更好地帮助您找到合适的资源，我需要了解更多信息：
-
-${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
-
-请回答其中一个或多个问题，我会为您提供更精准的推荐。`;
+  private buildClarificationMessage(questions: Array<{
+    question: string;
+    options: string[];
+    aspect: 'category' | 'style' | 'audience' | 'purpose';
+  }>): string {
+    // 返回一个简单的提示，实际问题由前端步骤式展示
+    return '为了更好地帮助您找到合适的资源，我需要了解更多信息。';
   }
 
   /**
