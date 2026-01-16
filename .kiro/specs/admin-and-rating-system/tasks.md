@@ -14,7 +14,7 @@
 
 ## Tasks
 
-- [ ] 1. Supabase 项目配置和环境设置
+- [x] 1. Supabase 项目配置和环境设置
   - 在 Supabase 控制台创建新项目
   - 获取项目 URL 和 anon key
   - 配置环境变量（NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY）
@@ -28,8 +28,8 @@
   - 测试基本查询操作
   - _Requirements: 7.1_
 
-- [ ] 2. 数据库 Schema 创建
-  - [ ] 2.1 创建数据库迁移文件
+- [x] 2. 数据库 Schema 创建
+  - [x] 2.1 创建数据库迁移文件
     - 创建 `supabase/migrations/001_initial_schema.sql`
     - 定义 profiles 表（扩展 auth.users）
     - 定义 resources 表
@@ -37,18 +37,18 @@
     - 创建索引和自动更新 updated_at 触发器
     - _Requirements: 7.1, 7.2, 7.3_
 
-  - [ ] 2.2 配置 Row Level Security (RLS) 策略
+  - [x] 2.2 配置 Row Level Security (RLS) 策略
     - 为 profiles 表创建 RLS 策略（公开可读，用户可更新自己，管理员可更新任何）
     - 为 resources 表创建 RLS 策略（公开可读，仅管理员可写）
     - 为 ratings 表创建 RLS 策略（公开可读，用户可管理自己的评分）
     - _Requirements: 2.3, 2.4, 9.3_
 
-  - [ ] 2.3 运行数据库迁移
+  - [x] 2.3 运行数据库迁移
     - 使用 Supabase CLI 或控制台 SQL Editor 运行迁移
     - 验证表结构和 RLS 策略
     - _Requirements: 7.1_
 
-  - [ ] 2.4 生成 TypeScript 类型
+  - [x] 2.4 生成 TypeScript 类型
     - 安装 Supabase CLI（如果未安装）
     - 运行 `supabase gen types typescript --project-id <project-id>` 生成类型定义
     - 创建 `types/database.ts` 文件保存生成的类型
@@ -59,26 +59,26 @@
     - 测试 RLS 策略
     - _Requirements: 7.1, 2.3, 2.4_
 
-- [ ] 3. Supabase 客户端配置
-  - [ ] 3.1 创建 Supabase 客户端（浏览器端）
+- [x] 3. Supabase 客户端配置
+  - [x] 3.1 创建 Supabase 客户端（浏览器端）
     - 创建 `lib/supabase/client.ts`
     - 配置浏览器端 Supabase 客户端
     - 导出 `createBrowserClient` 函数
     - _Requirements: 1.3_
 
-  - [ ] 3.2 创建 Supabase 客户端（服务器端）
+  - [x] 3.2 创建 Supabase 客户端（服务器端）
     - 创建 `lib/supabase/server.ts`
     - 配置服务器端 Supabase 客户端（使用 cookies）
     - 导出 `createServerClient` 函数
     - _Requirements: 1.3_
 
-  - [ ] 3.3 创建 Supabase 中间件
+  - [x] 3.3 创建 Supabase 中间件
     - 创建 `middleware.ts`（项目根目录）
     - 配置 Supabase Auth 中间件自动刷新会话
     - 处理 auth 回调路由
     - _Requirements: 1.5, 1.6_
 
-  - [ ] 3.4 创建权限验证辅助函数
+  - [x] 3.4 创建权限验证辅助函数
     - 创建 `lib/supabase/auth.ts`
     - 实现 `requireAuth()` 函数（验证用户登录）
     - 实现 `requireAdmin()` 函数（验证管理员权限）
