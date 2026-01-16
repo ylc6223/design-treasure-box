@@ -17,31 +17,59 @@ AI聊天助手是设计百宝箱平台的智能对话功能，通过RAG（检索
 
 ```mermaid
 graph TB
-    UI[Chat Interface] --> QP[Query Processor]
-    QP --> RAG[RAG Engine]
-    RAG --> VS[Vector Search]
-    RAG --> SF[Structured Filter]
-    VS --> VDB[(Vector Database)]
-    SF --> RDB[(Resource Database)]
-    RAG --> RE[Recommendation Engine]
-    RE --> GQ[Guided Questioning]
-    RE --> VP[Visual Preview]
-    VP --> UI
-    GQ --> UI
+    subgraph "前端界面层"
+        PK[Prompt-Kit Chat UI]
+        CI[Custom Chat Interface]
+        RC[Resource Cards]
+        CQ[Clarification Questions]
+    end
     
-    subgraph "Client Side"
-        UI
-        CS[Chat Session]
+    subgraph "AI服务层"
+        VSDK[Vercel AI SDK v6]
+        ZAP[zhipu-ai-provider]
+        AIM[AI Service Manager]
+        GLM[智谱大模型 GLM-4]
+    end
+    
+    subgraph "业务逻辑层"
+        RAG[RAG Engine]
+        HS[Hybrid Search]
+        GQ[Guided Questioning]
+        RE[Recommendation Engine]
+    end
+    
+    subgraph "数据层"
+        VS[Vector Search]
+        SF[Structured Filter]
+        VDB[(Vector Database)]
+        RDB[(Resource Database)]
         LS[(Local Storage)]
     end
     
-    subgraph "AI Services"
-        LLM[Language Model]
-        EMB[Embedding Model]
-    end
+    PK --> CI
+    CI --> AIM
+    AIM --> VSDK
+    VSDK --> ZAP
+    ZAP --> GLM
     
-    RAG --> LLM
-    VS --> EMB
+    CI --> RAG
+    RAG --> HS
+    RAG --> GQ
+    HS --> VS
+    HS --> SF
+    VS --> VDB
+    SF --> RDB
+    
+    RAG --> RE
+    RE --> RC
+    GQ --> CQ
+    
+    CI --> LS
+    
+    style PK fill:#e1f5fe
+    style VSDK fill:#f3e5f5
+    style RAG fill:#e8f5e8
+    style VDB fill:#fff3e0
 ```
 
 ### 技术栈选择
@@ -52,8 +80,10 @@ graph TB
 - TypeScript 5 - 类型安全
 
 **AI与搜索**:
-- Vercel AI SDK - LLM集成和流式响应
-- 智谱大模型 (GLM) - 自然语言理解和生成 (兼容OpenAI接口规范)
+- Vercel AI SDK v6 - LLM集成和流式响应
+- prompt-kit - AI聊天界面组件库
+- zhipu-ai-provider - 智谱大模型集成 (兼容Vercel AI SDK)
+- 智谱大模型 (GLM) - 自然语言理解和生成
 - 智谱Embeddings - 向量化 (或OpenAI Embeddings作为备选)
 - 本地向量存储 - 基于现有资源数据
 
@@ -68,29 +98,449 @@ graph TB
 - localStorage - 会话持久化
 - TanStack Query - 服务端状态缓存
 
+### AI模型接口设计
+
+为了支持未来的模型扩展，设计了一个灵活的AI提供者接口：
+
+```typescript
+// AI提供者抽象接口
+interface AIProvider {
+  name: string;
+  version: string;
+  capabilities: AICapabilities;
+  
+  // 聊天完成
+  generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse>;
+  
+  // 流式聊天
+  streamChatCompletion(messages: ChatMessage[], options?: ChatOptions): AsyncIterable<ChatChunk>;
+  
+  // 文本嵌入
+  generateEmbedding(text: string): Promise<number[]>;
+  
+  // 批量嵌入
+  generateEmbeddings(texts: string[]): Promise<number[][]>;
+}
+
+// AI能力定义
+interface AICapabilities {
+  chat: boolean;
+  streaming: boolean;
+  embedding: boolean;
+  functionCalling: boolean;
+  maxTokens: number;
+  supportedLanguages: string[];
+}
+
+// 智谱AI提供者实现
+class ZhipuAIProvider implements AIProvider {
+  name = 'zhipu-ai';
+  version = '0.2.1';
+  capabilities: AICapabilities = {
+    chat: true,
+    streaming: true,
+    embedding: true,
+    functionCalling: true,
+    maxTokens: 8192,
+    supportedLanguages: ['zh', 'en']
+  };
+
+  constructor(private apiKey: string, private baseURL?: string) {}
+
+  async generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse> {
+    // 使用zhipu-ai-provider实现
+  }
+
+  streamChatCompletion(messages: ChatMessage[], options?: ChatOptions): AsyncIterable<ChatChunk> {
+    // 流式响应实现
+  }
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    // 嵌入生成实现
+  }
+
+  async generateEmbeddings(texts: string[]): Promise<number[][]> {
+    // 批量嵌入实现
+  }
+}
+
+// AI提供者工厂
+class AIProviderFactory {
+  private providers = new Map<string, AIProvider>();
+
+  register(provider: AIProvider): void {
+    this.providers.set(provider.name, provider);
+  }
+
+  get(name: string): AIProvider | undefined {
+    return this.providers.get(name);
+  }
+
+  getDefault(): AIProvider {
+    return this.providers.get('zhipu-ai') || this.providers.values().next().value;
+  }
+}
+```
+
+### Prompt-Kit集成架构
+
+```typescript
+// 基于prompt-kit的聊天界面配置
+interface ChatInterfaceConfig {
+  provider: AIProvider;
+  systemPrompt: string;
+  maxMessages: number;
+  enableStreaming: boolean;
+  enableFunctionCalling: boolean;
+  customComponents?: {
+    MessageRenderer?: React.ComponentType<MessageProps>;
+    ResourceCard?: React.ComponentType<ResourceCardProps>;
+    LoadingIndicator?: React.ComponentType;
+  };
+}
+
+// 扩展prompt-kit的消息类型
+interface ExtendedChatMessage extends ChatMessage {
+  resources?: ResourceRecommendation[];
+  clarificationQuestions?: string[];
+  searchMetadata?: {
+    query: string;
+    filters: SearchFilters;
+    resultCount: number;
+  };
+}
+```
+
+### 配置管理与扩展性
+
+#### AI提供者配置
+
+```typescript
+// 环境变量配置
+interface AIEnvironmentConfig {
+  // 智谱AI配置
+  ZHIPU_AI_API_KEY: string;
+  ZHIPU_AI_BASE_URL?: string;
+  ZHIPU_AI_MODEL?: 'glm-4' | 'glm-4-turbo' | 'glm-3-turbo';
+  
+  // 备用提供者配置（预留）
+  OPENAI_API_KEY?: string;
+  ANTHROPIC_API_KEY?: string;
+  
+  // 功能开关
+  ENABLE_STREAMING?: boolean;
+  ENABLE_FUNCTION_CALLING?: boolean;
+  MAX_CONVERSATION_LENGTH?: number;
+}
+
+// 运行时配置
+interface AIRuntimeConfig {
+  defaultProvider: string;
+  fallbackProviders: string[];
+  maxRetries: number;
+  timeoutMs: number;
+  enableCaching: boolean;
+  cacheExpiryMs: number;
+}
+
+// 配置管理器
+class AIConfigManager {
+  private config: AIRuntimeConfig;
+  private envConfig: AIEnvironmentConfig;
+
+  constructor() {
+    this.loadConfiguration();
+  }
+
+  private loadConfiguration(): void {
+    this.envConfig = {
+      ZHIPU_AI_API_KEY: process.env.ZHIPU_AI_API_KEY!,
+      ZHIPU_AI_BASE_URL: process.env.ZHIPU_AI_BASE_URL,
+      ZHIPU_AI_MODEL: (process.env.ZHIPU_AI_MODEL as any) || 'glm-4',
+      ENABLE_STREAMING: process.env.ENABLE_STREAMING === 'true',
+      ENABLE_FUNCTION_CALLING: process.env.ENABLE_FUNCTION_CALLING === 'true',
+      MAX_CONVERSATION_LENGTH: parseInt(process.env.MAX_CONVERSATION_LENGTH || '50'),
+    };
+
+    this.config = {
+      defaultProvider: 'zhipu-ai',
+      fallbackProviders: [],
+      maxRetries: 3,
+      timeoutMs: 30000,
+      enableCaching: true,
+      cacheExpiryMs: 300000, // 5分钟
+    };
+  }
+
+  getProviderConfig(providerName: string): VercelAIConfig {
+    switch (providerName) {
+      case 'zhipu-ai':
+        return {
+          provider: 'zhipu-ai',
+          model: this.envConfig.ZHIPU_AI_MODEL!,
+          apiKey: this.envConfig.ZHIPU_AI_API_KEY,
+          baseURL: this.envConfig.ZHIPU_AI_BASE_URL,
+          streamingEnabled: this.envConfig.ENABLE_STREAMING || true,
+        };
+      default:
+        throw new Error(`Unknown provider: ${providerName}`);
+    }
+  }
+}
+```
+
+#### 扩展新AI提供者的步骤
+
+1. **实现AIProvider接口**：
+```typescript
+class NewAIProvider implements AIProvider {
+  name = 'new-provider';
+  version = '1.0.0';
+  capabilities = { /* ... */ };
+  
+  // 实现所有必需方法
+}
+```
+
+2. **注册到工厂**：
+```typescript
+const factory = new AIProviderFactory();
+factory.register(new NewAIProvider(config));
+```
+
+3. **更新配置管理器**：
+```typescript
+// 在AIConfigManager中添加新的配置分支
+case 'new-provider':
+  return {
+    provider: 'new-provider',
+    // 新提供者的配置
+  };
+```
+
+4. **环境变量配置**：
+```bash
+# .env.local
+NEW_PROVIDER_API_KEY=your_api_key
+NEW_PROVIDER_MODEL=model_name
+```
+
+这种设计确保了系统的可扩展性，可以轻松添加新的AI提供者而不影响现有功能。
+
 ## Components and Interfaces
 
 ### 核心组件架构
 
-#### 1. Chat Interface (聊天界面)
+#### 1. Chat Interface (基于prompt-kit)
 ```typescript
+// 基于prompt-kit的聊天界面组件
 interface ChatInterfaceProps {
   isOpen: boolean;
   onClose: () => void;
   initialQuery?: string;
+  provider: AIProvider;
+  config: ChatInterfaceConfig;
 }
 
-interface ChatMessage {
+// 扩展的聊天消息类型
+interface ExtendedChatMessage extends ChatMessage {
   id: string;
-  type: 'user' | 'assistant';
+  type: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
   resources?: ResourceRecommendation[];
+  clarificationQuestions?: string[];
+  searchMetadata?: SearchMetadata;
   isLoading?: boolean;
+}
+
+// 搜索元数据
+interface SearchMetadata {
+  query: string;
+  filters: SearchFilters;
+  resultCount: number;
+  processingTime: number;
+  searchType: 'semantic' | 'hybrid' | 'fallback';
 }
 ```
 
-#### 2. RAG Engine (检索增强生成引擎)
+#### 2. AI Provider Integration (Vercel AI SDK v6)
+```typescript
+// Vercel AI SDK集成配置
+interface VercelAIConfig {
+  provider: 'zhipu-ai' | 'openai' | 'anthropic';
+  model: string;
+  apiKey: string;
+  baseURL?: string;
+  maxTokens?: number;
+  temperature?: number;
+  streamingEnabled: boolean;
+}
+
+// 智谱AI提供者配置
+interface ZhipuAIConfig extends VercelAIConfig {
+  provider: 'zhipu-ai';
+  model: 'glm-4' | 'glm-4-turbo' | 'glm-3-turbo';
+  embeddingModel?: 'embedding-2' | 'embedding-3';
+}
+
+// AI服务管理器
+class AIServiceManager {
+  private currentProvider: AIProvider;
+  private fallbackProviders: AIProvider[];
+
+  constructor(config: VercelAIConfig) {
+    this.currentProvider = this.createProvider(config);
+  }
+
+  async switchProvider(config: VercelAIConfig): Promise<void> {
+    this.currentProvider = this.createProvider(config);
+  }
+
+  private createProvider(config: VercelAIConfig): AIProvider {
+    switch (config.provider) {
+      case 'zhipu-ai':
+        return new ZhipuAIProvider(config as ZhipuAIConfig);
+      default:
+        throw new Error(`Unsupported provider: ${config.provider}`);
+    }
+  }
+}
+```
+
+#### 3. Prompt-Kit集成与自定义
+
+```typescript
+// prompt-kit自定义配置
+interface PromptKitCustomization {
+  // 自定义消息渲染器
+  messageRenderer: {
+    UserMessage: React.ComponentType<UserMessageProps>;
+    AssistantMessage: React.ComponentType<AssistantMessageProps>;
+    ResourceMessage: React.ComponentType<ResourceMessageProps>;
+    ClarificationMessage: React.ComponentType<ClarificationMessageProps>;
+  };
+
+  // 自定义输入组件
+  inputComponents: {
+    TextInput: React.ComponentType<TextInputProps>;
+    SendButton: React.ComponentType<SendButtonProps>;
+    AttachmentButton?: React.ComponentType<AttachmentButtonProps>;
+  };
+
+  // 自定义主题
+  theme: {
+    colors: {
+      primary: string;
+      secondary: string;
+      background: string;
+      surface: string;
+      text: string;
+      textSecondary: string;
+    };
+    spacing: {
+      xs: string;
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
+    };
+    borderRadius: string;
+    shadows: {
+      sm: string;
+      md: string;
+      lg: string;
+    };
+  };
+}
+
+// 资源消息组件
+interface ResourceMessageProps {
+  resources: ResourceRecommendation[];
+  onResourceClick: (resource: Resource) => void;
+  onFavorite: (resourceId: string) => void;
+  onVisit: (resourceId: string) => void;
+}
+
+// 澄清问题组件
+interface ClarificationMessageProps {
+  questions: string[];
+  onQuestionSelect: (question: string) => void;
+  onCustomResponse: (response: string) => void;
+}
+```
+
+#### 4. RAG Engine (检索增强生成引擎)
+```typescript
+interface RAGEngine {
+  search(query: string, filters?: SearchFilters): Promise<SearchResult[]>;
+  generateResponse(query: string, context: SearchResult[], provider: AIProvider): Promise<string>;
+  embedQuery(query: string, provider: AIProvider): Promise<number[]>;
+  
+  // 新增：支持流式响应
+  streamResponse(query: string, context: SearchResult[], provider: AIProvider): AsyncIterable<string>;
+}
+
+// 集成Vercel AI SDK的RAG实现
+class VercelAIRAGEngine implements RAGEngine {
+  constructor(
+    private hybridSearch: HybridSearchEngine,
+    private guidedQuestioning: GuidedQuestioningEngine
+  ) {}
+
+  async generateResponse(query: string, context: SearchResult[], provider: AIProvider): Promise<string> {
+    // 使用Vercel AI SDK生成响应
+    const { text } = await generateText({
+      model: provider.getModel(),
+      messages: this.buildMessages(query, context),
+      maxTokens: 1000,
+      temperature: 0.7,
+    });
+    
+    return text;
+  }
+
+  async *streamResponse(query: string, context: SearchResult[], provider: AIProvider): AsyncIterable<string> {
+    // 使用Vercel AI SDK流式生成
+    const { textStream } = await streamText({
+      model: provider.getModel(),
+      messages: this.buildMessages(query, context),
+      maxTokens: 1000,
+      temperature: 0.7,
+    });
+
+    for await (const chunk of textStream) {
+      yield chunk;
+    }
+  }
+
+  private buildMessages(query: string, context: SearchResult[]): any[] {
+    const systemPrompt = this.buildSystemPrompt(context);
+    return [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: query }
+    ];
+  }
+
+  private buildSystemPrompt(context: SearchResult[]): string {
+    const resourceContext = context.map(result => 
+      `资源: ${result.resource.name}\n类别: ${result.resource.category}\n评分: ${result.resource.rating}\n描述: ${result.resource.description}\n匹配理由: ${result.matchReason}`
+    ).join('\n\n');
+
+    return `你是设计百宝箱的AI助手，专门帮助用户找到最适合的设计资源。
+
+基于以下资源信息回答用户问题：
+${resourceContext}
+
+请遵循以下原则：
+1. 提供具体的资源推荐，解释为什么推荐
+2. 如果用户需求不明确，主动询问澄清问题
+3. 保持友好、专业的语调
+4. 重点关注资源的实用性和匹配度
+5. 如果没有完全匹配的资源，推荐相近的替代方案`;
+  }
+}
+```
 ```typescript
 interface RAGEngine {
   search(query: string, filters?: SearchFilters): Promise<SearchResult[]>;
