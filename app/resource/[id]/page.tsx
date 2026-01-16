@@ -1,6 +1,5 @@
 'use client'
 
-import { Header } from '@/components/header'
 import { RatingBreakdown } from '@/components/rating-breakdown'
 import { ResourceCard } from '@/components/resource-card'
 import { Button } from '@/components/ui/button'
@@ -48,7 +47,6 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <Header categories={categories} />
         <div className="container px-4 py-16 text-center">
           <div className="text-muted-foreground">加载中...</div>
         </div>
@@ -60,7 +58,6 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
   if (!resource) {
     return (
       <div className="min-h-screen">
-        <Header categories={categories} />
         <div className="container px-4 py-16 text-center">
           <h1 className="text-4xl font-bold">资源不存在</h1>
           <p className="mt-4 text-muted-foreground">
@@ -81,9 +78,6 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <Header categories={categories} />
-
       {/* 主内容区 */}
       <div className="container px-4 py-8">
         {/* 返回按钮 */}

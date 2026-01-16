@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Header } from '@/components/header'
 import { MasonryGrid } from '@/components/masonry-grid'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +13,6 @@ import {
 import { useFavorites } from '@/hooks/use-favorites'
 import { useResources } from '@/hooks/use-resources'
 import { Heart, ArrowUpDown } from 'lucide-react'
-import categories from '@/data/categories.json'
 
 type SortOption = 'time-desc' | 'time-asc' | 'category'
 
@@ -68,9 +66,6 @@ export default function FavoritesPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <Header categories={categories} />
-
       {/* 主内容区 */}
       <div className="container px-4 py-8">
         {/* 页面标题 */}

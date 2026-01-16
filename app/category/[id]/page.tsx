@@ -1,6 +1,5 @@
 'use client'
 
-import { Header } from '@/components/header'
 import { MasonryGrid } from '@/components/masonry-grid'
 import { Button } from '@/components/ui/button'
 import { useFavorites } from '@/hooks/use-favorites'
@@ -45,7 +44,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   if (!category) {
     return (
       <div className="min-h-screen">
-        <Header categories={categories} />
         <div className="container px-4 py-16 text-center">
           <h1 className="text-4xl font-bold">分类不存在</h1>
           <p className="mt-4 text-muted-foreground">
@@ -66,9 +64,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <Header categories={categories} activeCategory={params.id} />
-
       {/* 主内容区 */}
       <div className="container px-4 py-8">
         {/* 分类头部 */}

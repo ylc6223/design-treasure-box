@@ -3,11 +3,16 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { DockSidebar } from './dock-sidebar'
 import { AIPromptInput } from './ai-prompt-input'
+import { Header } from './header'
 import type { Category } from '@/types'
+import type { Database } from '@/types/database'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 interface LayoutWrapperProps {
   categories: Category[]
   children: React.ReactNode
+  profile?: Profile | null
 }
 
 /**
@@ -15,7 +20,7 @@ interface LayoutWrapperProps {
  * 
  * 客户端包装组件，处理导航和交互逻辑
  */
-export function LayoutWrapper({ categories, children }: LayoutWrapperProps) {
+export function LayoutWrapper({ categories, children, profile }: LayoutWrapperProps) {
   const router = useRouter()
   const pathname = usePathname()
 
@@ -41,16 +46,21 @@ export function LayoutWrapper({ categories, children }: LayoutWrapperProps) {
   }
 
   return (
-    <div className="relative flex min-h-screen">
-      {/* 左侧 Dock 导航 */}
-      <DockSidebar
-        categories={categories}
-        activeCategory={activeCategory}
-        onCategoryClick={handleCategoryClick}
-      />
+    <div className="relative flex min-h-screen flex-col">
+      {/* 顶部 Header */}
+      <Header categories={categories} profile={profile} />
 
-      {/* 主内容区 */}
-      <main className="flex-1 md:ml-20">{children}</main>
+      <div className="flex flex-1">
+        {/* 左侧 Dock 导航 */}
+        <DockSidebar
+          categories={categories}
+          activeCategory={activeCategory}
+          onCategoryClick={handleCategoryClick}
+        />
+
+        {/* 主内容区 */}
+        <main className="flex-1 md:mx-20">{children}</main>
+      </div>
 
       {/* 底部 AI Prompt 输入框 */}
       <AIPromptInput onSubmit={handleAIPromptSubmit} />

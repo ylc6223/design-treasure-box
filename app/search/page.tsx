@@ -2,7 +2,6 @@
 
 import { Suspense, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Header } from '@/components/header'
 import { MasonryGrid } from '@/components/masonry-grid'
 import { Badge } from '@/components/ui/badge'
 import { useFavorites } from '@/hooks/use-favorites'
@@ -61,9 +60,6 @@ function SearchResultsContent() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <Header categories={categories} />
-
       {/* 主内容区 */}
       <div className="container px-4 py-8">
         {/* 搜索信息区域 */}
