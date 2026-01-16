@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RatingStars } from "@/components/rating-stars";
+import { ResourceThumbnail } from "@/components/resource-thumbnail";
 import { cn } from "@/lib/utils";
 import type { Resource } from "@/types";
 
@@ -104,11 +105,13 @@ export default function ExpandableCards({
             {/* 左侧：始终可见的缩略图和基本信息 */}
             <div className="relative h-full w-[240px]">
               {/* 图片 */}
-              <img
-                alt={resource.name}
-                className="h-full w-full object-cover"
-                src={resource.screenshot}
-              />
+              <div className="relative h-full w-full overflow-hidden">
+                <ResourceThumbnail
+                  url={resource.url}
+                  name={resource.name}
+                  className="object-cover"
+                />
+              </div>
               
               {/* 图片上的叠加信息 */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

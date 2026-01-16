@@ -3,13 +3,13 @@
 import * as React from 'react'
 import { RatingBreakdown } from '@/components/rating-breakdown'
 import { ResourceCard } from '@/components/resource-card'
+import { ResourceThumbnail } from '@/components/resource-thumbnail'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useFavorites } from '@/hooks/use-favorites'
 import { useResourceById, useResources } from '@/hooks/use-resources'
 import { ArrowLeft, ExternalLink, Heart, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import categories from '@/data/categories.json'
 import { RatingSection } from './rating-section'
 
@@ -101,12 +101,10 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
             <div className="space-y-6">
               {/* 资源截图 */}
               <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
-                <Image
-                  src={resource.screenshot}
-                  alt={resource.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                <ResourceThumbnail
+                  url={resource.url}
+                  name={resource.name}
+                  priority
                 />
                 {resource.isFeatured && (
                   <div className="absolute left-4 top-4 flex items-center gap-1 rounded-full bg-highlight px-2 py-1 text-xs font-medium text-white">

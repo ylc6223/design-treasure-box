@@ -1,13 +1,12 @@
 'use client'
 
-import * as React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Sparkles, Heart, ExternalLink } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { RatingStars } from './rating-stars'
+import { ResourceThumbnail } from './resource-thumbnail'
 import { cn } from '@/lib/utils'
 import type { Resource } from '@/types'
 
@@ -37,8 +36,6 @@ export function ResourceCard({
   onFavorite,
   onVisit,
 }: ResourceCardProps) {
-  const [imageError, setImageError] = React.useState(false)
-
   return (
     <Card
       className={cn(
@@ -51,19 +48,10 @@ export function ResourceCard({
       <Link href={`/resource/${resource.id}`} className="block">
         {/* 网站截图 */}
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-          {!imageError ? (
-            <Image
-              src={resource.screenshot}
-              alt={resource.name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted">
-              <span className="text-sm text-muted-foreground">图片加载失败</span>
-            </div>
-          )}
+          <ResourceThumbnail
+            url={resource.url}
+            name={resource.name}
+          />
 
           {/* 精选标识 */}
           {resource.isFeatured && (

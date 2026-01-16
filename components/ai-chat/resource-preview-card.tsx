@@ -1,12 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import { Heart, ExternalLink, Sparkles, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { RatingStars } from '@/components/rating-stars';
+import { ResourceThumbnail } from '@/components/resource-thumbnail';
 import { cn } from '@/lib/utils';
 import type { Resource } from '@/types';
 
@@ -50,18 +50,6 @@ export function ResourcePreviewCard({
   variant = 'compact',
   className,
 }: ResourcePreviewCardProps) {
-  const [imageError, setImageError] = React.useState(false);
-  const [isImageLoading, setIsImageLoading] = React.useState(true);
-
-  const handleImageError = () => {
-    setImageError(true);
-    setIsImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setIsImageLoading(false);
-  };
-
   const isCompact = variant === 'compact';
 
   return (
@@ -80,31 +68,10 @@ export function ResourcePreviewCard({
             isCompact ? 'h-20 w-28' : 'h-24 w-32'
           )}
         >
-          {!imageError ? (
-            <>
-              {isImageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                </div>
-              )}
-              <Image
-                src={resource.screenshot}
-                alt={resource.name}
-                fill
-                className={cn(
-                  'object-cover transition-opacity duration-300',
-                  isImageLoading ? 'opacity-0' : 'opacity-100'
-                )}
-                onError={handleImageError}
-                onLoad={handleImageLoad}
-                loading="lazy"
-              />
-            </>
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <span className="text-xs text-muted-foreground">无图片</span>
-            </div>
-          )}
+          <ResourceThumbnail
+            url={resource.url}
+            name={resource.name}
+          />
 
           {/* 精选标识 */}
           {resource.isFeatured && (

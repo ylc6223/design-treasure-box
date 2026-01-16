@@ -379,14 +379,14 @@
     - _Requirements: 2.2, 2.5_
 
 - [ ] 16. 前端资源缩略图组件
-  - [ ] 16.1 创建资源缩略图组件
+  - [x] 16.1 创建资源缩略图组件
     - 创建 `components/resource-thumbnail.tsx`
     - 使用 Microlink API 自动获取网站图片
     - 优先使用 Open Graph 图片，回退到截图
     - 实现错误处理和占位图
     - _Requirements: 3.4_
 
-  - [ ] 16.2 集成缩略图到资源卡片
+  - [x] 16.2 集成缩略图到资源卡片
     - 更新 `components/resource-card.tsx`
     - 使用 ResourceThumbnail 组件
     - 添加 lazy loading
@@ -399,12 +399,12 @@
     - _Requirements: 3.4_
 
 - [ ] 17. 错误处理和 API 响应规范化
-  - [ ] 17.1 创建错误类型定义
+  - [x] 17.1 创建错误类型定义
     - 创建 `lib/errors.ts`
     - 定义 AppError, AuthenticationError, AuthorizationError 等
     - _Requirements: 8.6_
 
-  - [ ] 17.2 创建 API 错误处理中间件
+  - [x] 17.2 创建 API 错误处理中间件
     - 创建 `lib/api/error-handler.ts`
     - 实现统一错误处理函数
     - 处理 Zod 验证错误
@@ -412,7 +412,7 @@
     - 处理应用错误
     - _Requirements: 7.5, 8.6_
 
-  - [ ] 17.3 应用错误处理到所有 API 端点
+  - [x] 17.3 应用错误处理到所有 API 端点
     - 更新所有 API 路由使用错误处理中间件
     - 确保返回一致的错误响应格式
     - _Requirements: 8.6_
@@ -445,14 +445,14 @@
     - _Requirements: 7.1, 7.3_
 
 - [ ] 19. 前端数据获取更新
-  - [ ] 19.1 更新资源查询 Hook
+  - [x] 19.1 更新资源查询 Hook
     - 修改 `hooks/use-resources.ts`
     - 从 Supabase 数据库获取资源（而非 JSON 文件）
     - 包含聚合评分和评分人数
     - 使用 TanStack Query 进行缓存
     - _Requirements: 5.2_
 
-  - [ ] 19.2 创建评分相关 Hook
+  - [x] 19.2 创建评分相关 Hook
     - 创建 `hooks/use-ratings.ts`
     - 实现 `useSubmitRating` hook
     - 实现 `useResourceRatings` hook
