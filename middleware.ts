@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({
@@ -34,11 +34,10 @@ export async function middleware(request: NextRequest) {
 
   // 刷新会话（如果过期）
   // 这会自动处理 token 刷新
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  await supabase.auth.getUser()
 
   // 可选：保护特定路由
+  // const { data: { user } } = await supabase.auth.getUser()
   // if (!user && request.nextUrl.pathname.startsWith('/admin')) {
   //   return NextResponse.redirect(new URL('/', request.url))
   // }

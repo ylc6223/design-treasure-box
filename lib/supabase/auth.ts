@@ -2,6 +2,7 @@
 // 权限验证辅助函数
 
 import { createClient } from './server'
+import type { Database } from '@/types/database'
 
 export class AuthenticationError extends Error {
   constructor(message = 'Authentication required') {
@@ -16,6 +17,8 @@ export class AuthorizationError extends Error {
     this.name = 'AuthorizationError'
   }
 }
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 /**
  * 验证用户已登录
@@ -45,7 +48,7 @@ export async function requireAuth() {
     throw new AuthenticationError('User profile not found')
   }
 
-  return { user, profile }
+  return { user, profile: profile as Profile }
 }
 
 /**
