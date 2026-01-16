@@ -1,13 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, Search } from 'lucide-react'
+import { Heart, Search, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from './theme-toggle'
 import { SearchInput } from './search-input'
+import { LoginDialog } from './auth/login-dialog'
+import { UserMenu } from './auth/user-menu'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/types'
+import type { Database } from '@/types/database'
 import { useState } from 'react'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 export interface HeaderProps {
   categories: Category[]
@@ -15,6 +20,7 @@ export interface HeaderProps {
   onCategoryChange?: (categoryId: string) => void
   showSearch?: boolean
   className?: string
+  profile?: Profile | null
 }
 
 /**
@@ -37,8 +43,10 @@ export function Header({
   onCategoryChange,
   showSearch = true,
   className,
+  profile,
 }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
 
   return (
     <header
@@ -131,6 +139,21 @@ export function Header({
             </Link>
           </Button>
 
+          {/* 用户菜单或登录按钮 */}
+          {profile ? (
+            <UserMenu profile={profile} />
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => setIsLoginOpen(true)}
+              className="hidden sm:inline-flex"
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              登录
+            </Button>
+          )}
+
           {/* 主题切换 */}
           <ThemeToggle />
         </div>
@@ -142,6 +165,9 @@ export function Header({
           <SearchInput placeholder="搜索资源..." />
         </div>
       )}
+
+      {/* 登录对话框 */}
+      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     </header>
   )
 }

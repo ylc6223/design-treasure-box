@@ -61,6 +61,27 @@ supabase db push
 - 管理员可以管理所有资源
 - 用户可以更新自己的资料
 
+### 002_auto_create_profile.sql
+
+自动创建用户 Profile：
+
+**功能：**
+- 当用户通过 OAuth 登录时自动创建 profile 记录
+- 从 OAuth 提供商获取用户信息（name, avatar_url）
+- 默认角色设置为 'USER'
+
+**触发器：**
+- `on_auth_user_created`: 在 auth.users 插入新记录后自动执行
+- `handle_new_user()`: 触发器函数，创建 profile 记录
+
+## 运行新迁移
+
+如果你已经运行了 001 迁移，现在需要运行 002 迁移：
+
+1. 打开 Supabase Dashboard → SQL Editor
+2. 复制 `migrations/002_auto_create_profile.sql` 的内容
+3. 粘贴并点击 **Run**
+
 ## 下一步
 
 迁移完成后，继续执行：

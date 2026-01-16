@@ -91,8 +91,8 @@
     - **Validates: Requirements 1.3, 1.5, 1.6, 1.7, 1.8, 9.3**
     - _Requirements: 1.3, 1.5, 1.6, 1.7, 1.8_
 
-- [ ] 4. 用户 Profile 自动创建
-  - [ ] 4.1 创建数据库触发器
+- [x] 4. 用户 Profile 自动创建
+  - [x] 4.1 创建数据库触发器
     - 在 Supabase 中创建触发器函数
     - 当 auth.users 新增记录时自动在 profiles 表创建对应记录
     - 设置默认角色为 'USER'
@@ -104,8 +104,8 @@
     - **Validates: Requirements 2.1**
     - _Requirements: 2.1_
 
-- [ ] 5. 认证 UI 组件开发
-  - [ ] 5.1 创建登录对话框组件
+- [x] 5. 认证 UI 组件开发
+  - [x] 5.1 创建登录对话框组件
     - 创建 `components/auth/login-dialog.tsx`
     - 实现 Google 和 GitHub 登录按钮
     - 集成 Supabase `signInWithOAuth()` 方法
@@ -113,13 +113,13 @@
     - 配置 redirectTo 到 auth callback
     - _Requirements: 1.1, 1.2, 1.4_
 
-  - [ ] 5.2 创建 OAuth 回调路由
+  - [x] 5.2 创建 OAuth 回调路由
     - 创建 `app/auth/callback/route.ts`
     - 处理 OAuth 回调并交换 code 为 session
     - 重定向到原始页面或首页
     - _Requirements: 1.3_
 
-  - [ ] 5.3 创建用户菜单组件
+  - [x] 5.3 创建用户菜单组件
     - 创建 `components/auth/user-menu.tsx`
     - 显示用户头像、名称和邮箱
     - 实现下拉菜单（个人资料、我的评分、退出登录）
@@ -127,7 +127,7 @@
     - 集成 Supabase `signOut()` 方法
     - _Requirements: 1.7, 10.2_
 
-  - [ ] 5.4 更新 Header 组件集成认证
+  - [x] 5.4 更新 Header 组件集成认证
     - 修改 `components/header.tsx`
     - 根据登录状态显示登录按钮或用户菜单
     - 使用 Supabase `useUser()` hook 获取用户状态
