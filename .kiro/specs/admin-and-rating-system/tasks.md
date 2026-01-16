@@ -271,7 +271,7 @@
     - _Requirements: 2.2, 2.5_
 
 - [ ] 12. 集成 Vercel 管理后台模板
-  - [ ] 12.1 下载并适配 Vercel 官方模板
+  - [x] 12.1 下载并适配 Vercel 官方模板
     - 从 `vercel/nextjs-postgres-nextauth-tailwindcss-template` 获取管理后台代码
     - 参考 GitHub 仓库：https://github.com/vercel/nextjs-postgres-nextauth-tailwindcss-template
     - 将 `app/admin` 相关页面和组件复制到项目
@@ -279,7 +279,7 @@
     - 移除 NextAuth 相关代码
     - _Requirements: 11.1, 11.2, 11.3_
 
-  - [ ] 12.2 替换认证系统为 Supabase
+  - [x] 12.2 替换认证系统为 Supabase
     - 移除模板中的 NextAuth 配置
     - 在 `app/admin/layout.tsx` 中集成 Supabase Auth 权限验证
     - 使用 `requireAdmin()` 函数验证管理员权限
@@ -287,7 +287,7 @@
     - 更新中间件使用 Supabase 会话
     - _Requirements: 2.3, 2.4, 11.1, 11.2_
 
-  - [ ] 12.3 适配管理员导航组件
+  - [x] 12.3 适配管理员导航组件
     - 更新 `components/admin/admin-nav.tsx`（或从模板复制）
     - 实现侧边栏导航菜单
     - 导航项：仪表板、资源管理、用户管理

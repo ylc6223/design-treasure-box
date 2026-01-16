@@ -1,0 +1,35 @@
+import { redirect } from 'next/navigation'
+import { requireAdmin } from '@/lib/supabase/auth'
+import { AdminNav } from '@/components/admin/admin-nav'
+
+/**
+ * 管理后台布局
+ * 需要管理员权限
+ */
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  try {
+    // 验证管理员权限
+    const { user, profile } = await requireAdmin()
+
+    return (
+      <div className="flex min-h-screen">
+        {/* 侧边栏导航 */}
+        <AdminNav user={user} profile={profile} />
+
+        {/* 主内容区域 */}
+        <main className="flex-1 overflow-y-auto bg-background">
+          <div className="container mx-auto p-6 lg:p-8">
+            {children}
+          </div>
+        </main>
+      </div>
+    )
+  } catch (error: any) {
+    // 未登录或非管理员，重定向到首页
+    redirect('/')
+  }
+}
