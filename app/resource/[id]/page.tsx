@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { RatingBreakdown } from '@/components/rating-breakdown'
 import { ResourceCard } from '@/components/resource-card'
 import { Button } from '@/components/ui/button'
@@ -10,16 +11,18 @@ import { ArrowLeft, ExternalLink, Heart, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import categories from '@/data/categories.json'
+import { RatingSection } from './rating-section'
 
 interface ResourceDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function ResourceDetailPage({ params }: ResourceDetailPageProps) {
   const router = useRouter()
-  const { data: resource, isLoading } = useResourceById(params.id)
+  const resolvedParams = React.use(params)
+  const { data: resource, isLoading } = useResourceById(resolvedParams.id)
   const { data: allResources } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 
@@ -207,8 +210,15 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
 
           {/* 右侧：评分详情 */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-6">
+              {/* 原有的评分分解 */}
               <RatingBreakdown rating={resource.rating} />
+              
+              {/* 新增：用户评分区域 */}
+              <div className="rounded-lg border bg-surface p-6">
+                <h3 className="text-lg font-semibold mb-4">用户评分</h3>
+                <RatingSection resource={resource} />
+              </div>
             </div>
           </div>
         </div>

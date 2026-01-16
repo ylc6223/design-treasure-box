@@ -140,14 +140,14 @@
     - 测试 Header 根据认证状态的条件渲染
     - _Requirements: 10.1, 10.2_
 
-- [ ] 6. 评分数据类型和验证
-  - [ ] 6.1 创建评分相关类型定义
+- [x] 6. 评分数据类型和验证
+  - [x] 6.1 创建评分相关类型定义
     - 创建 `types/rating.ts`
     - 定义 Rating, UserRating, SubmitRatingRequest 接口
     - 定义 ResourceRatings 接口
     - _Requirements: 4.1, 5.1_
 
-  - [ ] 6.2 创建评分 Zod 验证 Schema
+  - [x] 6.2 创建评分 Zod 验证 Schema
     - 在 `types/rating.ts` 中定义 RatingValueSchema
     - 定义 RatingSchema
     - 定义 SubmitRatingSchema
@@ -158,8 +158,8 @@
     - **Validates: Requirements 4.1, 4.2, 4.5**
     - _Requirements: 4.2, 4.5_
 
-- [ ] 7. 评分 API 端点实现
-  - [ ] 7.1 实现评分提交 API
+- [x] 7. 评分 API 端点实现
+  - [x] 7.1 实现评分提交 API
     - 创建 `app/api/ratings/route.ts`
     - 实现 POST 端点处理评分提交
     - 使用 `requireAuth()` 验证用户登录
@@ -167,7 +167,7 @@
     - 使用 Supabase upsert 处理新建和更新评分
     - _Requirements: 4.1, 4.3, 4.4, 4.5_
 
-  - [ ] 7.2 实现评分查询 API
+  - [x] 7.2 实现评分查询 API
     - 创建 `app/api/ratings/[resourceId]/route.ts`
     - 实现 GET 端点返回资源评分
     - 计算聚合评分（平均值，四舍五入到 0.5）
@@ -181,15 +181,15 @@
     - **Validates: Requirements 4.3, 4.4, 5.1, 5.5**
     - _Requirements: 4.3, 4.4, 5.1, 5.5_
 
-- [ ] 8. 评分 UI 组件开发
-  - [ ] 8.1 创建评分输入组件
+- [x] 8. 评分 UI 组件开发
+  - [x] 8.1 创建评分输入组件
     - 创建 `components/rating/rating-input.tsx`
     - 实现可交互的星级评分输入
     - 支持 0.5 精度（半星）
     - 支持 5 个评分维度
     - _Requirements: 4.1_
 
-  - [ ] 8.2 创建评分对话框组件
+  - [x] 8.2 创建评分对话框组件
     - 创建 `components/rating/rating-dialog.tsx`
     - 使用 React Hook Form + Zod 验证
     - 显示 5 个评分维度输入（overall, usability, aesthetics, updateFrequency, freeLevel）
@@ -197,7 +197,7 @@
     - 实现提交和取消功能
     - _Requirements: 4.1, 10.6_
 
-  - [ ] 8.3 创建评分显示组件
+  - [x] 8.3 创建评分显示组件
     - 创建 `components/rating/rating-display.tsx`
     - 显示策展人评分（默认）
     - 显示聚合评分和评分人数（如果有用户评分）
@@ -205,7 +205,7 @@
     - 显示"评分"或"修改评分"按钮（已登录用户）
     - _Requirements: 5.2, 5.3, 5.4, 10.4_
 
-  - [ ] 8.4 更新 ResourceCard 组件集成评分
+  - [x] 8.4 更新 ResourceCard 组件集成评分
     - 修改 `components/resource-card.tsx`
     - 集成 RatingDisplay 组件
     - 添加评分按钮点击处理（打开评分对话框）
