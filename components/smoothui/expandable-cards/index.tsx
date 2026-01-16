@@ -9,7 +9,6 @@ import { RatingStars } from "@/components/rating-stars";
 import { cn } from "@/lib/utils";
 import type { Resource } from "@/types";
 
-const AVATAR_SIZE = 96;
 const EASING_X1 = 0.4;
 const EASING_Y1 = 0.0;
 const EASING_X2 = 0.2;

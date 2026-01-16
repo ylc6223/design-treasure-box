@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Read port from environment variable
+  env: {
+    PORT: process.env.PORT || '3000',
+  },
 }
 
 export default nextConfig
