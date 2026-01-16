@@ -1,6 +1,5 @@
 'use client'
 
-import * as React from 'react'
 import { Users, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { RatingStars } from '@/components/rating-stars'

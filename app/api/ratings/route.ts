@@ -25,25 +25,25 @@ export async function POST(request: NextRequest) {
     // 创建 Supabase 客户端
     const supabase = await createClient()
 
+    // 准备评分数据
+    const ratingData = {
+      user_id: user.id,
+      resource_id: validatedData.resourceId,
+      overall: validatedData.overall,
+      usability: validatedData.usability,
+      aesthetics: validatedData.aesthetics,
+      update_frequency: validatedData.updateFrequency,
+      free_level: validatedData.freeLevel,
+      comment: validatedData.comment || null,
+    }
+
     // 使用 upsert 处理新建和更新评分
     // unique constraint (user_id, resource_id) 确保每个用户对每个资源只有一条评分
-    const { data, error } = await supabase
+    const { data, error } = await (supabase
       .from('ratings')
-      .upsert(
-        {
-          user_id: user.id,
-          resource_id: validatedData.resourceId,
-          overall: validatedData.overall,
-          usability: validatedData.usability,
-          aesthetics: validatedData.aesthetics,
-          update_frequency: validatedData.updateFrequency,
-          free_level: validatedData.freeLevel,
-          comment: validatedData.comment || null,
-        },
-        {
-          onConflict: 'user_id,resource_id',
-        }
-      )
+      .upsert as any)(ratingData, {
+        onConflict: 'user_id,resource_id',
+      })
       .select()
       .single()
 
