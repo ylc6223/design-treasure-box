@@ -251,13 +251,13 @@
     - _Requirements: 3.1, 3.2, 3.3, 3.5, 3.6_
 
 - [ ] 11. 用户管理 API（管理员功能）
-  - [ ] 11.1 实现用户列表 API
+  - [x] 11.1 实现用户列表 API
     - 创建 `app/api/admin/users/route.ts`
     - 实现 GET 端点（用户列表，带分页）
     - 使用 `requireAdmin()` 验证管理员权限
     - _Requirements: 2.2, 2.5_
 
-  - [ ] 11.2 实现用户角色更新 API
+  - [x] 11.2 实现用户角色更新 API
     - 创建 `app/api/admin/users/[id]/role/route.ts`
     - 实现 PATCH 端点（更新用户角色）
     - 验证角色值（USER 或 ADMIN）
