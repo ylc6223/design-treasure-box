@@ -93,29 +93,90 @@
 - [x] 7. Checkpoint - 验证搜索和推荐功能
   - 确保所有测试通过，如有问题请询问用户
 
-- [ ] 8. 基于prompt-kit的聊天界面
-  - [x] 8.1 配置prompt-kit基础组件
-    - 安装和配置prompt-kit
-    - 创建基础聊天界面结构
+- [ ] 8. UI/UX重新设计与实现
+  - [ ] 8.1 底部触发输入框组件 (AIPromptInput)
+    - 实现固定在页面底部的触发输入框
+    - 实现自动隐藏/复原逻辑
+    - 添加淡入/淡出动画
+    - _Requirements: 1.1, 1.2_
+    - **设计要点**:
+      - 固定在底部居中（max-w-2xl）
+      - 面板打开时自动隐藏（opacity-0 + pointer-events-none）
+      - 面板关闭时复原到空白状态
+      - 使用motion/react实现平滑过渡
+
+  - [ ] 8.2 右侧聊天面板组件 (AIChatInterface - PC端)
+    - 实现右侧固定宽度面板（400px）
+    - 实现滑入/滑出动画
+    - 集成面板内输入框
     - _Requirements: 1.1, 1.2, 1.3_
+    - **设计要点**:
+      - 使用fixed定位，right-0
+      - 不遮挡主内容区域
+      - 包含对话区域 + 底部输入框
+      - spring动画（damping: 30, stiffness: 300）
 
-  - [x] 8.2 实现自定义消息渲染器
-    - ResourceMessage组件用于显示资源推荐
-    - ClarificationMessage组件用于澄清问题
-    - _Requirements: 4.1, 4.2, 3.2_
+  - [ ] 8.3 全屏聊天界面 (AIChatInterface - 移动端)
+    - 实现全屏模式（fixed覆盖）
+    - 优化性能（主页面保留在DOM）
+    - 添加明显的返回按钮
+    - _Requirements: 8.3, 8.5_
+    - **设计要点**:
+      - 使用fixed inset-0覆盖
+      - 主页面不卸载（性能优化）
+      - 从右侧滑入/滑出动画
 
-  - [x] 8.3 编写聊天界面的属性测试
-    - **Property 1: 聊天界面触发和显示**
-    - **Validates: Requirements 1.1, 1.2**
+  - [ ] 8.4 快速回复按钮组件 (QuickReplyButtons)
+    - 实现快速回复按钮组
+    - 一次显示所有澄清选项
+    - 添加依次出现动画
+    - _Requirements: 3.2, 3.3_
+    - **设计要点**:
+      - 圆角胶囊样式（rounded-full）
+      - 支持emoji图标
+      - 横向排列，自动换行
+      - 每个按钮延迟0.05s出现
 
-  - [x] 8.4 实现视觉预览组件
-    - ResourcePreviewCard组件
-    - 图片加载和错误处理
+  - [ ] 8.5 简化资源卡片组件 (ResourceInlineCard)
+    - 实现简化版资源卡片（默认状态）
+    - 实现悬停/点击展开详情
+    - 集成Sheet/Popover组件
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
+    - **设计要点**:
+      - 默认：缩略图(48x48) + 名称 + 评分 + 类别
+      - 悬停：显示阴影效果
+      - 点击：展开详细信息（Sheet/Popover）
+      - 桌面端：Popover从右侧
+      - 移动端：Sheet从底部（80vh）
 
-  - [x] 8.5 编写视觉预览的属性测试
+  - [ ] 8.6 资源详情展开组件 (ResourceDetailSheet)
+    - 实现资源详情展开界面
+    - 显示大图预览和完整信息
+    - 添加操作按钮（收藏、访问、详情）
+    - _Requirements: 6.1, 6.2, 6.3_
+    - **设计要点**:
+      - 大图预览（h-48，全宽）
+      - 完整评分（5个维度）
+      - 详细描述
+      - 操作按钮组
+
+  - [ ] 8.7 更新消息渲染器
+    - 更新ResourceMessage组件使用新的简化卡片
+    - 更新ClarificationMessage组件使用快速回复按钮
+    - 保持与prompt-kit的视觉一致性
+    - _Requirements: 3.2, 4.1, 4.2_
+
+  - [ ] 8.8 编写UI组件的单元测试
+    - 测试底部输入框的显示/隐藏逻辑
+    - 测试面板的打开/关闭动画
+    - 测试快速回复按钮的交互
+    - 测试资源卡片的展开/收起
+    - _Requirements: 1.1, 1.2, 3.2, 4.1_
+
+  - [ ] 8.9 编写UI组件的属性测试
+    - **Property 1: 聊天界面触发和显示**
     - **Property 5: 视觉预览完整性**
-    - **Validates: Requirements 4.1, 4.2, 4.3, 4.4**
+    - **Validates: Requirements 1.1, 1.2, 4.1, 4.2, 4.3, 4.4**
 
 - [ ] 9. 响应式设计和动画
   - [x] 9.1 实现响应式布局
@@ -123,7 +184,7 @@
     - 使用Tailwind CSS实现响应式设计
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 9.2 添加motion/react动画效果
+  - [x] 9.2 添加motion/react动画效果
     - 聊天界面滑入/滑出动画
     - 消息加载和过渡动画
     - _Requirements: 1.1, 1.4_
@@ -206,6 +267,15 @@
       - 问题：LayoutWrapper和HomePage都渲染了AIPromptInput，导致状态不同步
       - 解决：将状态管理统一到LayoutWrapper，从HomePage移除AI组件
       - 验证：使用Chrome DevTools确认聊天界面正常显示和交互
+    - **API集成完成** (2026-01-16):
+      - ✅ 修复API路由错误：将`serviceManager.getProvider()`改为`getCurrentProvider()`
+      - ✅ 修复向量搜索方法名：将`vectorSearch.indexResources()`改为`buildIndex()`
+      - ✅ 配置ZhipuAI API密钥和模型（glm-4-plus）
+      - ✅ RAG引擎初始化成功（32个资源已索引）
+      - ✅ AI响应生成成功，返回高质量中文推荐
+      - ✅ 聊天界面完整显示：用户消息、AI响应、引导式提问、资源卡片
+      - ✅ 动画效果正常工作（聊天面板滑入/滑出）
+      - ✅ 截图保存：ai-chat-success.png
 
   - [ ] 14.2 最终测试和调优
     - 性能测试和优化

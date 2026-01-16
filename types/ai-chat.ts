@@ -46,7 +46,11 @@ export const ExtendedChatMessageSchema = z.object({
     resources: z.array(z.any()).optional(), // ResourceRecommendation[]
   }).optional(),
   resources: z.array(z.any()).optional(),
-  clarificationQuestions: z.array(z.string()).optional(),
+  clarificationQuestions: z.array(z.object({
+    question: z.string(),
+    options: z.array(z.string()),
+    aspect: z.enum(['category', 'style', 'audience', 'purpose']),
+  })).optional(),
   searchMetadata: z.object({
     query: z.string(),
     filters: z.any(),
@@ -125,7 +129,22 @@ export type VercelAIConfig = z.infer<typeof VercelAIConfigSchema>;
 // 智谱AI配置
 export const ZhipuAIConfigSchema = VercelAIConfigSchema.extend({
   provider: z.literal('zhipu-ai'),
-  model: z.enum(['glm-4', 'glm-4-turbo', 'glm-3-turbo']),
+  model: z.enum([
+    // 最新文本模型（2025）
+    'glm-4-plus',      // 推荐：增强版，性能最好
+    'glm-4-air',       // 轻量快速版本
+    'glm-4-flash',     // 超快速版本
+    'glm-4',           // 标准版本
+    'glm-4-0520',      // 特定版本
+    'glm-3-turbo',     // 旧版本（兼容）
+    // 多模态模型
+    'glm-4.6v',        // 最新多模态（106B）
+    'glm-4.6v-flash',  // 轻量多模态（9B）
+    'glm-4.5v',        // 上一代多模态
+    'glm-4v-plus',     // 增强多模态
+    // 代码专用
+    'glm-4.7',         // 代码编程专用
+  ]),
   embeddingModel: z.enum(['embedding-2', 'embedding-3']).optional(),
 });
 
@@ -135,7 +154,11 @@ export type ZhipuAIConfig = z.infer<typeof ZhipuAIConfigSchema>;
 export const AIEnvironmentConfigSchema = z.object({
   ZHIPU_AI_API_KEY: z.string(),
   ZHIPU_AI_BASE_URL: z.string().optional(),
-  ZHIPU_AI_MODEL: z.enum(['glm-4', 'glm-4-turbo', 'glm-3-turbo']).optional(),
+  ZHIPU_AI_MODEL: z.enum([
+    'glm-4-plus', 'glm-4-air', 'glm-4-flash', 'glm-4', 
+    'glm-4-0520', 'glm-3-turbo', 'glm-4.6v', 'glm-4.6v-flash',
+    'glm-4.5v', 'glm-4v-plus', 'glm-4.7'
+  ]).optional(),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   ENABLE_STREAMING: z.boolean().optional(),
