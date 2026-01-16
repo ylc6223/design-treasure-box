@@ -1,19 +1,39 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Package, Users, Star } from 'lucide-react'
+import { Package, Users, Star, TrendingUp } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 
 /**
  * 管理后台仪表板
- * 显示关键统计数据
+ * 显示关键统计数据和最近活动
  */
 export default async function AdminDashboard() {
   const supabase = await createClient()
 
   // 获取统计数据
-  const [resourcesResult, usersResult, ratingsResult] = await Promise.all([
+  const [
+    resourcesResult,
+    usersResult,
+    ratingsResult,
+    featuredResourcesResult,
+    recentUsersResult,
+    recentRatingsResult,
+  ] = await Promise.all([
     supabase.from('resources').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('ratings').select('*', { count: 'exact', head: true }),
+    supabase.from('resources').select('*', { count: 'exact', head: true }).eq('is_featured', true),
+    supabase
+      .from('profiles')
+      .select('id, name, email, image, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5),
+    supabase
+      .from('ratings')
+      .select('id, overall, created_at, profiles(name, email), resources(name)')
+      .order('created_at', { ascending: false })
+      .limit(5),
   ])
 
   const stats = [
@@ -22,6 +42,12 @@ export default async function AdminDashboard() {
       value: resourcesResult.count || 0,
       icon: Package,
       description: '平台收录的设计资源',
+    },
+    {
+      title: '精选资源',
+      value: featuredResourcesResult.count || 0,
+      icon: TrendingUp,
+      description: '标记为精选的资源',
     },
     {
       title: '用户总数',
@@ -37,6 +63,32 @@ export default async function AdminDashboard() {
     },
   ]
 
+  const recentUsers = recentUsersResult.data || []
+  const recentRatings = recentRatingsResult.data || []
+
+  const getInitials = (name: string | null, email: string) => {
+    if (name) {
+      return name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    }
+    return email[0].toUpperCase()
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+
+    if (diffInHours < 1) return '刚刚'
+    if (diffInHours < 24) return `${diffInHours} 小时前`
+    if (diffInHours < 48) return '昨天'
+    return date.toLocaleDateString('zh-CN')
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -45,7 +97,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
@@ -61,6 +113,76 @@ export default async function AdminDashboard() {
             </Card>
           )
         })}
+      </div>
+
+      {/* 最近活动 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* 最近注册用户 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>最近注册用户</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentUsers.length === 0 ? (
+              <p className="text-sm text-text-muted">暂无数据</p>
+            ) : (
+              <div className="space-y-4">
+                {recentUsers.map((user: any) => (
+                  <div key={user.id} className="flex items-center gap-3">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user.image || undefined} alt={user.name || user.email} />
+                      <AvatarFallback>{getInitials(user.name, user.email)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.name || user.email}
+                      </p>
+                      <p className="text-xs text-text-muted truncate">{user.email}</p>
+                    </div>
+                    <span className="text-xs text-text-muted whitespace-nowrap">
+                      {formatDate(user.created_at)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 最近评分 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>最近评分</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentRatings.length === 0 ? (
+              <p className="text-sm text-text-muted">暂无数据</p>
+            ) : (
+              <div className="space-y-4">
+                {recentRatings.map((rating: any) => (
+                  <div key={rating.id} className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {rating.resources?.name || '未知资源'}
+                      </p>
+                      <p className="text-xs text-text-muted truncate">
+                        {rating.profiles?.name || rating.profiles?.email || '匿名用户'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="whitespace-nowrap">
+                        {rating.overall} ⭐
+                      </Badge>
+                      <span className="text-xs text-text-muted whitespace-nowrap">
+                        {formatDate(rating.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* 快速操作 */}

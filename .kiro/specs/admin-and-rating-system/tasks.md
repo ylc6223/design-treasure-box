@@ -300,7 +300,7 @@
     - _Requirements: 11.1, 11.2_
 
 - [ ] 13. 管理员仪表板页面
-  - [ ] 13.1 适配仪表板页面
+  - [x] 13.1 适配仪表板页面
     - 从 Vercel 模板或 shadcn 官方示例获取仪表板组件
     - 参考：https://ui.shadcn.com/examples/dashboard
     - 创建或更新 `app/admin/page.tsx`
