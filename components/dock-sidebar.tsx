@@ -60,23 +60,23 @@ function DockItem({ icon, label, isActive, onClick, color }: DockItemProps) {
             className={cn(
               'relative flex h-10 w-10 items-center justify-center rounded-lg',
               'transition-all duration-150 ease-out',
-              'hover:scale-115 hover:bg-[var(--surface)]',
-              isActive && 'bg-[var(--surface)]'
+              'hover:scale-115 hover:bg-surface',
+              isActive && 'bg-surface'
             )}
             aria-label={label}
           >
             {/* 激活状态指示器 */}
             {isActive && (
               <div
-                className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full"
-                style={{ backgroundColor: color || 'var(--accent)' }}
+                className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-accent"
+                style={color ? { backgroundColor: color } : undefined}
               />
             )}
             
             <Icon
               className={cn(
                 'h-6 w-6 transition-colors',
-                isActive ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'
+                isActive ? 'text-foreground' : 'text-muted-foreground'
               )}
               style={isActive && color ? { color } : undefined}
             />
@@ -118,8 +118,8 @@ export function DockSidebar({
         <div
           className={cn(
             'flex w-16 flex-col items-center gap-1 rounded-2xl border p-2',
-            'border-[var(--border)] bg-[var(--glass)] backdrop-blur-xl',
-            'shadow-[0_4px_24px_rgba(0,0,0,0.08)]'
+            'border-border bg-card/80 backdrop-blur-xl',
+            'shadow-lg'
           )}
         >
           {/* 分类图标 */}
@@ -135,7 +135,7 @@ export function DockSidebar({
           ))}
 
           {/* 分隔线 */}
-          <div className="my-1 h-px w-8 bg-[var(--border)]" />
+          <div className="my-1 h-px w-8 bg-border" />
 
           {/* 收藏入口 */}
           <DockItem
@@ -151,8 +151,8 @@ export function DockSidebar({
       <nav
         className={cn(
           'fixed bottom-0 left-0 right-0 z-40 md:hidden',
-          'border-t border-[var(--border)] bg-[var(--glass)] backdrop-blur-xl',
-          'shadow-[0_-4px_24px_rgba(0,0,0,0.08)]'
+          'border-t border-border bg-card/80 backdrop-blur-xl',
+          'shadow-lg'
         )}
       >
         <div className="flex items-center justify-around px-2 py-2">
@@ -167,8 +167,8 @@ export function DockSidebar({
                 onClick={() => onCategoryClick(category.id)}
                 className={cn(
                   'flex flex-col items-center gap-1 px-3 py-2 transition-colors',
-                  isActive && 'text-[var(--text-primary)]',
-                  !isActive && 'text-[var(--text-secondary)]'
+                  isActive && 'text-foreground',
+                  !isActive && 'text-muted-foreground'
                 )}
                 aria-label={category.name}
               >
@@ -183,8 +183,8 @@ export function DockSidebar({
             onClick={() => onCategoryClick('favorites')}
             className={cn(
               'flex flex-col items-center gap-1 px-3 py-2 transition-colors',
-              activeCategory === 'favorites' && 'text-[var(--text-primary)]',
-              activeCategory !== 'favorites' && 'text-[var(--text-secondary)]'
+              activeCategory === 'favorites' && 'text-foreground',
+              activeCategory !== 'favorites' && 'text-muted-foreground'
             )}
             aria-label="我的收藏"
           >

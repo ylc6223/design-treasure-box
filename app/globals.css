@@ -33,6 +33,10 @@
   /* 项目自定义变量 */
   --surface: hsl(0 0% 100%);
   --highlight: hsl(38 92% 50%);
+  --glass: hsla(0, 0%, 100%, 0.8);
+  --text-muted: hsl(0 0% 64%);
+  --shadow: hsla(0, 0%, 0%, 0.1);
+  --shadow-strong: hsla(0, 0%, 0%, 0.15);
 }
 
 .dark {
@@ -64,6 +68,10 @@
   /* 项目自定义变量 */
   --surface: hsl(0 0% 9%);
   --highlight: hsl(48 96% 53%);
+  --glass: hsla(23, 23%, 23%, 0.8);
+  --text-muted: hsl(0 0% 45%);
+  --shadow: hsla(0, 0%, 0%, 0.3);
+  --shadow-strong: hsla(0, 0%, 0%, 0.5);
 }
 
 @theme {
@@ -98,7 +106,10 @@
   --color-highlight: var(--highlight);
   --color-text-primary: var(--foreground);
   --color-text-secondary: var(--muted-foreground);
-  --color-text-muted: var(--muted-foreground);
+  --color-text-muted: var(--text-muted);
+  --color-glass: var(--glass);
+  --color-shadow: var(--shadow);
+  --color-shadow-strong: var(--shadow-strong);
 
   /* Radius */
   --radius-xs: calc(var(--radius) - 4px);

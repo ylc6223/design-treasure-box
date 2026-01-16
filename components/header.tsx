@@ -55,9 +55,9 @@ export function Header({
         className
       )}
     >
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="flex h-16 items-center justify-between px-4 mx-auto max-w-screen-2xl">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2 shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
             <span className="text-lg font-bold">设</span>
           </div>
@@ -67,7 +67,7 @@ export function Header({
         </Link>
 
         {/* 分类标签 */}
-        <nav className="flex flex-1 items-center justify-center px-4">
+        <nav className="flex flex-1 items-center justify-center px-4 min-w-0">
           <div className="flex items-center space-x-1 overflow-x-auto scrollbar-hide">
             {/* 全部 */}
             <Button
@@ -105,7 +105,7 @@ export function Header({
         </nav>
 
         {/* 右侧操作 */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 shrink-0">
           {/* 搜索按钮（移动端） */}
           {showSearch && (
             <>

@@ -58,14 +58,14 @@ export function AIPromptInput({
         onSubmit={handleSubmit}
         className={cn(
           'flex h-14 items-center gap-3 rounded-[28px] border px-4',
-          'border-[var(--border)] bg-[var(--glass)] backdrop-blur-xl',
-          'shadow-[0_4px_24px_var(--shadow)]',
+          'border-border bg-card/80 backdrop-blur-xl',
+          'shadow-lg',
           'transition-shadow duration-200',
-          'focus-within:shadow-[0_4px_32px_var(--shadow-strong)]'
+          'focus-within:shadow-xl'
         )}
       >
         {/* 左侧图标 */}
-        <MessageSquare className="h-5 w-5 flex-shrink-0 text-[var(--text-muted)]" />
+        <MessageSquare className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
 
         {/* 输入框 */}
         <Input
@@ -76,7 +76,7 @@ export function AIPromptInput({
           disabled={isLoading}
           className={cn(
             'h-auto flex-1 border-0 bg-transparent px-0 text-base shadow-none',
-            'placeholder:text-[var(--text-muted)]',
+            'placeholder:text-muted-foreground',
             'focus-visible:ring-0 focus-visible:ring-offset-0',
             'disabled:cursor-not-allowed disabled:opacity-50'
           )}
@@ -90,9 +90,9 @@ export function AIPromptInput({
           disabled={!value.trim() || isLoading}
           className={cn(
             'h-9 w-9 flex-shrink-0 rounded-full',
-            'bg-[var(--accent)] text-[var(--accent-foreground)]',
+            'bg-accent text-accent-foreground',
             'transition-all duration-200',
-            'hover:scale-110 hover:bg-[var(--accent)]',
+            'hover:scale-110 hover:bg-accent',
             'disabled:pointer-events-none disabled:opacity-50',
             'active:scale-95'
           )}
@@ -104,7 +104,7 @@ export function AIPromptInput({
 
       {/* 提示文字（可选） */}
       {isLoading && (
-        <p className="mt-2 text-center text-xs text-[var(--text-muted)]">
+        <p className="mt-2 text-center text-xs text-muted-foreground">
           AI 正在思考...
         </p>
       )}
