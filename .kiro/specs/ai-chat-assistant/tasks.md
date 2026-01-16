@@ -196,11 +196,16 @@
     - _Requirements: 1.1, 1.2_
     - **完成时间**: 2026-01-16
     - **实现内容**:
-      - 在HomePage组件中添加状态管理（isChatOpen, initialQuery）
-      - 集成AIPromptInput组件到底部浮动位置
-      - 集成AIChatInterface组件到右侧滑出位置
+      - 将AI输入框和聊天界面的状态管理从HomePage移到LayoutWrapper组件
+      - 修复了两个AI输入框导致的状态不同步问题
       - 实现handleAIPromptSubmit和handleChatClose事件处理
+      - 清理Turbopack缓存解决编译错误
+      - 验证聊天界面可以正常打开和显示用户消息
       - 创建集成测试验证完整流程（6个测试全部通过）
+    - **Bug修复**:
+      - 问题：LayoutWrapper和HomePage都渲染了AIPromptInput，导致状态不同步
+      - 解决：将状态管理统一到LayoutWrapper，从HomePage移除AI组件
+      - 验证：使用Chrome DevTools确认聊天界面正常显示和交互
 
   - [ ] 14.2 最终测试和调优
     - 性能测试和优化
