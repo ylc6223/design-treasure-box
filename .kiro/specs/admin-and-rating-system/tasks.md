@@ -223,20 +223,20 @@
   - 如有问题，向用户询问
 
 - [ ] 10. 资源管理 API（管理员功能）
-  - [ ] 10.1 创建资源类型和验证 Schema
+  - [x] 10.1 创建资源类型和验证 Schema
     - 创建 `types/resource.ts`
     - 定义 CreateResourceRequest, UpdateResourceRequest 接口
     - 定义 CreateResourceSchema, UpdateResourceSchema
     - _Requirements: 3.1, 3.2_
 
-  - [ ] 10.2 实现资源管理 API 端点
+  - [x] 10.2 实现资源管理 API 端点
     - 创建 `app/api/admin/resources/route.ts`
     - 实现 POST 端点（创建资源）
     - 实现 GET 端点（列表查询，带分页）
     - 使用 `requireAdmin()` 验证管理员权限
     - _Requirements: 3.1_
 
-  - [ ] 10.3 实现单个资源管理 API
+  - [x] 10.3 实现单个资源管理 API
     - 创建 `app/api/admin/resources/[id]/route.ts`
     - 实现 GET 端点（获取单个资源）
     - 实现 PUT 端点（更新资源）
