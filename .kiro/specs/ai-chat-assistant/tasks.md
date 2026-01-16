@@ -90,7 +90,7 @@
     - 实现多轮对话上下文管理
     - _Requirements: 3.5, 5.5_
 
-- [-] 7. Checkpoint - 验证搜索和推荐功能
+- [x] 7. Checkpoint - 验证搜索和推荐功能
   - 确保所有测试通过，如有问题请询问用户
 
 - [ ] 8. 基于prompt-kit的聊天界面
@@ -99,26 +99,26 @@
     - 创建基础聊天界面结构
     - _Requirements: 1.1, 1.2, 1.3_
 
-  - [ ] 8.2 实现自定义消息渲染器
+  - [x] 8.2 实现自定义消息渲染器
     - ResourceMessage组件用于显示资源推荐
     - ClarificationMessage组件用于澄清问题
     - _Requirements: 4.1, 4.2, 3.2_
 
-  - [ ] 8.3 编写聊天界面的属性测试
+  - [x] 8.3 编写聊天界面的属性测试
     - **Property 1: 聊天界面触发和显示**
     - **Validates: Requirements 1.1, 1.2**
 
-  - [ ] 8.4 实现视觉预览组件
+  - [x] 8.4 实现视觉预览组件
     - ResourcePreviewCard组件
     - 图片加载和错误处理
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 8.5 编写视觉预览的属性测试
+  - [x] 8.5 编写视觉预览的属性测试
     - **Property 5: 视觉预览完整性**
     - **Validates: Requirements 4.1, 4.2, 4.3, 4.4**
 
 - [ ] 9. 响应式设计和动画
-  - [ ] 9.1 实现响应式布局
+  - [x] 9.1 实现响应式布局
     - 桌面、平板、移动设备的布局适配
     - 使用Tailwind CSS实现响应式设计
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
@@ -189,11 +189,18 @@
     - AI服务集成测试
     - _Requirements: 所有需求_
 
-- [ ] 14. 最终集成和优化
-  - [ ] 14.1 将聊天助手集成到主应用
+- [x] 14. 最终集成和优化
+  - [x] 14.1 将聊天助手集成到主应用
     - 修改现有AI输入框以触发聊天界面
     - 确保与现有功能的兼容性
     - _Requirements: 1.1, 1.2_
+    - **完成时间**: 2026-01-16
+    - **实现内容**:
+      - 在HomePage组件中添加状态管理（isChatOpen, initialQuery）
+      - 集成AIPromptInput组件到底部浮动位置
+      - 集成AIChatInterface组件到右侧滑出位置
+      - 实现handleAIPromptSubmit和handleChatClose事件处理
+      - 创建集成测试验证完整流程（6个测试全部通过）
 
   - [ ] 14.2 最终测试和调优
     - 性能测试和优化

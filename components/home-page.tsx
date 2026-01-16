@@ -4,12 +4,16 @@ import { useState, useMemo } from 'react'
 import { MasonicGrid } from '@/components/masonic-grid'
 import { CategoryFilter } from '@/components/category-filter'
 import { FeaturedSections } from '@/components/featured-sections'
+import { AIPromptInput } from '@/components/ai-prompt-input'
+import { AIChatInterface } from '@/components/ai-chat-interface'
 import { useFavorites, useResources, useInfiniteResources } from '@/hooks'
 import { Loader2 } from 'lucide-react'
 import categories from '@/data/categories.json'
 
 export function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined)
   const { data: allResources, isLoading } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 
@@ -54,6 +58,16 @@ export function HomePage() {
     setActiveCategory(categoryId)
   }
 
+  const handleAIPromptSubmit = (prompt: string) => {
+    setInitialQuery(prompt)
+    setIsChatOpen(true)
+  }
+
+  const handleChatClose = () => {
+    setIsChatOpen(false)
+    setInitialQuery(undefined)
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -63,9 +77,10 @@ export function HomePage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* 主内容区 */}
-      <div className="container px-4 py-8">
+    <>
+      <div className="min-h-screen">
+        {/* 主内容区 */}
+        <div className="container px-4 py-8">
         {/* 欢迎区域 */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
@@ -108,5 +123,19 @@ export function HomePage() {
         />
       </div>
     </div>
+
+    {/* AI Prompt Input - 底部浮动输入框 */}
+    <AIPromptInput
+      onSubmit={handleAIPromptSubmit}
+      placeholder="输入你想要的设计资源，AI 帮你找..."
+    />
+
+    {/* AI Chat Interface - 右侧滑出聊天界面 */}
+    <AIChatInterface
+      isOpen={isChatOpen}
+      onClose={handleChatClose}
+      initialQuery={initialQuery}
+    />
+  </>
   )
 }
