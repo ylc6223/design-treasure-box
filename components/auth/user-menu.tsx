@@ -44,17 +44,18 @@ export function UserMenu({ profile }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-9 w-9 rounded-full"
+          size="icon"
+          className="relative h-8 w-8 rounded-full p-0 hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
           aria-label="用户菜单"
         >
           {profile.image ? (
             <img
               src={profile.image}
               alt={profile.name || profile.email}
-              className="h-9 w-9 rounded-full object-cover"
+              className="h-full w-full rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground text-sm font-medium">
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-accent text-accent-foreground text-sm font-medium">
               {getInitials(profile.name)}
             </div>
           )}

@@ -53,9 +53,24 @@
 2. 启用 GitHub 提供商
 3. 按照说明配置 GitHub OAuth：
    - 访问 [GitHub Developer Settings](https://github.com/settings/developers)
-   - 创建新的 OAuth App
-   - 设置 Authorization callback URL：`https://your-project.supabase.co/auth/v1/callback`
-   - 复制 Client ID 和 Client Secret 到 Supabase
+   - 点击 **New OAuth App**
+   - 填写应用信息：
+     - **Application name**: Design Treasure Box（或你喜欢的名称）
+     - **Homepage URL**: 
+       - 开发环境：`http://localhost:3000`
+       - 生产环境：`https://your-domain.com`（部署后的实际域名）
+     - **Application description**: 设计资源聚合平台（可选）
+     - **Authorization callback URL**: `https://your-project.supabase.co/auth/v1/callback`
+   - 点击 **Register application**
+   - 复制 **Client ID**
+   - 点击 **Generate a new client secret**，复制 **Client Secret**
+   - 将 Client ID 和 Client Secret 粘贴到 Supabase 的 GitHub Provider 配置中
+   - 点击 **Save**
+
+**提示**：
+- 开发阶段先用 `http://localhost:3000` 作为 Homepage URL
+- 部署后可以在 GitHub OAuth App 设置中更新为生产域名
+- 或者创建两个 OAuth Apps 分别用于开发和生产环境
 
 ## 5. 验证配置
 
