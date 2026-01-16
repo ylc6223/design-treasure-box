@@ -185,7 +185,7 @@ export class HybridSearchEngine {
 
     // 标签匹配
     const queryLower = query.toLowerCase();
-    const matchedTags = resource.tags.filter(tag =>
+    const matchedTags = resource.tags.filter((tag: string) =>
       queryLower.includes(tag.toLowerCase()) ||
       tag.toLowerCase().includes(queryLower)
     );

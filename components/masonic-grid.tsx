@@ -32,7 +32,7 @@ interface MasonryCardProps {
  * 垂直间距由 usePositioner 的 rowGutter 参数控制
  */
 const MasonryCard = React.memo<MasonryCardProps>(
-  ({ data, width, isFavorited, onFavorite, onVisit }) => {
+  ({ data, width: _width, isFavorited, onFavorite, onVisit }) => {
     return (
       <ResourceCard
         resource={data}

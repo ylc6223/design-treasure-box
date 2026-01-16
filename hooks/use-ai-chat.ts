@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import type { ExtendedChatMessage, ChatSession } from '@/types/ai-chat';
+import type { ExtendedChatMessage, ChatSession, ChatMessage } from '@/types/ai-chat';
 
 const STORAGE_KEY = 'ai-chat-session';
 const MAX_MESSAGES = 50;
@@ -17,7 +17,13 @@ export function useAIChat() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const session: ChatSession = JSON.parse(stored);
-        setMessages(session.messages.slice(-MAX_MESSAGES));
+        // 将ChatMessage转换为ExtendedChatMessage，添加sessionId
+        const extendedMessages: ExtendedChatMessage[] = session.messages.map(msg => ({
+          ...msg,
+          sessionId: session.id,
+          timestamp: new Date(msg.timestamp), // 确保timestamp是Date对象
+        }));
+        setMessages(extendedMessages.slice(-MAX_MESSAGES));
         setSessionId(session.id);
       }
     } catch (error) {
@@ -29,9 +35,21 @@ export function useAIChat() {
   useEffect(() => {
     if (messages.length > 0) {
       try {
+        // 将ExtendedChatMessage转换为ChatMessage以符合ChatSession类型
+        const chatMessages: ChatMessage[] = messages.map(msg => ({
+          id: msg.id,
+          type: msg.type,
+          content: msg.content,
+          timestamp: msg.timestamp,
+          resources: msg.resources,
+          clarificationQuestions: msg.clarificationQuestions,
+          searchMetadata: msg.searchMetadata,
+          isLoading: msg.isLoading,
+        }));
+        
         const session: ChatSession = {
           id: sessionId,
-          messages: messages.slice(-MAX_MESSAGES),
+          messages: chatMessages.slice(-MAX_MESSAGES),
           createdAt: new Date(),
           updatedAt: new Date(),
           context: {},

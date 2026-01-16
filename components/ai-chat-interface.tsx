@@ -120,9 +120,8 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
                 </div>
               )}
 
-              {messages.map((message, index) => {
+              {messages.map((message) => {
                 const isAssistant = message.type === 'assistant';
-                const isLastMessage = index === messages.length - 1;
 
                 return (
                   <Message

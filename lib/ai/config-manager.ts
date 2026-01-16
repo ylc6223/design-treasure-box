@@ -12,8 +12,8 @@ import {
  * 负责加载和管理AI提供者的配置
  */
 export class AIConfigManager {
-  private config: AIRuntimeConfig;
-  private envConfig: AIEnvironmentConfig;
+  private config!: AIRuntimeConfig;
+  private envConfig!: AIEnvironmentConfig;
 
   constructor() {
     this.loadConfiguration();
