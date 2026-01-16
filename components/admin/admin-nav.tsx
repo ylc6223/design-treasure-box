@@ -8,7 +8,6 @@ import {
   Package,
   Users,
   LogOut,
-  ChevronLeft,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -80,20 +79,8 @@ export function AdminNav({ user, profile }: AdminNavProps) {
   return (
     <aside className="w-64 border-r bg-surface">
       <div className="flex h-full flex-col">
-        {/* Logo 和返回首页 */}
-        <div className="border-b p-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            返回首页
-          </Link>
-          <h1 className="mt-4 text-xl font-semibold">管理后台</h1>
-        </div>
-
         {/* 导航菜单 */}
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className="flex-1 space-y-1 p-4 pt-6">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')

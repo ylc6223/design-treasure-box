@@ -316,7 +316,7 @@
     - _Requirements: 6.1_
 
 - [ ] 14. 资源管理页面（管理员）
-  - [ ] 14.1 适配资源列表页面
+  - [x] 14.1 适配资源列表页面
     - 从 Vercel 模板获取数据表格组件
     - 创建或更新 `app/admin/resources/page.tsx`
     - 显示资源表格（带分页）
@@ -324,14 +324,14 @@
     - 添加"新建资源"按钮
     - _Requirements: 6.2_
 
-  - [ ] 14.2 适配资源表格组件
+  - [x] 14.2 适配资源表格组件
     - 从 Vercel 模板复制或创建 `components/admin/resource-table.tsx`
     - 显示资源列表（名称、分类、评分、操作）
     - 实现编辑和删除操作
     - 集成 Supabase 数据查询
     - _Requirements: 6.2_
 
-  - [ ] 14.3 创建资源表单组件
+  - [x] 14.3 创建资源表单组件
     - 创建 `components/admin/resource-form.tsx`
     - 使用 React Hook Form + Zod 验证
     - 表单字段：name, url, description, categoryId, tags, curatorNote, isFeatured
@@ -339,13 +339,13 @@
     - 注意：不需要 screenshot 字段，前端会自动从 url 获取图片
     - _Requirements: 6.4_
 
-  - [ ] 14.4 创建新建资源页面
+  - [x] 14.4 创建新建资源页面
     - 创建 `app/admin/resources/new/page.tsx`
     - 使用 ResourceForm 组件
     - 实现资源创建逻辑
     - _Requirements: 3.1, 6.4_
 
-  - [ ] 14.5 创建编辑资源页面
+  - [x] 14.5 创建编辑资源页面
     - 创建 `app/admin/resources/[id]/edit/page.tsx`
     - 使用 ResourceForm 组件
     - 加载现有资源数据
@@ -359,14 +359,14 @@
     - _Requirements: 3.1, 3.2, 6.2, 6.4_
 
 - [ ] 15. 用户管理页面（管理员）
-  - [ ] 15.1 适配用户管理页面
+  - [x] 15.1 适配用户管理页面
     - 从 Vercel 模板获取用户表格组件
     - 创建或更新 `app/admin/users/page.tsx`
     - 显示用户列表（带分页）
     - 实现搜索功能
     - _Requirements: 6.5_
 
-  - [ ] 15.2 适配用户表格组件
+  - [x] 15.2 适配用户表格组件
     - 从 Vercel 模板复制或创建 `components/admin/user-table.tsx`
     - 显示用户信息（名称、邮箱、角色、注册时间）
     - 实现角色切换功能（USER ↔ ADMIN）
@@ -425,14 +425,14 @@
     - _Requirements: 7.5, 8.5, 8.6, 9.1_
 
 - [ ] 18. 数据迁移脚本
-  - [ ] 18.1 创建数据迁移脚本
+  - [x] 18.1 创建数据迁移脚本
     - 创建 Node.js 脚本读取现有 JSON 数据
     - 读取 `data/resources.json` 和 `data/categories.json`
     - 使用 Supabase Client 插入到数据库
     - 处理重复数据（使用 upsert）
     - _Requirements: 7.1, 7.3_
 
-  - [ ] 18.2 创建数据库种子脚本
+  - [x] 18.2 创建数据库种子脚本
     - 创建 `supabase/seed.sql`
     - 添加测试用户（包括管理员）
     - 添加示例评分数据

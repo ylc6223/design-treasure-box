@@ -171,7 +171,7 @@ export default async function AdminDashboard() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="whitespace-nowrap">
-                        {rating.overall} ⭐
+                        {rating.overall}
                       </Badge>
                       <span className="text-xs text-text-muted whitespace-nowrap">
                         {formatDate(rating.created_at)}

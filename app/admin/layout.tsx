@@ -5,6 +5,7 @@ import { AdminNav } from '@/components/admin/admin-nav'
 /**
  * 管理后台布局
  * 需要管理员权限
+ * 注意：LayoutWrapper 会检测 /admin 路径并跳过前端布局渲染
  */
 export default async function AdminLayout({
   children,
@@ -16,7 +17,7 @@ export default async function AdminLayout({
     const { user, profile } = await requireAdmin()
 
     return (
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         {/* 侧边栏导航 */}
         <AdminNav user={user} profile={profile} />
 

@@ -71,10 +71,10 @@ SELECT id, name, category_id FROM public.resources LIMIT 5;
 // 写入文件
 fs.writeFileSync(outputPath, sqlContent, 'utf8')
 
-console.log('✅ SQL 文件已生成:', outputPath)
-console.log('📊 资源数量:', resources.length)
+console.log('[SUCCESS] SQL 文件已生成:', outputPath)
+console.log('[INFO] 资源数量:', resources.length)
 console.log('')
-console.log('📝 使用方法:')
+console.log('[INFO] 使用方法:')
 console.log('1. 打开 Supabase SQL Editor')
 console.log('2. 复制 supabase/migrations/003_seed_resources.sql 的内容')
 console.log('3. 粘贴并执行')

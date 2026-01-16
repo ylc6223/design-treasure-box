@@ -32,15 +32,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('❌ 错误：缺少 Supabase 环境变量')
+  console.error('[ERROR] 缺少 Supabase 环境变量')
   console.error('请确保 .env.local 中配置了：')
   console.error('  - NEXT_PUBLIC_SUPABASE_URL')
   console.error('  - SUPABASE_SERVICE_ROLE_KEY (推荐) 或 NEXT_PUBLIC_SUPABASE_ANON_KEY')
-  console.error('\n⚠️  注意：使用 ANON_KEY 需要临时禁用 RLS 策略')
+  console.error('\n[WARNING] 使用 ANON_KEY 需要临时禁用 RLS 策略')
   process.exit(1)
 }
 
-console.log('🔑 使用密钥类型:', supabaseServiceKey === process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Service Role (绕过 RLS)' : 'Anon Key (需要 RLS 权限)')
+console.log('[INFO] 使用密钥类型:', supabaseServiceKey === process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Service Role (绕过 RLS)' : 'Anon Key (需要 RLS 权限)')
 
 // 创建 Supabase 客户端
 const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey)
@@ -49,7 +49,7 @@ const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey)
 const resourcesPath = path.join(__dirname, '../data/resources.json')
 const resourcesData = JSON.parse(fs.readFileSync(resourcesPath, 'utf8'))
 
-console.log(`📦 读取到 ${resourcesData.length} 个资源`)
+console.log(`[INFO] 读取到 ${resourcesData.length} 个资源`)
 
 // 转换数据格式
 const resources = resourcesData.map((resource: any) => ({
@@ -67,7 +67,7 @@ const resources = resourcesData.map((resource: any) => ({
 }))
 
 async function migrateResources() {
-  console.log('\n🚀 开始迁移资源数据到 Supabase...\n')
+  console.log('\n[INFO] 开始迁移资源数据到 Supabase...\n')
 
   let successCount = 0
   let errorCount = 0
@@ -82,39 +82,39 @@ async function migrateResources() {
         })
 
       if (error) {
-        console.error(`❌ 迁移失败: ${resource.name}`)
+        console.error(`[ERROR] 迁移失败: ${resource.name}`)
         console.error(`   错误: ${error.message}`)
         errorCount++
       } else {
-        console.log(`✅ 迁移成功: ${resource.name}`)
+        console.log(`[SUCCESS] 迁移成功: ${resource.name}`)
         successCount++
       }
     } catch (err) {
-      console.error(`❌ 迁移失败: ${resource.name}`)
+      console.error(`[ERROR] 迁移失败: ${resource.name}`)
       console.error(`   错误: ${err}`)
       errorCount++
     }
   }
 
-  console.log('\n📊 迁移统计:')
+  console.log('\n[INFO] 迁移统计:')
   console.log(`   成功: ${successCount}`)
   console.log(`   失败: ${errorCount}`)
   console.log(`   总计: ${resources.length}`)
 
   if (errorCount === 0) {
-    console.log('\n✨ 所有资源迁移成功！')
+    console.log('\n[SUCCESS] 所有资源迁移成功！')
   } else {
-    console.log('\n⚠️  部分资源迁移失败，请检查错误信息')
+    console.log('\n[WARNING] 部分资源迁移失败，请检查错误信息')
   }
 }
 
 // 执行迁移
 migrateResources()
   .then(() => {
-    console.log('\n✅ 迁移完成')
+    console.log('\n[SUCCESS] 迁移完成')
     process.exit(0)
   })
   .catch((error) => {
-    console.error('\n❌ 迁移失败:', error)
+    console.error('\n[ERROR] 迁移失败:', error)
     process.exit(1)
   })

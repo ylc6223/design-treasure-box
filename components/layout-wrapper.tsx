@@ -19,10 +19,16 @@ interface LayoutWrapperProps {
  * LayoutWrapper 组件
  * 
  * 客户端包装组件，处理导航和交互逻辑
+ * 注意：管理后台路径（/admin）不使用此布局
  */
 export function LayoutWrapper({ categories, children, profile }: LayoutWrapperProps) {
   const router = useRouter()
   const pathname = usePathname()
+
+  // 如果是管理后台路径，直接返回 children，不渲染前端布局
+  if (pathname?.startsWith('/admin')) {
+    return <>{children}</>
+  }
 
   // 从路径中提取当前分类
   const activeCategory = pathname.startsWith('/category/')
