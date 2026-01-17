@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { VercelAIRAGEngine } from '../rag-engine';
 import { HybridSearchEngine } from '../hybrid-search';
-import { VectorSearchEngine } from '../vector-search';
+import { SupabaseVectorSearchEngine } from '../supabase-vector-search-engine';
 import { GuidedQuestioningEngine } from '../guided-questioning';
 import type { Resource } from '@/types';
 import type { AIProvider } from '@/types/ai-chat';
@@ -139,14 +139,13 @@ const testResources: Resource[] = [
 describe('VercelAIRAGEngine', () => {
   let ragEngine: VercelAIRAGEngine;
   let provider: MockAIProvider;
-  let vectorSearch: VectorSearchEngine;
+  let vectorSearch: SupabaseVectorSearchEngine;
   let hybridSearch: HybridSearchEngine;
   let guidedQuestioning: GuidedQuestioningEngine;
 
   beforeEach(async () => {
     provider = new MockAIProvider();
-    vectorSearch = new VectorSearchEngine(provider);
-    await vectorSearch.buildIndex(testResources);
+    vectorSearch = new SupabaseVectorSearchEngine(provider);
     hybridSearch = new HybridSearchEngine(vectorSearch, testResources);
     guidedQuestioning = new GuidedQuestioningEngine();
     ragEngine = new VercelAIRAGEngine(provider, hybridSearch, guidedQuestioning);

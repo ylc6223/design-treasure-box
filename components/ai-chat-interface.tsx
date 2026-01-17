@@ -34,8 +34,6 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
   const [messages, setMessages] = useState<ExtendedChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentClarificationIndex, setCurrentClarificationIndex] = useState(0);
-  const [clarificationAnswers, setClarificationAnswers] = useState<string[]>([]);
 
   // Initialize with initial query if provided
   useEffect(() => {
@@ -45,9 +43,9 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]); // 只依赖 initialQuery，避免无限循环
 
-  // 处理澄清问题回答
+  // 处理澄清问题回答（简化版 - 直接发送选中的选项）
   const handleClarificationAnswer = (answer: string) => {
-    // 将回答作为用户消息添加到对话中
+    // 将回答作为用户消息添加到对话中，并立即发送查询
     const userMessage: ExtendedChatMessage = {
       id: `user-${Date.now()}`,
       sessionId: 'default',
@@ -58,55 +56,8 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
 
     setMessages((prev) => [...prev, userMessage]);
     
-    // 保存回答
-    const newAnswers = [...clarificationAnswers, answer];
-    setClarificationAnswers(newAnswers);
-
-    // 获取当前消息中的澄清问题
-    const lastAssistantMessage = messages.filter(m => m.type === 'assistant').pop();
-    const clarificationQuestions = lastAssistantMessage?.clarificationQuestions || [];
-
-    // 检查是否还有更多问题
-    if (currentClarificationIndex + 1 < clarificationQuestions.length) {
-      // 移动到下一个问题
-      setCurrentClarificationIndex(currentClarificationIndex + 1);
-    } else {
-      // 所有问题都回答完毕，发送完整的查询
-      const originalQuery = messages.find(m => m.type === 'user')?.content || '';
-      const fullQuery = `${originalQuery} ${newAnswers.join(' ')}`.trim();
-      
-      // 重置状态
-      setCurrentClarificationIndex(0);
-      setClarificationAnswers([]);
-      
-      // 发送完整查询
-      handleSendMessage(fullQuery, true);
-    }
-  };
-
-  // 处理跳过澄清问题
-  const handleSkipClarification = () => {
-    const lastAssistantMessage = messages.filter(m => m.type === 'assistant').pop();
-    const clarificationQuestions = lastAssistantMessage?.clarificationQuestions || [];
-
-    // 检查是否还有更多问题
-    if (currentClarificationIndex + 1 < clarificationQuestions.length) {
-      // 移动到下一个问题
-      setCurrentClarificationIndex(currentClarificationIndex + 1);
-    } else {
-      // 直接搜索，使用已有的回答
-      const originalQuery = messages.find(m => m.type === 'user')?.content || '';
-      const fullQuery = clarificationAnswers.length > 0 
-        ? `${originalQuery} ${clarificationAnswers.join(' ')}`.trim()
-        : originalQuery;
-      
-      // 重置状态
-      setCurrentClarificationIndex(0);
-      setClarificationAnswers([]);
-      
-      // 发送查询
-      handleSendMessage(fullQuery, true);
-    }
+    // 直接发送选中的选项作为新查询
+    handleSendMessage(answer, true);
   };
 
   const handleSendMessage = async (content: string, skipClarification = false) => {
@@ -338,13 +289,11 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
                     >
                     {isAssistant ? (
                       <div className="group flex w-full flex-col gap-3">
-                        {/* 澄清问题 - 步骤式显示 */}
+                        {/* 澄清问题 - 快速回复按钮（一次显示所有选项） */}
                         {hasClarificationQuestions ? (
                           <ClarificationMessage
                             questions={message.clarificationQuestions!}
-                            currentQuestionIndex={currentClarificationIndex}
                             onAnswerSelect={handleClarificationAnswer}
-                            onSkip={handleSkipClarification}
                           />
                         ) : (
                           <>

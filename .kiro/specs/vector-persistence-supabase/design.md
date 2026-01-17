@@ -241,15 +241,32 @@ ON resource_embeddings (resource_id);
 CREATE INDEX resource_embeddings_updated_at_idx 
 ON resource_embeddings (updated_at);
 
--- 创建元数据索引（类别）
+-- 创建元数据索引（类别）- 使用 BTREE 进行精确匹配
 CREATE INDEX resource_embeddings_category_idx 
 ON resource_embeddings 
-USING GIN ((metadata->>'category'));
+USING BTREE ((metadata->>'category'));
 
 -- 创建元数据索引（评分）
 CREATE INDEX resource_embeddings_rating_idx 
 ON resource_embeddings 
 USING BTREE (((metadata->>'rating')::numeric));
+```
+
+#### 索引选择说明
+
+**类别索引使用 BTREE 的原因：**
+- **精确匹配优化：** 项目主要进行 `metadata->>'category' = 'color-tools'` 等精确匹配查询
+- **少量类别：** 仅有 8 个固定类别，BTREE 索引效率更高
+- **存储开销小：** 相比 GIN 索引，BTREE 占用更少存储空间
+- **维护成本低：** 更新和维护开销较小
+
+**如需支持文本搜索，可选择 GIN 索引：**
+```sql
+-- 启用 pg_trgm 扩展（如需模糊搜索）
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX resource_embeddings_category_gin_idx 
+ON resource_embeddings 
+USING GIN ((metadata->>'category') gin_trgm_ops);
 ```
 
 ### 2. 相似度搜索函数
@@ -264,7 +281,7 @@ CREATE OR REPLACE FUNCTION match_resources(
   min_rating float DEFAULT NULL
 )
 RETURNS TABLE (
-  resource_id text,
+  resource_id varchar(255),
   similarity float,
   metadata jsonb
 )

@@ -92,7 +92,7 @@ USING ivfflat (embedding vector_cosine_ops);
 ```bash
 # Supabase 配置
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_SECRET_KEY=your_secret_key
 
 # 向量存储配置
 VECTOR_STORE_PROVIDER=supabase

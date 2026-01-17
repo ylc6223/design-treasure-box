@@ -1,31 +1,38 @@
 /**
- * ClarificationMessage 组件测试
+ * ClarificationMessage 组件测试（快速回复按钮版本）
+ * 
  * Feature: ai-chat-assistant, Property 4: 模糊查询的引导式提问
  * Validates: Requirements 3.1, 3.2, 3.3, 3.4
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClarificationMessage } from '../clarification-message';
 
-describe('ClarificationMessage', () => {
+describe('ClarificationMessage - 快速回复按钮版本', () => {
   const mockQuestions = [
-    '您需要什么类型的设计资源？（UI灵感、字体资源还是色彩搭配）',
-    '您的目标受众是什么？（年轻群体还是商务专业）',
-    '您的使用场景是什么？',
+    {
+      question: '您需要什么类型的设计资源？',
+      options: ['UI灵感', '字体资源', '色彩搭配'],
+      aspect: 'category' as const,
+    },
+    {
+      question: '您偏好什么风格？',
+      options: ['现代简约', '复古经典', '未来科技'],
+      aspect: 'style' as const,
+    },
   ];
 
   const mockHandlers = {
-    onQuestionSelect: vi.fn(),
-    onCustomResponse: vi.fn(),
+    onAnswerSelect: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('基本渲染', () => {
-    it('应该渲染标题', () => {
+  describe('渲染', () => {
+    it('应该一次性渲染所有问题', () => {
       render(
         <ClarificationMessage
           questions={mockQuestions}
@@ -33,10 +40,12 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      expect(screen.getByText('需要更多信息')).toBeInTheDocument();
+      // 应该显示所有问题文本
+      expect(screen.getByText('您需要什么类型的设计资源？')).toBeInTheDocument();
+      expect(screen.getByText('您偏好什么风格？')).toBeInTheDocument();
     });
 
-    it('应该渲染提示文本', () => {
+    it('应该一次性渲染所有选项按钮', () => {
       render(
         <ClarificationMessage
           questions={mockQuestions}
@@ -44,10 +53,18 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      expect(screen.getByText(/请选择或回答以下问题/)).toBeInTheDocument();
+      // 第一个问题的选项
+      expect(screen.getByRole('button', { name: 'UI灵感' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '字体资源' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '色彩搭配' })).toBeInTheDocument();
+
+      // 第二个问题的选项
+      expect(screen.getByRole('button', { name: '现代简约' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '复古经典' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '未来科技' })).toBeInTheDocument();
     });
 
-    it('应该渲染所有问题按钮', () => {
+    it('应该使用圆角胶囊样式', () => {
       render(
         <ClarificationMessage
           questions={mockQuestions}
@@ -55,25 +72,13 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      mockQuestions.forEach((question) => {
-        expect(screen.getByText(question)).toBeInTheDocument();
-      });
-    });
-
-    it('应该显示自定义回答按钮', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      expect(screen.getByText('自定义回答')).toBeInTheDocument();
+      const button = screen.getByRole('button', { name: 'UI灵感' });
+      expect(button).toHaveClass('rounded-full');
     });
   });
 
-  describe('问题选择', () => {
-    it('应该在点击问题时调用 onQuestionSelect', () => {
+  describe('交互', () => {
+    it('应该在点击选项时调用 onAnswerSelect', () => {
       render(
         <ClarificationMessage
           questions={mockQuestions}
@@ -81,13 +86,14 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      const firstQuestion = screen.getByText(mockQuestions[0]);
-      fireEvent.click(firstQuestion);
+      const button = screen.getByRole('button', { name: 'UI灵感' });
+      fireEvent.click(button);
 
-      expect(mockHandlers.onQuestionSelect).toHaveBeenCalledWith(mockQuestions[0]);
+      expect(mockHandlers.onAnswerSelect).toHaveBeenCalledWith('UI灵感');
+      expect(mockHandlers.onAnswerSelect).toHaveBeenCalledTimes(1);
     });
 
-    it('应该为每个问题调用正确的回调', () => {
+    it('应该为每个选项调用正确的回调', () => {
       render(
         <ClarificationMessage
           questions={mockQuestions}
@@ -95,142 +101,17 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      mockQuestions.forEach((question) => {
-        const button = screen.getByText(question);
-        fireEvent.click(button);
-        expect(mockHandlers.onQuestionSelect).toHaveBeenCalledWith(question);
-      });
-    });
-  });
+      // 点击第一个问题的选项
+      fireEvent.click(screen.getByRole('button', { name: '字体资源' }));
+      expect(mockHandlers.onAnswerSelect).toHaveBeenCalledWith('字体资源');
 
-  describe('自定义回答', () => {
-    it('应该在点击自定义回答按钮时显示输入框', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      expect(screen.getByPlaceholderText('输入您的回答...')).toBeInTheDocument();
-    });
-
-    it('应该允许输入自定义回答', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '我需要配色工具' } });
-
-      expect(textarea).toHaveValue('我需要配色工具');
-    });
-
-    it('应该在点击发送时调用 onCustomResponse', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '我需要配色工具' } });
-
-      const sendButton = screen.getByText('发送');
-      fireEvent.click(sendButton);
-
-      expect(mockHandlers.onCustomResponse).toHaveBeenCalledWith('我需要配色工具');
-    });
-
-    it('应该在发送后清空输入框', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '我需要配色工具' } });
-
-      const sendButton = screen.getByText('发送');
-      fireEvent.click(sendButton);
-
-      expect(screen.queryByPlaceholderText('输入您的回答...')).not.toBeInTheDocument();
-    });
-
-    it('应该在输入为空时禁用发送按钮', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const sendButton = screen.getByText('发送');
-      expect(sendButton).toBeDisabled();
-    });
-
-    it('应该在输入有内容时启用发送按钮', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '我需要配色工具' } });
-
-      const sendButton = screen.getByText('发送');
-      expect(sendButton).not.toBeDisabled();
-    });
-
-    it('应该在点击取消时隐藏输入框', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '我需要配色工具' } });
-
-      const cancelButton = screen.getByText('取消');
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByPlaceholderText('输入您的回答...')).not.toBeInTheDocument();
-      expect(screen.getByText('自定义回答')).toBeInTheDocument();
+      // 点击第二个问题的选项
+      fireEvent.click(screen.getByRole('button', { name: '现代简约' }));
+      expect(mockHandlers.onAnswerSelect).toHaveBeenCalledWith('现代简约');
     });
   });
 
-  describe('空状态', () => {
+  describe('边界情况', () => {
     it('应该在没有问题时不渲染任何内容', () => {
       const { container } = render(
         <ClarificationMessage
@@ -241,9 +122,7 @@ describe('ClarificationMessage', () => {
 
       expect(container.firstChild).toBeNull();
     });
-  });
 
-  describe('边界情况', () => {
     it('应该处理只有一个问题的情况', () => {
       render(
         <ClarificationMessage
@@ -252,28 +131,8 @@ describe('ClarificationMessage', () => {
         />
       );
 
-      expect(screen.getByText(mockQuestions[0])).toBeInTheDocument();
-      expect(screen.queryByText(mockQuestions[1])).not.toBeInTheDocument();
-    });
-
-    it('应该处理空白输入', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
-
-      const customButton = screen.getByText('自定义回答');
-      fireEvent.click(customButton);
-
-      const textarea = screen.getByPlaceholderText('输入您的回答...');
-      fireEvent.change(textarea, { target: { value: '   ' } });
-
-      const sendButton = screen.getByText('发送');
-      fireEvent.click(sendButton);
-
-      expect(mockHandlers.onCustomResponse).not.toHaveBeenCalled();
+      expect(screen.getByText('您需要什么类型的设计资源？')).toBeInTheDocument();
+      expect(screen.queryByText('您偏好什么风格？')).not.toBeInTheDocument();
     });
   });
 });

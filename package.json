@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:vector-migration": "tsx scripts/test-vector-migration.ts",
     "migrate": "tsx scripts/migrate-data.ts"
   },
   "dependencies": {

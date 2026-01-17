@@ -83,15 +83,21 @@ ON resource_embeddings (resource_id);
 CREATE INDEX resource_embeddings_updated_at_idx 
 ON resource_embeddings (updated_at);
 
--- 创建元数据索引（类别）
+-- 创建元数据索引（类别）- 使用 BTREE 进行精确匹配
 CREATE INDEX resource_embeddings_category_idx 
 ON resource_embeddings 
-USING GIN ((metadata->>'category'));
+USING BTREE ((metadata->>'category'));
 
 -- 创建元数据索引（评分）
 CREATE INDEX resource_embeddings_rating_idx 
 ON resource_embeddings 
 USING BTREE (((metadata->>'rating')::numeric));
+```
+
+**索引选择说明：**
+- **BTREE vs GIN：** 对于精确匹配查询（如类别过滤），BTREE 索引性能更优
+- **存储效率：** BTREE 索引占用空间更小，维护成本更低
+- **查询模式：** 项目主要进行等值查询，不需要 GIN 的全文搜索能力
 ```
 
 ### 步骤 1.4：创建相似度搜索函数
@@ -106,7 +112,7 @@ CREATE OR REPLACE FUNCTION match_resources(
   min_rating float DEFAULT NULL
 )
 RETURNS TABLE (
-  resource_id text,
+  resource_id varchar(255),
   similarity float,
   metadata jsonb
 )
@@ -129,17 +135,43 @@ END;
 $$;
 ```
 
+**⚠️ 重要：数据类型一致性**
+
+PostgreSQL 严格检查函数返回类型与表字段类型的匹配：
+- **表字段：** `resource_id VARCHAR(255)`
+- **函数返回：** 必须是 `varchar(255)`，不能是 `text`
+- **错误原因：** `text` 和 `varchar(255)` 被视为不同类型
+- **TypeScript 映射：** `VARCHAR(255)` → `string`
+
+如果遇到类型不匹配错误，请确保函数返回类型与表结构完全一致。
+
 ### 步骤 1.5：验证数据库设置
 
 ```sql
 -- 验证表结构
-\d resource_embeddings
+SELECT 
+  column_name, 
+  data_type, 
+  is_nullable,
+  column_default
+FROM information_schema.columns 
+WHERE table_name = 'resource_embeddings'
+ORDER BY ordinal_position;
 
 -- 验证索引
-\di resource_embeddings*
+SELECT 
+  indexname, 
+  indexdef 
+FROM pg_indexes 
+WHERE tablename = 'resource_embeddings';
 
 -- 验证函数
-\df match_resources
+SELECT 
+  routine_name, 
+  routine_type,
+  data_type as return_type
+FROM information_schema.routines 
+WHERE routine_name = 'match_resources';
 
 -- 测试插入（使用随机向量）
 INSERT INTO resource_embeddings (resource_id, embedding, metadata) 
@@ -187,14 +219,17 @@ EMBEDDING_SYNC_INTERVAL=300
 EMBEDDING_BATCH_SIZE=50
 EMBEDDING_FORCE_SYNC=false
 
-# Supabase Service Role Key (用于服务端操作)
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+# Supabase Secret Key (用于服务端操作)
+SUPABASE_SECRET_KEY=your_secret_key_here
 ```
 
-**获取 Service Role Key：**
+**获取 Secret Key：**
 1. 访问 Supabase Dashboard > Settings > API
-2. 复制 `service_role` 密钥（注意：这是敏感信息）
-3. 添加到 `.env.local` 文件
+2. 在 **Project API keys** 部分找到 `secret` 密钥
+3. 复制 `secret` 密钥（注意：这是敏感信息，具有完全数据库访问权限）
+4. 添加到 `.env.local` 文件
+
+**注意：** 新版 Supabase 使用 `secret` 密钥替代了之前的 `service_role` 密钥。
 
 ### 步骤 2.3：创建 Supabase 客户端配置
 
@@ -205,16 +240,16 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
 
-if (!supabaseUrl || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseSecretKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
 // 服务端客户端（用于向量操作）
 export const supabaseAdmin = createClient<Database>(
   supabaseUrl,
-  supabaseServiceKey,
+  supabaseSecretKey,
   {
     auth: {
       autoRefreshToken: false,
@@ -1009,7 +1044,7 @@ pnpm dev
 ```bash
 # .env.production
 NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
+SUPABASE_SECRET_KEY=your_production_secret_key
 ZHIPU_AI_API_KEY=your_zhipu_api_key
 VECTOR_STORE_PROVIDER=supabase
 VECTOR_CACHE_TTL=3600
@@ -1088,14 +1123,53 @@ SELECT * FROM pg_extension WHERE extname = 'vector';
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-#### 2. 向量维度不匹配
+#### 2. GIN 索引创建失败
+**错误信息：** `data type text has no default operator class for access method "gin"`
+
+**解决方案：** 使用 BTREE 索引替代 GIN 索引
+```sql
+-- 正确的索引创建方式
+CREATE INDEX resource_embeddings_category_idx 
+ON resource_embeddings 
+USING BTREE ((metadata->>'category'));
+
+-- 如果确实需要 GIN 索引，需要指定操作符类：
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX resource_embeddings_category_gin_idx 
+ON resource_embeddings 
+USING GIN ((metadata->>'category') gin_trgm_ops);
+```
+
+#### 3. 函数返回类型不匹配
+**错误信息：** `structure of query does not match function result type`
+
+**原因：** 函数返回类型与表字段类型不匹配
+```sql
+-- 错误示例：表字段是 VARCHAR(255)，但函数返回 text
+RETURNS TABLE (resource_id text, ...)  -- ❌ 错误
+
+-- 正确示例：类型必须完全匹配
+RETURNS TABLE (resource_id varchar(255), ...)  -- ✅ 正确
+```
+
+**解决方案：** 确保函数返回类型与表结构一致
+```sql
+-- 查看表字段的确切类型
+SELECT column_name, data_type, character_maximum_length 
+FROM information_schema.columns 
+WHERE table_name = 'resource_embeddings' AND column_name = 'resource_id';
+
+-- 根据查询结果调整函数定义
+```
+
+#### 4. 向量维度不匹配
 ```typescript
 // 确保向量维度为 1536
 const embedding = await provider.generateEmbedding(text);
 console.log('Embedding dimension:', embedding.length); // 应该是 1536
 ```
 
-#### 3. 权限问题
+#### 5. 权限问题
 ```sql
 -- 检查表权限
 \dp resource_embeddings
@@ -1105,7 +1179,7 @@ GRANT ALL ON resource_embeddings TO your_user;
 GRANT USAGE ON SEQUENCE resource_embeddings_id_seq TO your_user;
 ```
 
-#### 4. 搜索性能问题
+#### 6. 搜索性能问题
 ```sql
 -- 检查查询计划
 EXPLAIN (ANALYZE, BUFFERS) 
