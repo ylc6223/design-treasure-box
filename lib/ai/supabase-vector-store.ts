@@ -73,6 +73,7 @@ export class SupabaseVectorStore {
   async upsertEmbedding(
     resourceId: string,
     embedding: number[],
+    content: string,
     metadata: ResourceMetadata
   ): Promise<void> {
     try {
@@ -81,6 +82,7 @@ export class SupabaseVectorStore {
         .upsert({
           resource_id: resourceId,
           embedding,
+          content,
           metadata,
         });
 
@@ -100,6 +102,7 @@ export class SupabaseVectorStore {
     embeddings: Array<{
       resourceId: string;
       embedding: number[];
+      content: string;
       metadata: ResourceMetadata;
     }>
   ): Promise<void> {
@@ -107,6 +110,7 @@ export class SupabaseVectorStore {
       const records = embeddings.map(item => ({
         resource_id: item.resourceId,
         embedding: item.embedding,
+        content: item.content,
         metadata: item.metadata,
       }));
 

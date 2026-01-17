@@ -61,12 +61,12 @@ export class EmbeddingSyncService {
             category: resource.categoryId,
             rating: resource.rating.overall,
             tags: resource.tags,
-            lastUpdated: resource.updatedAt || resource.createdAt,
+            lastUpdated: resource.createdAt,
             name: resource.name,
             description: resource.description,
           };
 
-          await this.vectorStore.upsertEmbedding(resource.id, embedding, metadata);
+          await this.vectorStore.upsertEmbedding(resource.id, embedding, text, metadata);
           result.processedResources++;
 
           console.log(`✅ Synced: ${resource.name} (${resource.id})`);
@@ -114,11 +114,12 @@ export class EmbeddingSyncService {
       const batchData = (resources as Resource[]).map((resource, index) => ({
         resourceId: resource.id,
         embedding: embeddings[index],
+        content: texts[index], // 添加content字段
         metadata: {
           category: resource.categoryId,
           rating: resource.rating.overall,
           tags: resource.tags,
-          lastUpdated: resource.updatedAt || resource.createdAt,
+          lastUpdated: resource.createdAt,
           name: resource.name,
           description: resource.description,
         } as ResourceMetadata,

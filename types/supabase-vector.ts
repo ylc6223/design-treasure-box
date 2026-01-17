@@ -32,6 +32,7 @@ export interface VectorDatabase {
           id: number;
           resource_id: string;
           embedding: number[];
+          content: string;
           metadata: ResourceMetadata;
           created_at: string;
           updated_at: string;
@@ -39,10 +40,12 @@ export interface VectorDatabase {
         Insert: {
           resource_id: string;
           embedding: number[];
+          content: string;
           metadata: ResourceMetadata;
         };
         Update: {
           embedding?: number[];
+          content?: string;
           metadata?: ResourceMetadata;
           updated_at?: string;
         };
