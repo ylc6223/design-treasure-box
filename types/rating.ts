@@ -44,8 +44,8 @@ export const UserRatingSchema = RatingSchema.extend({
   userId: z.string().uuid(),
   resourceId: z.string().uuid(),
   comment: z.string().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string(), // ISO 8601 字符串，与数据库返回类型一致
+  updatedAt: z.string(), // ISO 8601 字符串，与数据库返回类型一致
 })
 
 /**

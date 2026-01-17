@@ -30,7 +30,7 @@ export const ResourceSchema = z.object({
   rating: RatingSchema,
   curatorNote: z.string().min(1),
   isFeatured: z.boolean(),
-  createdAt: z.string().datetime(),
+  createdAt: z.string(), // ISO 8601 字符串，与数据库返回类型一致
   viewCount: z.number().int().min(0),
   favoriteCount: z.number().int().min(0),
 })
@@ -51,7 +51,7 @@ export const CategorySchema = z.object({
  */
 export const FavoriteItemSchema = z.object({
   resourceId: z.string().min(1),
-  addedAt: z.string().datetime(),
+  addedAt: z.string(), // ISO 8601 字符串
 })
 
 /**
@@ -60,7 +60,7 @@ export const FavoriteItemSchema = z.object({
 export const StoredFavoritesSchema = z.object({
   version: z.number().int().positive(),
   items: z.array(FavoriteItemSchema),
-  lastUpdated: z.string().datetime(),
+  lastUpdated: z.string(), // ISO 8601 字符串
 })
 
 // ============================================================================

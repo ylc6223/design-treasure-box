@@ -50,18 +50,6 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // 返回成功响应
   return successResponse({
     success: true,
-    data: {
-      id: data.id,
-      userId: data.user_id,
-      resourceId: data.resource_id,
-      overall: data.overall,
-      usability: data.usability,
-      aesthetics: data.aesthetics,
-      updateFrequency: data.update_frequency,
-      freeLevel: data.free_level,
-      comment: data.comment,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    },
+    data: data, // 直接返回数据库数据，不做字段转换
   })
 })

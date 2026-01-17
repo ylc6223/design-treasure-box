@@ -76,13 +76,13 @@ async function fetchResources(): Promise<Resource[]> {
         name: resource.name,
         url: resource.url,
         description: resource.description,
-        screenshot: resource.url, // 使用 url 作为 screenshot（通过 Microlink API 获取）
+        screenshot: `https://api.microlink.io/?url=${encodeURIComponent(resource.url)}&meta=false&embed=image.url`, // 使用 Microlink API 获取截图
         categoryId: resource.category_id,
         tags: resource.tags,
         rating: aggregatedRating || (resource.curator_rating as any), // 如果没有用户评分，使用策展人评分
         curatorNote: resource.curator_note,
         isFeatured: resource.is_featured,
-        createdAt: resource.created_at,
+        createdAt: new Date(resource.created_at).toISOString(), // 转换为 ISO 字符串
         viewCount: resource.view_count,
         favoriteCount: resource.favorite_count,
       }
