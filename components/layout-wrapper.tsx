@@ -6,13 +6,12 @@ import { DockSidebar } from './dock-sidebar'
 import { AIPromptInput } from './ai-prompt-input'
 import { AIChatInterface } from './ai-chat-interface'
 import { Header } from './header'
-import type { Category } from '@/types'
+import { useCategories } from '@/hooks/use-categories'
 import type { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
 interface LayoutWrapperProps {
-  categories: Category[]
   children: React.ReactNode
   profile?: Profile | null
 }
@@ -23,9 +22,10 @@ interface LayoutWrapperProps {
  * 客户端包装组件，处理导航和交互逻辑
  * 注意：管理后台路径（/admin）不使用此布局
  */
-export function LayoutWrapper({ categories, children, profile }: LayoutWrapperProps) {
+export function LayoutWrapper({ children, profile }: LayoutWrapperProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const { data: categories = [] } = useCategories()
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined)
 

@@ -6,9 +6,10 @@ import { CategoryFilter } from '@/components/category-filter'
 import { FeaturedSections } from '@/components/featured-sections'
 import { useFavorites, useResources, useInfiniteResources } from '@/hooks'
 import { Loader2 } from 'lucide-react'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 
 export function HomePage() {
+  const { data: categories = [] } = useCategories()
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined)
   const { data: allResources, isLoading } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()

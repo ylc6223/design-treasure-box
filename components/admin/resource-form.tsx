@@ -26,7 +26,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { CreateResourceSchema, type CreateResourceRequest, type ResourceResponse } from '@/types/resource'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 
 interface ResourceFormProps {
   resource?: ResourceResponse
@@ -35,6 +35,7 @@ interface ResourceFormProps {
 }
 
 export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps) {
+  const { data: categories = [] } = useCategories()
   const [submitting, setSubmitting] = useState(false)
   const [tagInput, setTagInput] = useState('')
 

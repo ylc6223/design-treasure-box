@@ -8,12 +8,13 @@
 
 import { Header } from './header'
 import { useState } from 'react'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 
 /**
  * 基础示例：带分类切换的 Header
  */
 export function BasicHeaderExample() {
+  const { data: categories = [] } = useCategories()
   const [activeCategory, setActiveCategory] = useState<string>('')
 
   return (

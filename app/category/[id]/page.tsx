@@ -6,7 +6,7 @@ import { useFavorites } from '@/hooks/use-favorites'
 import { useResourcesByCategory } from '@/hooks/use-resources'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 import * as LucideIcons from 'lucide-react'
 
 interface CategoryPageProps {
@@ -17,6 +17,7 @@ interface CategoryPageProps {
 
 export default function CategoryPage({ params }: CategoryPageProps) {
   const router = useRouter()
+  const { data: categories = [] } = useCategories()
   const { data: resources, isLoading } = useResourcesByCategory(params.id)
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 

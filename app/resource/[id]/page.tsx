@@ -10,7 +10,7 @@ import { useFavorites } from '@/hooks/use-favorites'
 import { useResourceById, useResources } from '@/hooks/use-resources'
 import { ArrowLeft, ExternalLink, Heart, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 import { RatingSection } from './rating-section'
 
 interface ResourceDetailPageProps {
@@ -22,6 +22,7 @@ interface ResourceDetailPageProps {
 export default function ResourceDetailPage({ params }: ResourceDetailPageProps) {
   const router = useRouter()
   const resolvedParams = React.use(params)
+  const { data: categories = [] } = useCategories()
   const { data: resource, isLoading } = useResourceById(resolvedParams.id)
   const { data: allResources } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()

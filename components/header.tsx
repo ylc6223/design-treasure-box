@@ -7,14 +7,14 @@ import { ThemeToggle } from './theme-toggle'
 import { LoginDialog } from './auth/login-dialog'
 import { UserMenu } from './auth/user-menu'
 import { cn } from '@/lib/utils'
-import type { Category } from '@/types'
+import type { DatabaseCategory } from '@/types/category'
 import type { Database } from '@/types/database'
 import { useState } from 'react'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
 export interface HeaderProps {
-  categories: Category[]
+  categories: DatabaseCategory[]
   activeCategory?: string
   onCategoryChange?: (categoryId: string) => void
   className?: string

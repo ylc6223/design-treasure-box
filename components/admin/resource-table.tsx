@@ -33,10 +33,11 @@ import {
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
 import type { ResourceResponse, PaginatedResponse } from '@/types/resource'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 
 export function ResourceTable() {
   const router = useRouter()
+  const { data: categories = [] } = useCategories()
   const [resources, setResources] = useState<ResourceResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)

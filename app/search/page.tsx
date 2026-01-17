@@ -8,7 +8,7 @@ import { useFavorites } from '@/hooks/use-favorites'
 import { useResources } from '@/hooks/use-resources'
 import { useSearch } from '@/hooks/use-search'
 import { Search, X, TrendingUp } from 'lucide-react'
-import categories from '@/data/categories.json'
+import { useCategories } from '@/hooks/use-categories'
 import type { SearchFilters } from '@/types'
 
 /**
@@ -18,6 +18,7 @@ import type { SearchFilters } from '@/types'
  */
 function SearchResultsContent() {
   const searchParams = useSearchParams()
+  const { data: categories = [] } = useCategories()
   const { data: allResources, isLoading } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 

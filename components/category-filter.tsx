@@ -2,10 +2,10 @@
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import type { Category } from '@/types'
+import type { DatabaseCategory } from '@/types/category'
 
 export interface CategoryFilterProps {
-  categories: Category[]
+  categories: DatabaseCategory[]
   activeCategory?: string
   onCategoryChange: (categoryId: string | undefined) => void
   className?: string

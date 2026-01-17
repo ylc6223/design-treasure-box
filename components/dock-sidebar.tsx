@@ -1,6 +1,6 @@
 'use client'
 
-import { type Category } from '@/types'
+import { type DatabaseCategory } from '@/types/category'
 import {
   Palette,
   Code,
@@ -34,7 +34,7 @@ const iconMap = {
 }
 
 interface DockSidebarProps {
-  categories: Category[]
+  categories: DatabaseCategory[]
   activeCategory?: string
   onCategoryClick: (categoryId: string) => void
   className?: string

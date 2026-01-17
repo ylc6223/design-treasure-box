@@ -19,3 +19,12 @@ export {
 export { useScrollVisibility } from './use-scroll-visibility'
 export { useInfiniteResources } from './use-infinite-resources'
 export { useIntersectionObserver } from './use-intersection-observer'
+export {
+  useCategories,
+  useCategory,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+  useCategoryName,
+  useCategoryMap,
+} from './use-categories'

@@ -4,7 +4,6 @@ import { Providers } from '@/components/providers'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { Toaster } from '@/components/ui/sonner'
 import { getCurrentUser } from '@/lib/supabase/auth'
-import categories from '@/data/categories.json'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -29,7 +28,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <LayoutWrapper categories={categories} profile={user?.profile ?? null}>
+            <LayoutWrapper profile={user?.profile ?? null}>
               {children}
             </LayoutWrapper>
             <Toaster />
