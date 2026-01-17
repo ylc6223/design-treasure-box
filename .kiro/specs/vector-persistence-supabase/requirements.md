@@ -2,7 +2,7 @@
 
 ## Introduction
 
-基于当前项目的 AI 聊天助手实现，设计并实现一个使用 Supabase PostgreSQL + pgvector 的向量化持久化方案，解决当前纯内存向量索引的局限性，提供可扩展、高性能的语义搜索能力。
+基于当前项目的 AI 聊天助手实现，设计并实现一个使用 Supabase PostgreSQL + pgvector 的向量化持久化方案，完全替换当前纯内存向量索引的局限性，提供可扩展、高性能的语义搜索能力。
 
 ## Glossary
 
@@ -25,7 +25,7 @@
 1. WHEN 系统启动时，THE Vector_Store SHALL 从 Supabase 数据库加载已存在的向量数据
 2. WHEN 新资源添加时，THE Embedding_Sync SHALL 生成向量并存储到数据库
 3. WHEN 资源更新时，THE Embedding_Sync SHALL 检测变更并更新对应的向量数据
-4. WHEN 向量数据存储失败时，THE Vector_Store SHALL 记录错误并提供降级方案
+4. WHEN 向量数据存储失败时，THE Vector_Store SHALL 记录错误并抛出明确异常
 5. THE Vector_Store SHALL 支持批量向量数据的插入和更新操作
 
 ### Requirement 2: 数据库架构设计
@@ -106,7 +106,7 @@
 
 #### Acceptance Criteria
 
-1. THE Vector_Store SHALL 提供从内存索引到数据库的一次性迁移功能
+1. THE Vector_Store SHALL 提供从旧向量搜索到数据库的一次性迁移功能
 2. THE Vector_Store SHALL 支持向量数据的导出和导入操作
 3. THE Vector_Store SHALL 支持增量备份，只备份变更的向量数据
 4. WHEN 执行数据迁移时，THE Vector_Store SHALL 验证数据完整性

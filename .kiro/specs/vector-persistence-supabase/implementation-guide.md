@@ -2,7 +2,7 @@
 
 ## 概述
 
-本文档提供了将当前项目的纯内存向量索引迁移到 Supabase PostgreSQL + pgvector 的详细操作步骤。该指南确保平滑迁移到生产级向量搜索服务，完全移除内存索引依赖。
+本文档提供了将当前项目的纯内存向量索引完全迁移到 Supabase PostgreSQL + pgvector 的详细操作步骤。该指南确保平滑迁移到生产级向量搜索服务，彻底移除旧向量索引依赖。
 
 ## 前置条件
 
@@ -722,7 +722,7 @@ import type { VectorMatch, VectorSearchOptions } from './vector-search';
 
 /**
  * Supabase 向量搜索引擎
- * 完全替换内存向量索引
+ * 完全替换旧向量索引，所有向量操作都通过数据库
  */
 export class SupabaseVectorSearchEngine {
   private vectorStore = new SupabaseVectorStore();
@@ -1197,7 +1197,7 @@ REINDEX INDEX resource_embeddings_embedding_idx;
 
 完成以上步骤后，你的项目将：
 
-1. ✅ **完全移除内存向量索引** - 所有向量操作都通过 Supabase 数据库
+1. ✅ **完全移除旧向量索引** - 所有向量操作都通过 Supabase 数据库
 2. ✅ **实现持久化存储** - 系统重启无需重新生成向量
 3. ✅ **支持增量同步** - 智能检测和更新变更的资源
 4. ✅ **提供高性能搜索** - pgvector 优化的向量索引

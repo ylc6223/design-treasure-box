@@ -2,7 +2,7 @@
 
 ## Overview
 
-本设计文档详细描述了基于 Supabase PostgreSQL + pgvector 的向量化持久化方案。该方案将替换当前的纯内存向量索引，提供可扩展、高性能的语义搜索能力，解决冷启动、成本和扩展性问题。
+本设计文档详细描述了基于 Supabase PostgreSQL + pgvector 的向量化持久化方案。该方案完全替换当前的纯内存向量索引，提供可扩展、高性能的语义搜索能力，解决冷启动、成本和扩展性问题。
 
 ## Architecture
 
@@ -50,7 +50,7 @@ graph TB
 #### 1. Vector Persistence Service (VPS)
 - **职责**: 向量数据的持久化存储和检索
 - **接口**: 提供向量搜索、存储、更新、删除操作
-- **特性**: 支持批量操作、缓存、降级处理
+- **特性**: 支持批量操作、缓存、错误处理
 
 #### 2. Embedding Sync Service (ESS)
 - **职责**: 资源数据与向量的同步管理
@@ -423,7 +423,7 @@ interface Database {
 - **Property 2**: 生成随机查询验证搜索结果排序
 - **Property 3**: 多次执行同步操作验证幂等性
 - **Property 4**: 模拟系统重启测试数据持久化
-- **Property 5**: 断开数据库连接测试降级功能
+- **Property 5**: 数据库连接异常测试错误处理
 - **Property 6**: 随机批量操作测试原子性
 - **Property 7**: 随机过滤条件测试准确性
 - **Property 8**: 监控所有操作的性能指标
