@@ -1,5 +1,6 @@
 -- 更新向量维度从1536到1024
--- 这个脚本需要在Supabase SQL编辑器中运行
+-- 手动执行脚本：在Supabase Dashboard SQL编辑器中运行
+-- 用途：修复向量维度不匹配问题，重建embedding表结构
 
 -- 1. 删除现有的相似度搜索函数（如果存在）
 DROP FUNCTION IF EXISTS match_resources(vector, float, int, text[], float);

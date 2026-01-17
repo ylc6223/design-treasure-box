@@ -1,5 +1,6 @@
--- 数据插入脚本 - 可直接在 Supabase SQL Editor 中运行
--- 将 JSON 数据迁移到 Supabase 数据库
+-- 资源数据种子脚本
+-- 手动执行脚本：在Supabase Dashboard SQL编辑器中运行
+-- 用途：将静态JSON数据迁移到数据库，包含32个精选设计资源
 
 -- 插入资源数据
 INSERT INTO resources (
