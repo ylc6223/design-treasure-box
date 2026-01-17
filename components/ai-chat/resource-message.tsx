@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import type { Resource } from '@/types';
 import type { ResourceRecommendation } from '@/types/ai-chat';
-import { ResourcePreviewCard } from './resource-preview-card';
+import { ResourceInlineCard } from './resource-inline-card';
 
 export interface ResourceMessageProps {
   resources: ResourceRecommendation[];
@@ -18,7 +18,7 @@ export interface ResourceMessageProps {
  * ResourceMessage 组件
  * 
  * 在聊天界面中显示AI推荐的资源列表
- * 使用 ResourcePreviewCard 组件渲染每个资源
+ * 使用 ResourceInlineCard 组件渲染每个资源（简化版）
  */
 export function ResourceMessage({
   resources,
@@ -34,16 +34,12 @@ export function ResourceMessage({
   return (
     <div className={cn('space-y-3', className)}>
       {resources.map((recommendation) => (
-        <ResourcePreviewCard
+        <ResourceInlineCard
           key={recommendation.resource.id}
           resource={recommendation.resource}
-          matchReason={recommendation.matchReason}
-          matchedAspects={recommendation.matchedAspects}
-          relevanceScore={recommendation.relevanceScore}
+          onViewDetails={onResourceClick}
           onFavorite={onFavorite}
           onVisit={onVisit}
-          onViewDetails={onResourceClick}
-          variant="compact"
         />
       ))}
     </div>

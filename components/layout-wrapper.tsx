@@ -77,8 +77,11 @@ export function LayoutWrapper({ children, profile }: LayoutWrapperProps) {
         <main className="flex-1 md:mx-20">{children}</main>
       </div>
 
-      {/* 底部 AI Prompt 输入框 */}
-      <AIPromptInput onSubmit={handleAIPromptSubmit} />
+      {/* 底部 AI Prompt 输入框 - 聊天面板打开时自动隐藏 */}
+      <AIPromptInput 
+        onSubmit={handleAIPromptSubmit}
+        isHidden={isChatOpen}
+      />
 
       {/* AI Chat Interface - 右侧滑出聊天界面 */}
       <AIChatInterface

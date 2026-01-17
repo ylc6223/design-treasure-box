@@ -1,7 +1,7 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { MessageContent } from '@/components/prompt-kit/message';
 import { cn } from '@/lib/utils';
 
 export interface ClarificationQuestion {
@@ -12,69 +12,71 @@ export interface ClarificationQuestion {
 
 export interface ClarificationMessageProps {
   questions: ClarificationQuestion[];
-  currentQuestionIndex: number;
   onAnswerSelect: (answer: string) => void;
-  onSkip: () => void;
   className?: string;
 }
 
 /**
- * ClarificationMessage 组件
+ * ClarificationMessage 组件（快速回复按钮版本）
  * 
- * 步骤式引导提问组件
- * - 一次只显示一个问题
- * - 选项以陈述句形式呈现
- * - 用户点击后作为回答发送
+ * 一次性显示所有澄清选项的快速回复按钮组
+ * - 移除步骤式逻辑，一次显示所有问题和选项
+ * - 圆角胶囊样式按钮（rounded-full）
+ * - 依次出现动画（每个按钮延迟 0.05s）
+ * - 用户可以点击任意选项或直接在输入框输入
+ * 
+ * @param questions - 澄清问题数组
+ * @param onAnswerSelect - 选项选择回调
+ * @param className - 额外的 CSS 类名
  */
 export function ClarificationMessage({
   questions,
-  currentQuestionIndex,
   onAnswerSelect,
-  onSkip,
   className,
 }: ClarificationMessageProps) {
-  if (questions.length === 0 || currentQuestionIndex >= questions.length) {
+  if (questions.length === 0) {
     return null;
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
-
   return (
-    <div className={cn('flex w-full flex-col gap-3', className)}>
-      {/* AI 问题 */}
-      <MessageContent
-        className={cn(
-          'text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-secondary',
-          'p-2.5 sm:p-3 text-sm sm:text-base'
-        )}
-      >
-        {currentQuestion.question}
-      </MessageContent>
-
-      {/* 选项按钮 */}
-      <div className="flex flex-col gap-2 pl-2">
-        {currentQuestion.options.map((option, index) => (
-          <Button
-            key={index}
-            variant="outline"
-            className="justify-start text-left h-auto py-2.5 px-3 whitespace-normal hover:bg-primary hover:text-primary-foreground transition-colors"
-            onClick={() => onAnswerSelect(option)}
-          >
-            <span className="text-sm">{option}</span>
-          </Button>
-        ))}
-
-        {/* 跳过按钮 */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onSkip}
-          className="mt-1 text-muted-foreground hover:text-foreground"
+    <div className={cn('flex w-full flex-col gap-4', className)}>
+      {questions.map((q, qIndex) => (
+        <motion.div
+          key={qIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: qIndex * 0.1, duration: 0.3 }}
+          className="space-y-2"
         >
-          {isLastQuestion ? '直接搜索' : '跳过这个问题'}
-        </Button>
-      </div>
+          {/* 问题文本 */}
+          <p className="text-sm text-muted-foreground">{q.question}</p>
+
+          {/* 快速回复按钮 */}
+          <div className="flex flex-wrap gap-2">
+            {q.options.map((option, optIndex) => (
+              <motion.div
+                key={optIndex}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: qIndex * 0.1 + optIndex * 0.05, duration: 0.2 }}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    'rounded-full text-sm',
+                    'hover:bg-primary hover:text-primary-foreground',
+                    'transition-colors'
+                  )}
+                  onClick={() => onAnswerSelect(option)}
+                >
+                  {option}
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 }

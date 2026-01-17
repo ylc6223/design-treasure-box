@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAIServiceManager } from '@/lib/ai/service-manager';
 import { VercelAIRAGEngine } from '@/lib/ai/rag-engine';
 import { HybridSearchEngine } from '@/lib/ai/hybrid-search';
-import { VectorSearchEngine } from '@/lib/ai/vector-search';
+import { SupabaseVectorSearchEngine } from '@/lib/ai/supabase-vector-search-engine'; // 新的引擎
 import { GuidedQuestioningEngine } from '@/lib/ai/guided-questioning';
+import { EmbeddingSyncService } from '@/lib/ai/embedding-sync-service'; // 新的同步服务
 import resources from '@/data/resources.json';
 import type { Resource } from '@/types';
 import type { SearchFilters } from '@/types/ai-chat';
@@ -20,33 +21,46 @@ async function initializeRAGEngine() {
   }
 
   try {
+    console.log('🚀 Initializing Supabase-based RAG Engine...');
+
     // 1. 获取 AI 服务管理器并初始化
     const serviceManager = getAIServiceManager();
     
-    // 确保服务管理器已初始化
     if (!serviceManager.isServiceAvailable()) {
       await serviceManager.initialize();
     }
     
     const provider = serviceManager.getCurrentProvider();
 
-    // 2. 初始化向量搜索引擎
-    const vectorSearch = new VectorSearchEngine(provider);
-    await vectorSearch.buildIndex(resources as Resource[]);
+    // 2. 初始化 Supabase 向量搜索引擎
+    const vectorSearch = new SupabaseVectorSearchEngine(provider);
 
-    // 3. 初始化混合搜索引擎
+    // 3. 确保向量数据已同步
+    const syncService = new EmbeddingSyncService();
+    const syncStatus = await syncService.getSyncStatus();
+    
+    console.log('📊 Current sync status:', syncStatus);
+    
+    if (syncStatus.totalEmbeddings === 0) {
+      console.log('🔄 No embeddings found, starting initial sync...');
+      await syncService.syncAllEmbeddings();
+    } else {
+      console.log(`✅ Found ${syncStatus.totalEmbeddings} existing embeddings`);
+    }
+
+    // 4. 初始化混合搜索引擎
     const hybridSearch = new HybridSearchEngine(vectorSearch, resources as Resource[]);
 
-    // 4. 初始化引导式提问引擎
+    // 5. 初始化引导式提问引擎
     const guidedQuestioning = new GuidedQuestioningEngine();
 
-    // 5. 创建 RAG 引擎
+    // 6. 创建 RAG 引擎
     ragEngine = new VercelAIRAGEngine(provider, hybridSearch, guidedQuestioning);
 
-    console.log('✅ RAG Engine initialized successfully');
+    console.log('✅ Supabase RAG Engine initialized successfully');
     return ragEngine;
   } catch (error) {
-    console.error('❌ Failed to initialize RAG Engine:', error);
+    console.error('❌ Failed to initialize Supabase RAG Engine:', error);
     throw error;
   }
 }

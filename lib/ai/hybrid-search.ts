@@ -5,7 +5,16 @@
 
 import type { Resource } from '@/types';
 import type { SearchFilters, SearchResult } from '@/types/ai-chat';
-import type { VectorSearchEngine, VectorMatch } from './vector-search';
+import type { SupabaseVectorSearchEngine } from './supabase-vector-search-engine';
+
+/**
+ * 向量匹配结果接口（保持兼容性）
+ */
+export interface VectorMatch {
+  resourceId: string;
+  similarity: number;
+  resource: Resource;
+}
 
 /**
  * 混合搜索选项
@@ -22,7 +31,7 @@ export interface HybridSearchOptions {
  */
 export class HybridSearchEngine {
   constructor(
-    private vectorSearch: VectorSearchEngine,
+    private vectorSearch: SupabaseVectorSearchEngine,
     private allResources: Resource[]
   ) {}
 

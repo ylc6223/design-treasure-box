@@ -11,6 +11,7 @@ interface AIPromptInputProps {
   onSubmit: (prompt: string) => void
   placeholder?: string
   isLoading?: boolean
+  isHidden?: boolean  // 新增：控制输入框是否隐藏（用于聊天面板打开时）
   className?: string
 }
 
@@ -19,20 +20,26 @@ interface AIPromptInputProps {
  * 
  * 固定底部悬浮的 AI Prompt 输入框，类似 ChatGPT 风格
  * 滚动时自动隐藏，停止滚动后延迟显示
+ * 当聊天面板打开时，通过 isHidden prop 强制隐藏
  * 
  * @param onSubmit - 提交回调函数
  * @param placeholder - 输入框占位符
  * @param isLoading - 是否正在加载
+ * @param isHidden - 是否强制隐藏（优先级高于滚动状态）
  * @param className - 额外的 CSS 类名
  */
 export function AIPromptInput({
   onSubmit,
   placeholder = '输入你想要的设计资源，AI 帮你找...',
   isLoading = false,
+  isHidden = false,
   className,
 }: AIPromptInputProps) {
   const [value, setValue] = useState('')
-  const isVisible = useScrollVisibility(300)
+  const isScrollVisible = useScrollVisibility(300)
+  
+  // 最终显示状态：如果 isHidden 为 true，则强制隐藏；否则根据滚动状态决定
+  const isVisible = !isHidden && isScrollVisible
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
