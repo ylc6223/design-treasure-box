@@ -221,7 +221,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 CREATE TABLE resource_embeddings (
   id SERIAL PRIMARY KEY,
   resource_id VARCHAR(255) UNIQUE NOT NULL,
-  embedding vector(1536) NOT NULL,  -- 智谱 embedding-2 维度
+  embedding vector(1024) NOT NULL,  -- 智谱 embedding-2 维度
   metadata JSONB NOT NULL DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -274,7 +274,7 @@ USING GIN ((metadata->>'category') gin_trgm_ops);
 ```sql
 -- 创建相似度搜索函数
 CREATE OR REPLACE FUNCTION match_resources(
-  query_embedding vector(1536),
+  query_embedding vector(1024),
   match_threshold float DEFAULT 0.3,
   match_count int DEFAULT 10,
   category_filter text[] DEFAULT NULL,

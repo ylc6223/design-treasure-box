@@ -38,7 +38,7 @@
 CREATE TABLE resource_embeddings (
   id SERIAL PRIMARY KEY,
   resource_id VARCHAR(255) UNIQUE NOT NULL,
-  embedding vector(1536) NOT NULL,  -- 智谱 embedding-2 维度
+  embedding vector(1024) NOT NULL,  -- 智谱 embedding-2 维度
   metadata JSONB NOT NULL DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

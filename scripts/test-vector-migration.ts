@@ -1,10 +1,22 @@
-import { SupabaseVectorStore } from '../lib/ai/supabase-vector-store';
-import { EmbeddingSyncService } from '../lib/ai/embedding-sync-service';
-import { SupabaseVectorSearchEngine } from '../lib/ai/supabase-vector-search-engine';
-import { getAIServiceManager } from '../lib/ai/service-manager';
+import { config } from 'dotenv';
+import { SupabaseVectorStore } from '../lib/ai/supabase-vector-store.js';
+import { EmbeddingSyncService } from '../lib/ai/embedding-sync-service.js';
+import { SupabaseVectorSearchEngine } from '../lib/ai/supabase-vector-search-engine.js';
+import { getAIServiceManager } from '../lib/ai/service-manager.js';
+
+// 加载环境变量
+config({ path: '.env.local' });
 
 async function testVectorMigration() {
   console.log('🧪 Starting vector migration test...');
+
+  // 验证环境变量
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
+    console.error('❌ Missing required environment variables:');
+    console.error('  - NEXT_PUBLIC_SUPABASE_URL:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.error('  - SUPABASE_SECRET_KEY:', !!process.env.SUPABASE_SECRET_KEY);
+    process.exit(1);
+  }
 
   try {
     // 1. 测试数据库连接
@@ -19,14 +31,17 @@ async function testVectorMigration() {
 
     // 2. 测试向量同步
     console.log('\n2️⃣ Testing vector synchronization...');
+    
+    // 初始化 AI 服务管理器
+    const serviceManager = getAIServiceManager();
+    await serviceManager.initialize();
+    
     const syncService = new EmbeddingSyncService();
     const syncResult = await syncService.syncAllEmbeddings();
     console.log('Sync result:', syncResult);
 
     // 3. 测试向量搜索
     console.log('\n3️⃣ Testing vector search...');
-    const serviceManager = getAIServiceManager();
-    await serviceManager.initialize();
     const provider = serviceManager.getCurrentProvider();
     
     const searchEngine = new SupabaseVectorSearchEngine(provider);
