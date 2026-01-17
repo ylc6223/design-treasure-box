@@ -9,7 +9,8 @@
       "command": "npx",
       "args": ["shadcn@latest", "mcp"],
       "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "PATH": "/Users/jerry/.nvm/versions/node/v22.18.0/bin:/usr/local/bin:/usr/bin:/bin"
       },
       "disabled": false,
       "autoApprove": []
@@ -21,7 +22,8 @@
       "args": ["-y", "shadcn@canary", "mcp"],
       "env": {
         "REGISTRY_URL": "https://www.prompt-kit.com/c/registry.json",
-        "FASTMCP_LOG_LEVEL": "ERROR"
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "PATH": "/Users/jerry/.nvm/versions/node/v22.18.0/bin:/usr/local/bin:/usr/bin:/bin"
       },
       "disabled": false,
       "autoApprove": []
