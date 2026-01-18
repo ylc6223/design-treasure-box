@@ -49,7 +49,7 @@ export function ResourceCard({
         {/* 网站截图 */}
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
           <ResourceThumbnail
-            url={resource.url}
+            screenshotUrl={resource.screenshotUrl}
             name={resource.name}
           />
 

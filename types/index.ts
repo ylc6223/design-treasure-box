@@ -24,7 +24,8 @@ export const ResourceSchema = z.object({
   name: z.string().min(1),
   url: z.string().url(),
   description: z.string().min(1),
-  screenshot: z.string().url(),
+  screenshotUrl: z.string().url().optional().nullable(), // 截图URL，存储在Cloudflare R2
+  screenshotUpdatedAt: z.string().optional().nullable(), // 截图更新时间
   categoryId: z.string().min(1),
   tags: z.array(z.string()).min(1), // 至少有一个标签
   rating: RatingSchema,

@@ -31,6 +31,9 @@ CREATE TABLE public.resources (
   curator_rating JSONB NOT NULL,
   view_count INTEGER DEFAULT 0 NOT NULL,
   favorite_count INTEGER DEFAULT 0 NOT NULL,
+  screenshot_url TEXT,
+  screenshot_updated_at TIMESTAMPTZ,
+  screenshot_error TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
@@ -56,6 +59,8 @@ CREATE INDEX idx_profiles_email ON public.profiles(email);
 CREATE INDEX idx_profiles_role ON public.profiles(role);
 CREATE INDEX idx_resources_category ON public.resources(category_id);
 CREATE INDEX idx_resources_featured ON public.resources(is_featured);
+CREATE INDEX idx_resources_screenshot_null ON public.resources(id) WHERE screenshot_url IS NULL;
+CREATE INDEX idx_resources_screenshot_updated ON public.resources(screenshot_updated_at);
 CREATE INDEX idx_ratings_user ON public.ratings(user_id);
 CREATE INDEX idx_ratings_resource ON public.ratings(resource_id);
 

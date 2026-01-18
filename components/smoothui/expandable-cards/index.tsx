@@ -107,7 +107,8 @@ export default function ExpandableCards({
               {/* 图片 */}
               <div className="relative h-full w-full overflow-hidden">
                 <ResourceThumbnail
-                  url={resource.url}
+                  screenshotUrl={resource.screenshotUrl}
+                  screenshotStatus={resource.screenshotStatus}
                   name={resource.name}
                   className="object-cover"
                 />

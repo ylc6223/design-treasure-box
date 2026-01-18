@@ -9,7 +9,8 @@ export {
   useResources,
   useResourceById,
   useResourcesByCategory,
-  useFeaturedResources,
+  useHotResources,
+  useLatestResources,
 } from './use-resources'
 export {
   useSearch,

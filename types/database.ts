@@ -56,6 +56,10 @@ export interface Database {
           curator_rating: Json
           view_count: number
           favorite_count: number
+          average_rating: number
+          rating_count: number
+          screenshot_url: string | null
+          screenshot_updated_at: string | null
           created_at: string
           updated_at: string
         }
@@ -71,6 +75,10 @@ export interface Database {
           curator_rating: Json
           view_count?: number
           favorite_count?: number
+          average_rating?: number
+          rating_count?: number
+          screenshot_url?: string | null
+          screenshot_updated_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -86,6 +94,10 @@ export interface Database {
           curator_rating?: Json
           view_count?: number
           favorite_count?: number
+          average_rating?: number
+          rating_count?: number
+          screenshot_url?: string | null
+          screenshot_updated_at?: string | null
           created_at?: string
           updated_at?: string
         }
