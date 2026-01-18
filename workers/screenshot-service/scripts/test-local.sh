@@ -26,7 +26,7 @@ echo "✅ TypeScript 编译通过"
 
 # 启动开发服务器 (后台运行)
 echo "🚀 启动开发服务器..."
-wrangler dev --port 8787 &
+wrangler dev --remote --port 8787 &
 DEV_PID=$!
 
 # 等待服务器启动

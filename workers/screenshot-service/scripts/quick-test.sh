@@ -54,7 +54,8 @@ fi
 read -p "🚀 是否启动本地测试服务器？(y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "🌐 启动本地开发服务器..."
+    echo "🌐 启动远程预览模式 (由于使用 Browser API，必须在 Cloudflare 远程运行)..."
+    echo "提示: 如果未登录，wrangler 将引导你完成授权。"
     echo "请在另一个终端运行以下命令测试："
     echo ""
     echo "# 健康检查"
@@ -65,7 +66,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
     echo "按 Ctrl+C 停止服务器"
     
-    wrangler dev --port 8787
+    wrangler dev --remote --port 8787
 else
     echo "⏭️  跳过本地测试"
 fi

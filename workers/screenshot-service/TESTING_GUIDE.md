@@ -33,29 +33,30 @@ ON public.resources(screenshot_updated_at);
 
 ### 2. 环境配置
 
-#### Cloudflare Workers 环境变量
+#### 本地开发变量 (.dev.vars)
+
+由于使用 `--remote` 模式运行，Wrangler 需要本地的密钥文件。在 `workers/screenshot-service/` 目录下创建 `.dev.vars`：
+
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET_KEY=your-service-role-key
+R2_PUBLIC_URL=https://your-r2-domain.com
+```
+
+#### Cloudflare Workers 配置
 
 在 `workers/screenshot-service/wrangler.jsonc` 中配置：
 
 ```jsonc
 {
-  "env": {
-    "production": {
-      "vars": {
-        "SUPABASE_URL": "https://your-project.supabase.co",
-        "R2_PUBLIC_URL": "https://your-r2-domain.com"
-      }
+  "r2_buckets": [
+    {
+      "binding": "SCREENSHOT_BUCKET",
+      "bucket_name": "photos",
+      "preview_bucket_name": "photos" // 允许开发环境使用相同的桶
     }
-  }
+  ]
 }
-```
-
-#### 设置密钥
-
-```bash
-cd workers/screenshot-service
-wrangler secret put SUPABASE_SECRET_KEY --env production
-# 输入你的 Supabase Secret Key
 ```
 
 ### 3. 依赖安装
@@ -76,10 +77,12 @@ npm run type-check
 
 预期结果：无编译错误
 
-### 第二步：本地开发测试
+### 第二步：开发测试（远程预览模式）
+
+> **注意**：由于服务涉及 Browser API，本地环境无法模拟浏览器，必须使用 `--remote` 模式（`npm run dev` 已默认设置）。
 
 ```bash
-# 启动本地开发服务器
+# 启动远程预览服务器
 npm run dev
 ```
 
@@ -88,14 +91,6 @@ npm run dev
 ```bash
 # 健康检查
 curl http://localhost:8787/health
-
-# 预期响应
-{
-  "status": "healthy",
-  "timestamp": "2024-01-18T...",
-  "service": "screenshot-service",
-  "batchSize": 5
-}
 ```
 
 ### 第三步：手动触发测试
@@ -103,14 +98,9 @@ curl http://localhost:8787/health
 ```bash
 # 手动触发截图任务
 curl -X POST http://localhost:8787/trigger
-
-# 预期响应
-{
-  "message": "Screenshot batch triggered",
-  "batchSize": 5,
-  "timestamp": "2024-01-18T..."
-}
 ```
+
+**观察日志**：在运行 `npm run dev` 的窗口观察实时处理进度。
 
 ### 第四步：数据库验证
 
@@ -168,34 +158,19 @@ curl -X POST https://your-worker.workers.dev/trigger
 
 ### 常见问题
 
-#### 1. 数据库连接失败
-```
-Error: Failed to fetch resources: ...
-```
-
+#### 1. Invalid URL: /v1/acquire
+**原因**: Browser Rendering 服务未在控制台开启，或 Wrangler 版本过旧。
 **解决方案**:
-- 检查 `SUPABASE_URL` 配置
-- 验证 `SUPABASE_SECRET_KEY` 密钥
-- 确认 Supabase 项目状态正常
+- 登录 Cloudflare 控制台 -> Workers & Pages -> Browser Rendering 确保已开启。
+- 升级依赖：`pnpm install --save-dev wrangler@latest @cloudflare/puppeteer@latest`
 
-#### 2. 浏览器启动失败
-```
-Error: browser.launch is not a function
-```
+#### 2. waitUntil() tasks did not complete...
+**原因**: 预览环境下 Worker 的生命周期较短，处理多个截图可能触发超时保护。
+**解决方案**: 这通常是环境限制，不代表代码错误。检查数据库或 R2 确认截图是否已成功生成。
 
-**解决方案**:
-- 确认 Browser API 已在 Cloudflare 中启用
-- 检查 `wrangler.jsonc` 中的 browser 绑定配置
-
-#### 3. R2 上传失败
-```
-Error: R2 bucket not found
-```
-
-**解决方案**:
-- 确认 R2 存储桶已创建
-- 检查 `wrangler.jsonc` 中的 r2_buckets 配置
-- 验证存储桶名称正确
+#### 3. 环境变量未生效
+**原因**: 修改 `.dev.vars` 后未重启 `npm run dev`。
+**解决方案**: 停止进程并重新启动。
 
 #### 4. 截图超时
 ```
