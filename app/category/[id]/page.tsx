@@ -37,10 +37,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     }
   }
 
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   // 如果分类不存在，显示 404
   if (!category) {
     return (
@@ -120,7 +116,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             resources={resources}
             isFavorited={isFavorited}
             onFavorite={handleFavorite}
-            onVisit={handleVisit}
           />
         ) : (
           <div className="py-16 text-center">

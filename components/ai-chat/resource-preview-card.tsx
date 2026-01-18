@@ -69,7 +69,8 @@ export function ResourcePreviewCard({
           )}
         >
           <ResourceThumbnail
-            url={resource.url}
+            screenshotUrl={resource.screenshotUrl}
+            screenshotStatus={resource.screenshotStatus}
             name={resource.name}
           />
 

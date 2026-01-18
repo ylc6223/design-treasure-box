@@ -44,17 +44,12 @@ export function ResourceCardExample() {
     }
   }
 
-  const handleVisit = () => {
-    window.open(exampleResource.url, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <div className="max-w-sm">
       <ResourceCard
         resource={exampleResource}
         isFavorited={isFavorited(exampleResource.id)}
         onFavorite={handleFavorite}
-        onVisit={handleVisit}
       />
     </div>
   )
@@ -67,10 +62,6 @@ export function ResourceCardExample() {
  */
 export function ResourceGridExample({ resources }: { resources: Resource[] }) {
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
-
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
 
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
@@ -88,7 +79,6 @@ export function ResourceGridExample({ resources }: { resources: Resource[] }) {
           resource={resource}
           isFavorited={isFavorited(resource.id)}
           onFavorite={() => handleFavorite(resource.id)}
-          onVisit={() => handleVisit(resource.url)}
         />
       ))}
     </div>

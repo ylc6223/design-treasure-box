@@ -21,7 +21,7 @@ const mockResource: Resource = {
   name: 'Test Resource',
   url: 'https://example.com',
   description: 'This is a test resource description that should be displayed in the card',
-  screenshot: 'https://example.com/screenshot.jpg',
+  screenshotUrl: 'https://example.com/screenshot.jpg',
   categoryId: 'color',
   tags: ['配色', '工具', '免费', '在线'],
   rating: {
@@ -41,14 +41,12 @@ const mockResource: Resource = {
 describe('ResourceCard', () => {
   it('renders resource information correctly', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -74,14 +72,12 @@ describe('ResourceCard', () => {
 
   it('displays featured badge when resource is featured', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -90,7 +86,6 @@ describe('ResourceCard', () => {
 
   it('does not display featured badge when resource is not featured', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
     const nonFeaturedResource = { ...mockResource, isFeatured: false }
 
     render(
@@ -98,7 +93,6 @@ describe('ResourceCard', () => {
         resource={nonFeaturedResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -108,14 +102,12 @@ describe('ResourceCard', () => {
   it('calls onFavorite when favorite button is clicked', async () => {
     const user = userEvent.setup()
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -125,36 +117,14 @@ describe('ResourceCard', () => {
     expect(onFavorite).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onVisit when visit button is clicked', async () => {
-    const user = userEvent.setup()
-    const onFavorite = vi.fn()
-    const onVisit = vi.fn()
-
-    render(
-      <ResourceCard
-        resource={mockResource}
-        isFavorited={false}
-        onFavorite={onFavorite}
-        onVisit={onVisit}
-      />
-    )
-
-    const visitButton = screen.getByRole('button', { name: /访问/i })
-    await user.click(visitButton)
-
-    expect(onVisit).toHaveBeenCalledTimes(1)
-  })
-
   it('displays filled heart icon when resource is favorited', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <ResourceCard
         resource={mockResource}
         isFavorited={true}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -165,34 +135,30 @@ describe('ResourceCard', () => {
 
   it('displays correct number of stars for rating', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
     // 4.5 评分应该显示 4 个满星 + 1 个半星
     // 通过检查 SVG 元素的数量来验证
     const stars = container.querySelectorAll('svg')
-    // 应该有多个 SVG: 精选的 Sparkles, 星星们, Heart, ExternalLink
+    // 应该有多个 SVG: 精选的 Sparkles, 星星们, Heart
     expect(stars.length).toBeGreaterThan(5)
   })
 
   it('handles image loading error gracefully', async () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -209,14 +175,12 @@ describe('ResourceCard', () => {
 
   it('displays only first 3 tags when resource has more than 3 tags', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <ResourceCard
         resource={mockResource}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -234,7 +198,6 @@ describe('ResourceCard', () => {
 
   it('displays all tags when resource has 3 or fewer tags', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
     const resourceWithFewTags = {
       ...mockResource,
       tags: ['配色', '工具'],
@@ -245,7 +208,6 @@ describe('ResourceCard', () => {
         resource={resourceWithFewTags}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -256,7 +218,6 @@ describe('ResourceCard', () => {
 
   it('renders correct rating for whole number', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
     const resourceWithWholeRating = {
       ...mockResource,
       rating: {
@@ -270,7 +231,6 @@ describe('ResourceCard', () => {
         resource={resourceWithWholeRating}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -279,7 +239,6 @@ describe('ResourceCard', () => {
 
   it('truncates long descriptions to 2 lines', () => {
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
     const resourceWithLongDescription = {
       ...mockResource,
       description:
@@ -291,7 +250,6 @@ describe('ResourceCard', () => {
         resource={resourceWithLongDescription}
         isFavorited={false}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 

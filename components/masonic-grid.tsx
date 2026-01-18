@@ -13,7 +13,6 @@ export interface MasonicGridProps {
   onLoadMore: () => void
   isFavorited: (id: string) => boolean
   onFavorite: (id: string) => void
-  onVisit: (url: string) => void
   className?: string
 }
 
@@ -22,7 +21,6 @@ interface MasonryCardProps {
   width: number
   isFavorited: boolean
   onFavorite: () => void
-  onVisit: () => void
 }
 
 /**
@@ -32,13 +30,12 @@ interface MasonryCardProps {
  * 垂直间距由 usePositioner 的 rowGutter 参数控制
  */
 const MasonryCard = React.memo<MasonryCardProps>(
-  ({ data, width: _width, isFavorited, onFavorite, onVisit }) => {
+  ({ data, width: _width, isFavorited, onFavorite }) => {
     return (
       <ResourceCard
         resource={data}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
   }
@@ -64,7 +61,6 @@ export function MasonicGrid({
   onLoadMore,
   isFavorited,
   onFavorite,
-  onVisit,
   className,
 }: MasonicGridProps) {
   // 使用 masonic 的 useInfiniteLoader 处理无限滚动
@@ -104,7 +100,6 @@ export function MasonicGrid({
             width={width}
             isFavorited={isFavorited(data.id)}
             onFavorite={() => onFavorite(data.id)}
-            onVisit={() => onVisit(data.url)}
           />
         )}
       />

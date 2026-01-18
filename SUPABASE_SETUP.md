@@ -19,6 +19,7 @@
 3. 找到以下信息：
    - **Project URL**: 类似 `https://xxxxx.supabase.co`
    - **anon public**: 公开密钥（用于客户端）
+   - **service_role**: 服务密钥（用于服务端，现在称为 Secret Key）
 
 ## 3. 配置环境变量
 
@@ -31,6 +32,7 @@
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_SECRET_KEY=your-secret-key-here
    ```
 
 ## 4. 配置 OAuth 认证
@@ -99,8 +101,15 @@ pnpm dev
 1. 点击左侧菜单的 **Table Editor**
 2. 你应该能看到以下表：
    - `profiles` - 用户资料表
-   - `resources` - 资源表
+   - `resources` - 资源表（包含截图字段）
    - `ratings` - 用户评分表
+
+### 验证截图字段
+
+在 `resources` 表中，确认包含以下截图相关字段：
+- `screenshot_url` - 截图 URL 地址
+- `screenshot_updated_at` - 截图更新时间
+- `screenshot_error` - 截图错误信息
 
 ## 下一步
 

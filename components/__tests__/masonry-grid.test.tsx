@@ -14,7 +14,7 @@ const mockResources: Resource[] = [
     name: 'Test Resource 1',
     url: 'https://example.com/1',
     description: 'Test description 1',
-    screenshot: 'https://example.com/screenshot1.jpg',
+    screenshotUrl: 'https://example.com/screenshot1.jpg',
     categoryId: 'color',
     tags: ['配色', '工具'],
     rating: {
@@ -35,7 +35,7 @@ const mockResources: Resource[] = [
     name: 'Test Resource 2',
     url: 'https://example.com/2',
     description: 'Test description 2',
-    screenshot: 'https://example.com/screenshot2.jpg',
+    screenshotUrl: 'https://example.com/screenshot2.jpg',
     categoryId: 'css',
     tags: ['CSS', '框架'],
     rating: {
@@ -56,7 +56,7 @@ const mockResources: Resource[] = [
     name: 'Test Resource 3',
     url: 'https://example.com/3',
     description: 'Test description 3',
-    screenshot: 'https://example.com/screenshot3.jpg',
+    screenshotUrl: 'https://example.com/screenshot3.jpg',
     categoryId: 'font',
     tags: ['字体', '免费'],
     rating: {
@@ -78,14 +78,12 @@ describe('MasonryGrid', () => {
   it('renders all resources', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -97,14 +95,12 @@ describe('MasonryGrid', () => {
   it('displays empty state when no resources', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <MasonryGrid
         resources={[]}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -115,14 +111,12 @@ describe('MasonryGrid', () => {
   it('applies responsive grid classes', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -136,14 +130,12 @@ describe('MasonryGrid', () => {
   it('applies custom className', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
         className="custom-class"
       />
     )
@@ -155,14 +147,12 @@ describe('MasonryGrid', () => {
   it('passes correct props to ResourceCard', () => {
     const isFavorited = vi.fn((id) => id === 'test-1')
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -175,14 +165,12 @@ describe('MasonryGrid', () => {
   it('applies stagger animation delay', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -201,14 +189,12 @@ describe('MasonryGrid', () => {
   it('renders correct number of cards', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const { container } = render(
       <MasonryGrid
         resources={mockResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -219,14 +205,12 @@ describe('MasonryGrid', () => {
   it('handles single resource', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     render(
       <MasonryGrid
         resources={[mockResources[0]]}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 
@@ -237,7 +221,6 @@ describe('MasonryGrid', () => {
   it('handles large number of resources', () => {
     const isFavorited = vi.fn(() => false)
     const onFavorite = vi.fn()
-    const onVisit = vi.fn()
 
     const manyResources = Array.from({ length: 20 }, (_, i) => ({
       ...mockResources[0],
@@ -250,7 +233,6 @@ describe('MasonryGrid', () => {
         resources={manyResources}
         isFavorited={isFavorited}
         onFavorite={onFavorite}
-        onVisit={onVisit}
       />
     )
 

@@ -2,10 +2,11 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import { ImageIcon, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface ResourceThumbnailProps {
-  url: string
+  screenshotUrl?: string
   name: string
   className?: string
   priority?: boolean
@@ -14,76 +15,40 @@ export interface ResourceThumbnailProps {
 /**
  * ResourceThumbnail 组件
  * 
- * 使用 Microlink API 自动获取网站图片
- * 优先级：Open Graph 图片 → 截图 → 占位图
- * 
- * 优点：
- * - 零存储成本 - 不保存任何图片文件
- * - 零后端压力 - 前端直接调用 API
- * - 完全免费 - Microlink 免费额度足够使用
- * - 自动缓存 - Microlink 自动缓存结果
- * - 实时更新 - 网站更新后自动获取新图片
+ * 显示资源截图，支持不同状态的 UI 反馈
+ * 图片通过 Cloudflare CDN 缓存，无需客户端缓存逻辑
  */
 export function ResourceThumbnail({
-  url,
+  screenshotUrl,
   name,
   className,
   priority = false,
 }: ResourceThumbnailProps) {
   const [imageError, setImageError] = React.useState(false)
-  const [useScreenshot, setUseScreenshot] = React.useState(false)
 
-  // 构造 Microlink API URL
-  // 优先使用 Open Graph 图片（官方图片，质量好）
-  const getImageUrl = React.useCallback(() => {
-    const encodedUrl = encodeURIComponent(url)
-    
-    if (useScreenshot) {
-      // 回退到截图
-      return `https://api.microlink.io/?url=${encodedUrl}&screenshot=true&meta=false&embed=screenshot.url`
-    }
-    
-    // 优先使用 OG 图片
-    return `https://api.microlink.io/?url=${encodedUrl}&meta=false&embed=image.url`
-  }, [url, useScreenshot])
-
-  const handleError = React.useCallback(() => {
-    if (!useScreenshot) {
-      // 第一次失败，尝试使用截图
-      setUseScreenshot(true)
-      setImageError(false)
-    } else {
-      // 截图也失败，显示占位图
-      setImageError(true)
-    }
-  }, [useScreenshot])
-
-  // 当 URL 变化时重置状态
-  React.useEffect(() => {
-    setImageError(false)
-    setUseScreenshot(false)
-  }, [url])
-
-  if (imageError) {
-    // 占位图
-    return (
-      <div
-        className={cn(
-          'flex h-full w-full items-center justify-center bg-muted',
-          className
-        )}
-      >
-        <div className="text-center space-y-2 p-4">
-          <div className="text-4xl">🖼️</div>
-          <p className="text-sm text-muted-foreground">图片加载失败</p>
-        </div>
+  // 渲染占位图
+  const renderPlaceholder = (message: string) => (
+    <div
+      className={cn(
+        'flex h-full w-full items-center justify-center bg-muted',
+        className
+      )}
+    >
+      <div className="text-center space-y-2 p-4">
+        <ImageIcon className="h-8 w-8 text-muted-foreground mx-auto" />
+        <p className="text-sm text-muted-foreground">{message}</p>
       </div>
-    )
+    </div>
+  )
+
+  // 如果没有截图URL或加载失败，显示占位图
+  if (!screenshotUrl || imageError) {
+    return renderPlaceholder(!screenshotUrl ? '暂无截图' : '图片加载失败')
   }
 
   return (
     <Image
-      src={getImageUrl()}
+      src={screenshotUrl}
       alt={name}
       fill
       className={cn(
@@ -92,8 +57,7 @@ export function ResourceThumbnail({
       )}
       loading={priority ? undefined : 'lazy'}
       priority={priority}
-      onError={handleError}
-      unoptimized // Microlink 已经优化过图片
+      onError={() => setImageError(true)}
     />
   )
 }

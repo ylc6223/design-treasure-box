@@ -1,0 +1,25 @@
+{
+  "name": "screenshot-service",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for automated screenshot generation",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:production": "wrangler deploy --env production",
+    "test": "./scripts/test-local.sh",
+    "test:quick": "./scripts/quick-test.sh",
+    "type-check": "tsc --noEmit",
+    "logs": "wrangler tail --env production",
+    "logs:dev": "wrangler tail"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^0.0.8",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.95.0"
+  }
+}

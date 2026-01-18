@@ -60,10 +60,6 @@ export default function FavoritesPage() {
     }
   }
 
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <div className="min-h-screen">
       {/* 主内容区 */}
@@ -109,7 +105,6 @@ export default function FavoritesPage() {
             resources={favoriteResources}
             isFavorited={isFavorited}
             onFavorite={handleFavorite}
-            onVisit={handleVisit}
           />
         ) : (
           /* 空状态 */

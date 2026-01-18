@@ -1,0 +1,46 @@
+{
+  // Cloudflare Workers 配置文件
+  "name": "design-treasure-screenshot",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-27",
+  "compatibility_flags": [
+    "nodejs_compat_v2",
+    "enable_nodejs_process_v2",
+    "nodejs_compat_populate_process_env"
+  ],
+  "browser": {
+    "binding": "MYBROWSER"
+  },
+  // "workers_dev": true,
+  // 生产环境配置
+  "env": {
+    "production": {
+      // R2 存储桶 - 用于图片存储
+      "r2_buckets": [
+        {
+          "binding": "SCREENSHOT_BUCKET",
+          "bucket_name": "photos"
+        }
+      ],
+      // Browser API - 用于 Puppeteer
+      "browser": {
+        "binding": "MYBROWSER"
+      },
+      // 定时任务 - 每5分钟执行一次，处理5个资源
+      "triggers": [
+        {
+          "cron": "*/5 * * * *"
+        }
+      ],
+      // 环境变量
+      "vars": {
+        "SUPABASE_URL": "https://qtymidkusovwjamlntsk.supabase.co",
+        "R2_PUBLIC_URL": "https://images.thepexels.top"
+      },
+      // 密钥变量 (通过 wrangler secret 设置)
+      "secrets": [
+        "SUPABASE_SECRET_KEY"
+      ]
+    }
+  }
+}

@@ -55,10 +55,6 @@ function SearchResultsContent() {
     }
   }
 
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   return (
     <div className="min-h-screen">
       {/* 主内容区 */}
@@ -119,7 +115,6 @@ function SearchResultsContent() {
               resources={results}
               isFavorited={isFavorited}
               onFavorite={handleFavorite}
-              onVisit={handleVisit}
             />
           </section>
         )}
@@ -146,7 +141,6 @@ function SearchResultsContent() {
               resources={popularResources}
               isFavorited={isFavorited}
               onFavorite={handleFavorite}
-              onVisit={handleVisit}
             />
           </section>
         )}
