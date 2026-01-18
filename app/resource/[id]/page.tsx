@@ -200,7 +200,6 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
                       resource={relatedResource}
                       isFavorited={isFavorited(relatedResource.id)}
                       onFavorite={() => handleFavorite(relatedResource.id)}
-                      onVisit={() => handleVisit(relatedResource.url)}
                     />
                   ))}
                 </div>

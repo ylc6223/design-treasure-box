@@ -9,7 +9,6 @@ export interface MasonryGridProps {
   resources: Resource[]
   isFavorited: (id: string) => boolean
   onFavorite: (id: string) => void
-  onVisit: (url: string) => void
   className?: string
 }
 
@@ -33,7 +32,6 @@ export function MasonryGrid({
   resources,
   isFavorited,
   onFavorite,
-  onVisit,
   className,
 }: MasonryGridProps) {
   const [mounted, setMounted] = React.useState(false)
@@ -85,7 +83,6 @@ export function MasonryGrid({
             resource={resource}
             isFavorited={isFavorited(resource.id)}
             onFavorite={() => onFavorite(resource.id)}
-            onVisit={() => onVisit(resource.url)}
           />
         </div>
       ))}

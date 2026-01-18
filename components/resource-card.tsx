@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Sparkles, Heart, ExternalLink } from 'lucide-react'
+import { Sparkles, Heart } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,6 @@ export interface ResourceCardProps {
   resource: Resource
   isFavorited: boolean
   onFavorite: () => void
-  onVisit: () => void
 }
 
 /**
@@ -26,7 +25,7 @@ export interface ResourceCardProps {
  * - 资源名称 + 评分星星
  * - 简介描述（2行截断）
  * - 标签 Badge
- * - 收藏按钮 + 访问按钮
+ * - 收藏按钮
  * - 悬停上浮动效
  * - 点击跳转到详情页
  */
@@ -34,7 +33,6 @@ export function ResourceCard({
   resource,
   isFavorited,
   onFavorite,
-  onVisit,
 }: ResourceCardProps) {
   return (
     <Card
@@ -44,8 +42,30 @@ export function ResourceCard({
         'hover:-translate-y-1 hover:shadow-lg'
       )}
     >
+      {/* 收藏按钮 - 放在右上角，阻止事件冒泡 */}
+      <div className="absolute top-3 right-3 z-10">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onFavorite()
+          }}
+          className={cn(
+            'h-8 w-8 rounded-full bg-black/20 text-white backdrop-blur-sm transition-colors hover:bg-black/40 hover:text-white',
+            isFavorited && 'bg-white/90 text-red-500 hover:bg-white hover:text-red-600 shadow-sm'
+          )}
+          aria-label={isFavorited ? '取消收藏' : '收藏'}
+        >
+          <Heart
+            className={cn('h-4 w-4', isFavorited && 'fill-current')}
+          />
+        </Button>
+      </div>
+
       {/* 可点击区域 - 跳转到详情页 */}
-      <Link href={`/resource/${resource.id}`} className="block">
+      <Link href={`/resource/${resource.id}`} className="block h-full">
         {/* 网站截图 */}
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
           <ResourceThumbnail
@@ -63,7 +83,7 @@ export function ResourceCard({
         </div>
 
         {/* 卡片内容 */}
-        <div className="p-4 space-y-3">
+        <div className="flex flex-col gap-3 p-4">
           {/* 资源名称 + 评分 */}
           <div className="space-y-1.5">
             <h3 className="font-semibold text-base leading-tight line-clamp-1">
@@ -73,61 +93,25 @@ export function ResourceCard({
           </div>
 
           {/* 简介描述 */}
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5em]">
             {resource.description}
           </p>
 
           {/* 标签 */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 pt-1">
             {resource.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
+              <Badge key={tag} variant="secondary" className="text-xs font-normal">
                 {tag}
               </Badge>
             ))}
             {resource.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs font-normal">
                 +{resource.tags.length - 3}
               </Badge>
             )}
           </div>
         </div>
       </Link>
-
-      {/* 操作按钮 - 阻止事件冒泡 */}
-      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onFavorite()
-          }}
-          className={cn(
-            'transition-colors bg-surface/80 backdrop-blur-sm',
-            isFavorited && 'text-red-500 hover:text-red-600'
-          )}
-          aria-label={isFavorited ? '取消收藏' : '收藏'}
-        >
-          <Heart
-            className={cn('h-5 w-5', isFavorited && 'fill-current')}
-          />
-        </Button>
-
-        <Button
-          variant="default"
-          size="sm"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onVisit()
-          }}
-          className="gap-1.5 bg-surface/80 backdrop-blur-sm"
-        >
-          <span>访问</span>
-          <ExternalLink className="h-3.5 w-3.5" />
-        </Button>
-      </div>
     </Card>
   )
 }

@@ -14,7 +14,7 @@ function transformResource(resource: ResourceRow): Resource | null {
   // 如果需要详细维度的评分，需要单独获取详情，或者在数据库也做缓存(过于复杂不推荐)
   // 这里我们使用 average_rating 填充 overall，其他维度暂时给默认值或 curator_rating
   const curatorRating = resource.curator_rating as any
-  
+
   const rating = {
     overall: resource.average_rating ?? curatorRating?.overall ?? 0,
     // 列表页通常只需要总分，以下细分维度在列表页展示时如果需要，
@@ -30,7 +30,7 @@ function transformResource(resource: ResourceRow): Resource | null {
     name: resource.name,
     url: resource.url,
     description: resource.description,
-    screenshotUrl: resource.screenshot_url || `https://api.microlink.io/?url=${encodeURIComponent(resource.url)}&meta=false&embed=image.url`,
+    screenshotUrl: resource.screenshot_url || undefined,
     screenshotUpdatedAt: resource.screenshot_updated_at,
     categoryId: resource.category_id,
     tags: resource.tags,
@@ -66,7 +66,7 @@ export async function fetchResourcePage({
   categoryId,
 }: FetchResourcePageOptions) {
   const supabase = createClient()
-  
+
   const from = page * pageSize
   const to = from + pageSize - 1
 
@@ -101,7 +101,7 @@ export async function fetchResourcePage({
 
 async function fetchHotResources() {
   const supabase = createClient()
-  
+
   const { data: resources, error } = await supabase
     .from('resources')
     .select('*')
@@ -129,7 +129,7 @@ export function useHotResources() {
 
 async function fetchLatestResources() {
   const supabase = createClient()
-  
+
   const { data: resources, error } = await supabase
     .from('resources')
     .select('*')
@@ -168,7 +168,7 @@ export function useResourceById(resourceId: string) {
         .select('*')
         .eq('id', resourceId)
         .single()
-      
+
       if (error) throw error
       // 对于详情页，如果确实需要详细评分分布，这里其实应该再查一次 ratings 表
       // 但为了保持接口一致性，目前先用 transformResource
@@ -182,7 +182,7 @@ export function useResourceById(resourceId: string) {
  * useResourcesByCategory Hook (Deprecated logic: prefer useInfiniteResources)
  */
 export function useResourcesByCategory(categoryId: string) {
-   return useQuery({
+  return useQuery({
     queryKey: ['resources', 'category', categoryId],
     queryFn: () => fetchResourcePage({ page: 0, pageSize: 24, categoryId }).then(r => r.data),
     staleTime: 1000 * 60 * 5,
@@ -196,17 +196,17 @@ export function useResources() {
   return useQuery({
     queryKey: ['resources', 'all'],
     queryFn: async () => {
-       const supabase = createClient()
-       const { data: resources, error } = await supabase
+      const supabase = createClient()
+      const { data: resources, error } = await supabase
         .from('resources')
         .select('*')
         .order('created_at', { ascending: false })
         .returns<ResourceRow[]>()
 
-       if (error) throw error
-       if (!resources) return []
-       
-       return resources.map(transformResource).filter(Boolean) as Resource[]
+      if (error) throw error
+      if (!resources) return []
+
+      return resources.map(transformResource).filter(Boolean) as Resource[]
     },
     staleTime: 1000 * 60 * 5,
   })
