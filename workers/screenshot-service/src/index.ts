@@ -34,55 +34,55 @@ export default {
    * 定时任务处理器 - 每5分钟执行一次，处理5个资源
    */
   async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
-    console.log('🚀 Starting batch screenshot processing...')
-    
+    console.log('🚀 开始批量截图处理任务...')
+
     const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY)
     let browser = null
-    
+
     try {
       // 第一步：任务发现 - 获取待处理的资源
-      console.log(`🔍 Fetching ${BATCH_SIZE} resources needing screenshots...`)
-      
+      console.log(`🔍 正在获取 ${BATCH_SIZE} 个需要截图的资源...`)
+
       const { data: resources, error: fetchError } = await supabase
         .from('resources')
         .select('id, name, url, screenshot_url')
         .is('screenshot_url', null)
         .limit(BATCH_SIZE)
         .order('id')
-      
+
       if (fetchError) {
         throw new Error(`Failed to fetch resources: ${fetchError.message}`)
       }
-      
+
       if (!resources || resources.length === 0) {
-        console.log('✅ No resources need screenshots')
+        console.log('✅ 没有需要处理的资源')
         return
       }
-      
-      console.log(`📋 Found ${resources.length} resources to process`)
-      
+
+      console.log(`📋 发现 ${resources.length} 个资源待处理`)
+
       // 第二步：启动浏览器
-      console.log('🌐 Launching browser...')
+      console.log('🌐 正在启动浏览器...')
       browser = await puppeteer.launch(env.MYBROWSER)
-      
+
       // 第三步：串行处理每个资源
       for (const resource of resources) {
         await processResource(resource, browser, env, supabase)
-        
+
         // 批次间延迟，避免过度并发
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
-      
-      console.log('✅ Batch processing completed')
-      
+
+      console.log('✅ 批量任务处理完成')
+
     } catch (error) {
-      console.error('💥 Batch processing failed:', error)
+      console.error('💥 批量处理任务失败:', error)
       throw error
     } finally {
       // 【关键】无论成功还是报错，都要释放浏览器实例
       if (browser !== null) {
         await browser.close()
-        console.log('🔒 Browser closed')
+        console.log('🔒 浏览器已关闭')
       }
     }
   },
@@ -126,7 +126,7 @@ export default {
         // 手动触发截图任务 - 异步执行
         const scheduledHandler = this.scheduled.bind(this)
         ctx.waitUntil(scheduledHandler({} as ScheduledEvent, env, ctx))
-        
+
         return Response.json({
           message: 'Screenshot batch triggered',
           method: request.method,
@@ -156,28 +156,28 @@ export default {
  * 处理单个资源的截图生成
  */
 async function processResource(
-  resource: Resource, 
-  browser: any, 
-  env: Env, 
+  resource: Resource,
+  browser: any,
+  env: Env,
   supabase: any
 ): Promise<void> {
   let page = null
-  
+
   try {
-    console.log(`📸 Processing ${resource.name} (${resource.url})`)
-    
+    console.log(`📸 正在处理: ${resource.name} (${resource.url})`)
+
     // 创建新页面
     page = await browser.newPage()
-    
+
     // 设置视口
     await page.setViewport(VIEWPORT_CONFIG)
-    
+
     // 导航到页面
-    await page.goto(resource.url, { 
-      waitUntil: 'networkidle2', 
-      timeout: SCREENSHOT_TIMEOUT 
+    await page.goto(resource.url, {
+      waitUntil: 'networkidle2',
+      timeout: SCREENSHOT_TIMEOUT
     })
-    
+
     // 注入中文字体支持
     await page.addStyleTag({
       content: `
@@ -185,20 +185,20 @@ async function processResource(
         * { font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif !important; }
       `
     })
-    
+
     // 等待页面稳定
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // 生成截图
     const screenshot = await page.screenshot({
       type: 'jpeg',
       quality: JPEG_QUALITY,
       fullPage: false
     })
-    
+
     // 生成文件名 - 使用资源ID确保唯一性
     const filename = `screenshots/${resource.id}.jpg`
-    
+
     // 上传到R2
     await env.SCREENSHOT_BUCKET.put(filename, screenshot, {
       httpMetadata: {
@@ -206,10 +206,10 @@ async function processResource(
         cacheControl: 'public, s-maxage=604800' // 7天强缓存
       }
     })
-    
+
     // 构建公网访问URL
     const screenshotUrl = `${env.R2_PUBLIC_URL}/${filename}`
-    
+
     // 第三步：数据回填 - 更新Supabase
     const { error: updateError } = await supabase
       .from('resources')
@@ -218,17 +218,17 @@ async function processResource(
         screenshot_updated_at: new Date().toISOString()
       })
       .eq('id', resource.id)
-    
+
     if (updateError) {
       throw new Error(`Database update failed: ${updateError.message}`)
     }
-    
-    console.log(`✅ Screenshot completed for ${resource.name}`)
-    
+
+    console.log(`✅ ${resource.name} 截图完成`)
+
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-    console.log(`❌ Screenshot failed for ${resource.name}: ${errorMsg}`)
-    
+    console.log(`❌ ${resource.name} 截图失败: ${errorMsg}`)
+
     // 可选：记录失败状态到数据库
     await supabase
       .from('resources')
@@ -237,8 +237,8 @@ async function processResource(
         screenshot_updated_at: new Date().toISOString()
       })
       .eq('id', resource.id)
-      .catch(() => {}) // 忽略更新错误，避免双重失败
-    
+      .catch(() => { }) // 忽略更新错误，避免双重失败
+
   } finally {
     // 【关键】无论成功还是报错，都要释放页面实例
     if (page !== null) {
@@ -264,28 +264,28 @@ async function generateUrlHash(url: string): Promise<string> {
 async function handleImageRequest(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url)
   const filename = url.pathname.slice(1) // 移除开头的 '/'
-  
+
   try {
     const object = await env.SCREENSHOT_BUCKET.get(filename)
-    
+
     if (!object) {
       return new Response('Image not found', { status: 404 })
     }
-    
+
     const headers = new Headers({
       'Content-Type': 'image/jpeg',
       'Cache-Control': 'public, s-maxage=604800', // 7天强缓存
       'ETag': object.etag || ''
     })
-    
+
     // 支持304缓存
     const ifNoneMatch = request.headers.get('If-None-Match')
     if (ifNoneMatch && ifNoneMatch === object.etag) {
       return new Response(null, { status: 304, headers })
     }
-    
+
     return new Response(object.body, { headers })
-    
+
   } catch (error) {
     console.error('Error fetching image:', error)
     return new Response('Error fetching image', { status: 500 })

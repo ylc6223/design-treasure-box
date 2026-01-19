@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'images.thepexels.top',
+        pathname: '/screenshots/**',
+      },
+      {
+        protocol: 'https',
         hostname: '**',
       },
     ],

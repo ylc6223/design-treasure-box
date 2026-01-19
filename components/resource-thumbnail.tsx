@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
-import { ImageIcon, RefreshCw } from 'lucide-react'
+import { ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface ResourceThumbnailProps {
@@ -57,6 +57,7 @@ export function ResourceThumbnail({
       )}
       loading={priority ? undefined : 'lazy'}
       priority={priority}
+      unoptimized={!!screenshotUrl?.includes('images.thepexels.top')}
       onError={() => setImageError(true)}
     />
   )
