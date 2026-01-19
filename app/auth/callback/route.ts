@@ -27,11 +27,13 @@ export async function GET(request: Request) {
     }
 
     // 获取用户权限角色以决定跳转目标
-    const { data: profile }: { data: Profile | null } = await supabase
+    const { data: profileData } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .maybeSingle();
+
+    const profile = profileData as Profile | null;
 
     // 默认跳转：管理员去后台，普通用户留首页
     let nextTarget = '/';
