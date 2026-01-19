@@ -3,6 +3,9 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import type { Database } from '@/types/database';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -22,11 +25,11 @@ export async function GET(request: Request) {
     }
 
     // 获取用户权限角色以决定跳转目标
-    const { data: profile } = (await supabase
+    const { data: profile }: { data: Profile | null } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
-      .single()) as { data: { role: string } | null };
+      .maybeSingle();
 
     // 默认跳转：管理员去后台，普通用户留首页
     let nextTarget = '/';
