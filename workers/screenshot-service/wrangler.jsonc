@@ -1,5 +1,4 @@
 {
-  // Cloudflare Workers 配置文件
   "name": "design-treasure-screenshot",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-27",
@@ -18,36 +17,32 @@
       "preview_bucket_name": "photos"
     }
   ],
-  // 生产环境配置
+  "vars": {
+    "R2_PUBLIC_URL": "https://images.thepexels.top",
+    "API_BASE_URL": "https://design.thepexels.top",
+    "DATABASE_API_KEY": "sb_secret_SP7zzAJrC89EBMq47GK29g_Uf6oyp20"
+  },
   "env": {
     "production": {
-      // R2 存储桶 - 用于图片存储
+      // 必须在这里重复定义 Bindings，因为它们不会被继承
+      "browser": {
+        "binding": "MYBROWSER"
+      },
       "r2_buckets": [
         {
           "binding": "SCREENSHOT_BUCKET",
           "bucket_name": "photos"
         }
       ],
-      // Browser API - 用于 Puppeteer
-      "browser": {
-        "binding": "MYBROWSER"
-      },
-      // 定时任务 - 每5分钟执行一次，处理5个资源
-      "triggers": [
-        {
-          "cron": "*/5 * * * *"
-        }
-      ],
-      // 环境变量
       "vars": {
-        "SUPABASE_URL": "https://qtymidkusovwjamlntsk.supabase.co",
         "R2_PUBLIC_URL": "https://images.thepexels.top",
         "API_BASE_URL": "https://design.thepexels.top",
         "DATABASE_API_KEY": "sb_secret_SP7zzAJrC89EBMq47GK29g_Uf6oyp20"
       },
-      // 密钥变量 (通过 wrangler secret 设置)
-      "secrets": [
-        "SUPABASE_SECRET_KEY"
+      "triggers": [
+        {
+          "cron": "*/5 * * * *"
+        }
       ]
     }
   }
