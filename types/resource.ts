@@ -66,6 +66,10 @@ export interface ResourceResponse {
   favorite_count: number
   created_at: string
   updated_at: string
+  // 截图相关字段
+  screenshot_url: string | null
+  screenshot_updated_at: string | null
+  screenshot_error: string | null
 }
 
 // 资源列表查询参数

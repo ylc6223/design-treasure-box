@@ -41,7 +41,9 @@
       // 环境变量
       "vars": {
         "SUPABASE_URL": "https://qtymidkusovwjamlntsk.supabase.co",
-        "R2_PUBLIC_URL": "https://images.thepexels.top"
+        "R2_PUBLIC_URL": "https://images.thepexels.top",
+        "API_BASE_URL": "https://design.thepexels.top",
+        "DATABASE_API_KEY": "sb_secret_SP7zzAJrC89EBMq47GK29g_Uf6oyp20"
       },
       // 密钥变量 (通过 wrangler secret 设置)
       "secrets": [

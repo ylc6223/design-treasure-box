@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Package, Users, Star, TrendingUp } from 'lucide-react'
+import { Package, Users, Star, TrendingUp, Camera } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { ScreenshotServiceCard } from '@/components/admin/screenshot-service-card'
 
 /**
  * 管理后台仪表板
@@ -10,6 +11,9 @@ import { Badge } from '@/components/ui/badge'
  */
 export default async function AdminDashboard() {
   const supabase = await createClient()
+
+  // 计算 7 天前的时间
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
   // 获取统计数据
   const [
@@ -19,6 +23,11 @@ export default async function AdminDashboard() {
     featuredResourcesResult,
     recentUsersResult,
     recentRatingsResult,
+    // 截图统计
+    screenshotSuccessResult,
+    screenshotFailedResult,
+    screenshotPendingResult,
+    failedResourcesResult,
   ] = await Promise.all([
     supabase.from('resources').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
@@ -34,6 +43,30 @@ export default async function AdminDashboard() {
       .select('id, overall, created_at, profiles(name, email), resources(name)')
       .order('created_at', { ascending: false })
       .limit(5),
+    // 成功的截图：有 URL 且在 7 天内且无错误
+    supabase
+      .from('resources')
+      .select('*', { count: 'exact', head: true })
+      .not('screenshot_url', 'is', null)
+      .gte('screenshot_updated_at', sevenDaysAgo)
+      .is('screenshot_error', null),
+    // 失败的截图
+    supabase
+      .from('resources')
+      .select('*', { count: 'exact', head: true })
+      .not('screenshot_error', 'is', null),
+    // 待更新的截图：无 URL 或过期（不包括失败的）
+    supabase
+      .from('resources')
+      .select('*', { count: 'exact', head: true })
+      .is('screenshot_error', null)
+      .or(`screenshot_url.is.null,screenshot_updated_at.lt.${sevenDaysAgo}`),
+    // 获取失败资源的 ID（最多 10 个用于批量重截）
+    supabase
+      .from('resources')
+      .select('id')
+      .not('screenshot_error', 'is', null)
+      .limit(10),
   ])
 
   const stats = [
@@ -65,6 +98,14 @@ export default async function AdminDashboard() {
 
   const recentUsers = recentUsersResult.data || []
   const recentRatings = recentRatingsResult.data || []
+
+  // 截图统计
+  const totalResources = resourcesResult.count || 0
+  const successCount = screenshotSuccessResult.count || 0
+  const failedCount = screenshotFailedResult.count || 0
+  const pendingCount = screenshotPendingResult.count || 0
+  const successRate = totalResources > 0 ? Math.round((successCount / totalResources) * 100) : 0
+  const failedResourceIds = (failedResourcesResult.data || []).map((r: { id: string }) => r.id)
 
   const getInitials = (name: string | null, email: string) => {
     if (name) {
@@ -114,6 +155,15 @@ export default async function AdminDashboard() {
           )
         })}
       </div>
+
+      {/* 截图服务概览 */}
+      <ScreenshotServiceCard
+        successCount={successCount}
+        pendingCount={pendingCount}
+        failedCount={failedCount}
+        successRate={successRate}
+        failedResourceIds={failedResourceIds}
+      />
 
       {/* 最近活动 */}
       <div className="grid gap-4 md:grid-cols-2">

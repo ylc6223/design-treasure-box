@@ -86,7 +86,8 @@
 2. WHEN 更新数据库时，THE Screenshot_Service SHALL 同时更新screenshot_updated_at时间戳
 3. WHEN 调用数据库API时，THE Screenshot_Service SHALL 使用Bearer token进行身份验证
 4. WHEN 数据库更新失败时，THE Screenshot_Service SHALL 记录错误但不中断其他资源的处理
-5. THE Screenshot_Service SHALL 通过/api/resources/all端点获取所有资源列表
+5. THE Screenshot_Service SHALL 通过/api/admin/resources/screenshot/needed端点获取需要截图的资源列表（7天增量过滤）
+6. WHEN 截图生成失败时，THE Screenshot_Service SHALL 将错误信息（截断至500字符）更新到screenshot_error字段
 
 ### Requirement 6: 错误处理和容错
 
@@ -135,3 +136,16 @@
 3. WHEN 发生错误时，THE Screenshot_Service SHALL 输出详细的错误日志到控制台
 4. WHEN 批量任务完成时，THE Screenshot_Service SHALL 记录成功和失败的资源数量
 5. THE Screenshot_Service SHALL 为每个处理步骤提供清晰的日志输出
+
+### Requirement 11: 管理后台可观测性
+
+**User Story:** 作为系统管理员，我希望能够在管理后台直观查看截图状态，并能够手动触发截图生成，这样可以及时发现和解决显示异常。
+
+#### Acceptance Criteria
+
+1. THE Admin_UI SHALL 在资源列表中显示截图状态列（已生成/待更新/失败）
+2. WHEN 截图失败时，THE Admin_UI SHALL 显示失败原因的 tooltip
+3. THE Admin_UI SHALL 在每条资源旁提供手动触发截图按钮
+4. WHEN 点击触发按钮时，THE Admin_UI SHALL 调用/api/admin/resources/screenshot/trigger端点
+5. THE Admin_UI SHALL 在仪表板显示截图服务概览卡片（成功率、待更新数、失败数）
+6. THE Admin_UI SHALL 提供批量重截失败资源的功能（限流：单次最多10个）
