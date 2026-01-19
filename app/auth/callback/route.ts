@@ -10,7 +10,9 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const origin = requestUrl.origin;
+
+  // 优先使用环境变量中的 APP_URL，确保在多环境下跳转到正确的域名
+  const origin = process.env.NEXT_PUBLIC_APP_URL || requestUrl.origin;
 
   if (code) {
     const supabase = await createClient();
