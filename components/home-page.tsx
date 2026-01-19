@@ -71,13 +71,6 @@ export function HomePage() {
   }
 
   /**
-   * 处理外部跳转
-   */
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
-  /**
    * 处理分类切换
    */
   const handleCategoryChange = (categoryId: string | undefined) => {
@@ -121,7 +114,7 @@ export function HomePage() {
             latestResources={latestResources}
             isFavorited={isFavorited}
             onFavorite={handleFavorite}
-            onVisit={handleVisit}
+            onVisit={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
           />
         )}
 
@@ -144,7 +137,6 @@ export function HomePage() {
           onLoadMore={loadMore}
           isFavorited={isFavorited}
           onFavorite={handleFavorite}
-          onVisit={handleVisit}
         />
       </div>
     </div>

@@ -83,12 +83,12 @@ export function useSubmitRating() {
   
   return useMutation({
     mutationFn: submitRating,
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       // 使评分查询缓存失效，触发重新获取
       queryClient.invalidateQueries({
         queryKey: ['ratings', variables.resourceId],
       })
-      
+
       // 使资源列表缓存失效（因为聚合评分可能改变）
       queryClient.invalidateQueries({
         queryKey: ['resources'],

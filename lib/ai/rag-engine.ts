@@ -296,7 +296,7 @@ ${context}
   /**
    * 构建澄清消息（不再需要，因为前端会处理步骤式显示）
    */
-  private buildClarificationMessage(questions: Array<{
+  private buildClarificationMessage(_questions: Array<{
     question: string;
     options: string[];
     aspect: 'category' | 'style' | 'audience' | 'purpose';

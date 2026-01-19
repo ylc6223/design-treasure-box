@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Package, Users, Star, TrendingUp, Camera } from 'lucide-react'
+import { Package, Users, Star, TrendingUp } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { ScreenshotServiceCard } from '@/components/admin/screenshot-service-card'

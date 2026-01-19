@@ -3,7 +3,13 @@
  * 改造：解耦数据库，通过 Next.js API 进行任务获取和状态回填
  */
 
+// @ts-ignore - Cloudflare-specific module
 import puppeteer from '@cloudflare/puppeteer'
+
+// Cloudflare-specific types
+type R2Bucket = any;
+type ScheduledEvent = any;
+type ExecutionContext = any;
 
 // 环境接口定义
 interface Env {
@@ -22,7 +28,7 @@ interface Resource {
 }
 
 // 批处理配置
-const BATCH_SIZE = 10 // 由 Next.js API 控制返回数量，这里设置一个上限安全值
+// const BATCH_SIZE = 10 // 由 Next.js API 控制返回数量，这里设置一个上限安全值
 const SCREENSHOT_TIMEOUT = 15000 // 15秒超时
 const VIEWPORT_CONFIG = { width: 1200, height: 800 }
 const JPEG_QUALITY = 80

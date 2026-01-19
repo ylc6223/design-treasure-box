@@ -10,7 +10,7 @@
 import { createClient } from '@supabase/supabase-js'
 import * as fs from 'fs'
 import * as path from 'path'
-import type { Database } from '../types/database'
+import type { Database } from '../../types/database'
 
 // 手动加载 .env.local
 const envPath = path.join(__dirname, '../.env.local')

@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
 import type { Resource } from '@/types';
 import type { ResourceRecommendation } from '@/types/ai-chat';

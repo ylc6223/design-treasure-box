@@ -30,11 +30,12 @@ export function BasicHeaderExample() {
  * 受控示例：从 URL 参数读取激活分类
  */
 export function ControlledHeaderExample() {
+  const { data: categories = [] } = useCategories()
   const [activeCategory, setActiveCategory] = useState<string>('')
 
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId)
-    
+
     // 更新 URL（实际项目中使用 Next.js router）
     if (categoryId) {
       window.history.pushState({}, '', `/category/${categoryId}`)
@@ -56,6 +57,7 @@ export function ControlledHeaderExample() {
  * 简单示例：不带分类切换回调
  */
 export function SimpleHeaderExample() {
+  const { data: categories = [] } = useCategories()
   return <Header categories={categories} />
 }
 
@@ -63,6 +65,7 @@ export function SimpleHeaderExample() {
  * 自定义样式示例
  */
 export function CustomStyledHeaderExample() {
+  const { data: categories = [] } = useCategories()
   const [activeCategory, setActiveCategory] = useState<string>('')
 
   return (

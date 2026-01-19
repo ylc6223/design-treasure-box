@@ -16,10 +16,6 @@ export function BasicMasonryGridExample() {
   const { data: resources = [] } = useResources()
   const { isFavorited, addFavorite, removeFavorite } = useFavorites()
 
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
       removeFavorite(id)
@@ -33,7 +29,6 @@ export function BasicMasonryGridExample() {
       resources={resources}
       isFavorited={isFavorited}
       onFavorite={handleFavorite}
-      onVisit={handleVisit}
     />
   )
 }
@@ -47,10 +42,6 @@ export function FeaturedMasonryGridExample() {
 
   // 只显示精选资源
   const featuredResources = resources.filter((r) => r.isFeatured)
-
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
 
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
@@ -73,7 +64,6 @@ export function FeaturedMasonryGridExample() {
         resources={featuredResources}
         isFavorited={isFavorited}
         onFavorite={handleFavorite}
-        onVisit={handleVisit}
       />
     </div>
   )
@@ -89,10 +79,6 @@ export function CategoryMasonryGridExample({ categoryId }: { categoryId: string 
   // 按分类筛选
   const categoryResources = resources.filter((r) => r.categoryId === categoryId)
 
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
       removeFavorite(id)
@@ -106,7 +92,6 @@ export function CategoryMasonryGridExample({ categoryId }: { categoryId: string 
       resources={categoryResources}
       isFavorited={isFavorited}
       onFavorite={handleFavorite}
-      onVisit={handleVisit}
       className="mt-8"
     />
   )
@@ -121,10 +106,6 @@ export function FavoritesMasonryGridExample() {
 
   // 只显示收藏的资源
   const favoriteResources = resources.filter((r) => isFavorited(r.id))
-
-  const handleVisit = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
 
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
@@ -160,7 +141,6 @@ export function FavoritesMasonryGridExample() {
         resources={favoriteResources}
         isFavorited={isFavorited}
         onFavorite={handleFavorite}
-        onVisit={handleVisit}
       />
     </div>
   )

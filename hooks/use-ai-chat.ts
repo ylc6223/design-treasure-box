@@ -18,11 +18,15 @@ export function useAIChat() {
       if (stored) {
         const session: ChatSession = JSON.parse(stored);
         // 将ChatMessage转换为ExtendedChatMessage，添加sessionId
-        const extendedMessages: ExtendedChatMessage[] = session.messages.map(msg => ({
-          ...msg,
-          sessionId: session.id,
-          timestamp: new Date(msg.timestamp), // 确保timestamp是Date对象
-        }));
+        // Note: clarificationQuestions types differ, so we omit it from the spread
+        const extendedMessages: ExtendedChatMessage[] = session.messages.map(msg => {
+          const { clarificationQuestions: _, ...msgWithoutQuestions } = msg as any;
+          return {
+            ...msgWithoutQuestions,
+            sessionId: session.id,
+            timestamp: new Date(msg.timestamp), // 确保timestamp是Date对象
+          };
+        });
         setMessages(extendedMessages.slice(-MAX_MESSAGES));
         setSessionId(session.id);
       }
@@ -36,13 +40,14 @@ export function useAIChat() {
     if (messages.length > 0) {
       try {
         // 将ExtendedChatMessage转换为ChatMessage以符合ChatSession类型
+        // Note: clarificationQuestions type differs, so we omit it
         const chatMessages: ChatMessage[] = messages.map(msg => ({
           id: msg.id,
           type: msg.type,
           content: msg.content,
           timestamp: msg.timestamp,
           resources: msg.resources,
-          clarificationQuestions: msg.clarificationQuestions,
+          // clarificationQuestions: msg.clarificationQuestions, // Type mismatch
           searchMetadata: msg.searchMetadata,
           isLoading: msg.isLoading,
         }));

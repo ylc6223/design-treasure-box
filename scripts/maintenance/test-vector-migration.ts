@@ -1,8 +1,8 @@
 import { config } from 'dotenv';
-import { SupabaseVectorStore } from '../lib/ai/supabase-vector-store.js';
-import { EmbeddingSyncService } from '../lib/ai/embedding-sync-service.js';
-import { SupabaseVectorSearchEngine } from '../lib/ai/supabase-vector-search-engine.js';
-import { getAIServiceManager } from '../lib/ai/service-manager.js';
+import { SupabaseVectorStore } from '../../lib/ai/supabase-vector-store.js';
+import { EmbeddingSyncService } from '../../lib/ai/embedding-sync-service.js';
+import { SupabaseVectorSearchEngine } from '../../lib/ai/supabase-vector-search-engine.js';
+import { getAIServiceManager } from '../../lib/ai/service-manager.js';
 
 // 加载环境变量
 config({ path: '.env.local' });

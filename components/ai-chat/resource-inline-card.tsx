@@ -81,7 +81,7 @@ export function ResourceInlineCard({
         <div className="relative w-12 h-12 rounded-md overflow-hidden shrink-0 bg-muted">
           {!imageError ? (
             <Image
-              src={resource.screenshot}
+              src={resource.screenshotUrl || ''}
               alt={resource.name}
               fill
               className="object-cover"
@@ -129,7 +129,7 @@ export function ResourceInlineCard({
             <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
               {!imageError ? (
                 <Image
-                  src={resource.screenshot}
+                  src={resource.screenshotUrl || ''}
                   alt={resource.name}
                   fill
                   className="object-cover"

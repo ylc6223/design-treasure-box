@@ -8,11 +8,11 @@ import { requireAdmin } from '@/lib/supabase/auth'
  * 获取单个分类详情
  */
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const supabase = await createClient()
 
     const { data: category, error } = await supabase
@@ -54,20 +54,20 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 验证管理员权限
     await requireAdmin()
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const data = UpdateCategorySchema.parse(body)
 
     const supabase = await createClient()
 
     // 更新分类
-    const { data: category, error } = await supabase
+    const { data: category, error } = await (supabase as any)
       .from('categories')
       .update(data)
       .eq('id', id)
@@ -121,14 +121,14 @@ export async function PUT(
  * 删除分类 (仅管理员)
  */
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 验证管理员权限
     await requireAdmin()
 
-    const { id } = params
+    const { id } = await params
     const supabase = await createClient()
 
     // 检查是否有资源使用此分类

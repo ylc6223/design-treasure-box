@@ -36,7 +36,7 @@ export async function PATCH(
         }
 
         // 构建更新对象
-        const updateData: Record<string, unknown> = {}
+        const updateData: any = {}
 
         if (screenshotUrl) {
             updateData.screenshot_url = screenshotUrl
@@ -53,7 +53,7 @@ export async function PATCH(
         }
 
         // 更新资源的截图信息
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('resources')
             .update(updateData)
             .eq('id', id)

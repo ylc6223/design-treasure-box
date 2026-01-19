@@ -147,7 +147,7 @@ export class EmbeddingSyncService {
   /**
    * 检查资源是否需要向量更新
    */
-  private async needsVectorUpdate(resource: Resource): Promise<boolean> {
+  private async needsVectorUpdate(_resource: Resource): Promise<boolean> {
     // 简化版：总是返回 true 进行更新
     // 在生产环境中，这里应该检查资源的更新时间
     return true;

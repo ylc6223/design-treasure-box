@@ -57,7 +57,7 @@ interface JsonResource {
 }
 
 // 分类数据接口
-interface JsonCategory {
+export interface JsonCategory {
   id: string
   name: string
   icon: string
@@ -92,7 +92,7 @@ async function migrateResources() {
     }))
 
     // 使用 upsert 插入数据（如果已存在则更新）
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
       .from('resources')
       .upsert(dbResources, {
         onConflict: 'id',

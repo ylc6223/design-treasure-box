@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { Heart, ExternalLink, Sparkles, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -69,8 +68,7 @@ export function ResourcePreviewCard({
           )}
         >
           <ResourceThumbnail
-            screenshotUrl={resource.screenshotUrl}
-            screenshotStatus={resource.screenshotStatus}
+            screenshotUrl={resource.screenshotUrl ?? undefined}
             name={resource.name}
           />
 
@@ -104,7 +102,7 @@ export function ResourcePreviewCard({
             </h4>
             <RatingStars
               rating={resource.rating.overall}
-              size={isCompact ? 'sm' : 'default'}
+              size={isCompact ? 'sm' : 'md'}
               showValue
             />
           </div>

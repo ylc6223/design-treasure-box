@@ -5,16 +5,10 @@
 
 import type { Resource } from '@/types';
 import type { SearchFilters, SearchResult } from '@/types/ai-chat';
-import type { SupabaseVectorSearchEngine } from './supabase-vector-search-engine';
+import type { SupabaseVectorSearchEngine, VectorMatch } from './supabase-vector-search-engine';
 
-/**
- * 向量匹配结果接口（保持兼容性）
- */
-export interface VectorMatch {
-  resourceId: string;
-  similarity: number;
-  resource: Resource;
-}
+// Re-export VectorMatch for convenience
+export type { VectorMatch };
 
 /**
  * 混合搜索选项

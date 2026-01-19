@@ -35,7 +35,7 @@ const exampleResource: Resource = {
   name: 'Coolors',
   url: 'https://coolors.co',
   description: '快速生成配色方案的在线工具，支持导出多种格式',
-  screenshot: 'https://example.com/screenshots/coolors.jpg',
+  screenshotUrl: 'https://example.com/screenshots/coolors.jpg',
   categoryId: 'color',
   tags: ['配色', '工具', '免费', '在线'],
   rating: exampleRating,

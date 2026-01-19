@@ -73,10 +73,8 @@ export function UserTable() {
       setTotalPages(data.pagination.totalPages)
     } catch (error) {
       console.error('Failed to load users:', error)
-      toast({
-        title: '加载失败',
+      toast.error('加载失败', {
         description: '无法加载用户列表',
-        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -99,8 +97,7 @@ export function UserTable() {
         throw new Error('Failed to update role')
       }
 
-      toast({
-        title: '更新成功',
+      toast.success('更新成功', {
         description: `用户角色已更新为 ${newRole === 'ADMIN' ? '管理员' : '普通用户'}`,
       })
 
@@ -108,10 +105,8 @@ export function UserTable() {
       loadUsers()
     } catch (error) {
       console.error('Failed to update role:', error)
-      toast({
-        title: '更新失败',
+      toast.error('更新失败', {
         description: '无法更新用户角色',
-        variant: 'destructive',
       })
     } finally {
       setUpdatingRole(null)

@@ -46,7 +46,7 @@ const navItems = [
   },
 ]
 
-export function AdminNav({ user, profile }: AdminNavProps) {
+export function AdminNav({ user: _user, profile }: AdminNavProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)

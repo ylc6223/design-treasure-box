@@ -103,8 +103,7 @@ export default function ResourceDetailPage({ params }: ResourceDetailPageProps) 
               {/* 资源截图 */}
               <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
                 <ResourceThumbnail
-                  screenshotUrl={resource.screenshotUrl}
-                  screenshotStatus={resource.screenshotStatus}
+                  screenshotUrl={resource.screenshotUrl ?? undefined}
                   name={resource.name}
                   priority
                 />

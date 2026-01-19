@@ -44,18 +44,28 @@ export class SupabaseVectorStore {
     } = options;
 
     try {
-      const { data, error } = await this.client.rpc('match_resources', {
+      const rpcParams: Record<string, unknown> = {
         query_embedding: queryEmbedding,
         match_threshold: minSimilarity,
         match_count: limit,
-        category_filter: categoryFilter || null,
-        min_rating: minRating || null,
-      });
+      };
+
+      // Only add optional filters if they have values
+      if (categoryFilter && categoryFilter.length > 0) {
+        rpcParams.category_filter = categoryFilter;
+      }
+      if (minRating !== undefined) {
+        rpcParams.min_rating = minRating;
+      }
+
+      // @ts-ignore - Supabase RPC type inference issue
+      const { data, error } = await this.client.rpc('match_resources', rpcParams);
 
       if (error) {
         throw new Error(`Vector search failed: ${error.message}`);
       }
 
+      // @ts-ignore - data type inference issue
       return data.map(row => ({
         resourceId: row.resource_id,
         similarity: row.similarity,
@@ -79,6 +89,7 @@ export class SupabaseVectorStore {
     try {
       const { error } = await this.client
         .from('resource_embeddings')
+        // @ts-ignore - Supabase type inference issue
         .upsert({
           resource_id: resourceId,
           embedding,
@@ -116,6 +127,7 @@ export class SupabaseVectorStore {
 
       const { error } = await this.client
         .from('resource_embeddings')
+        // @ts-ignore - Supabase type inference issue
         .upsert(records);
 
       if (error) {
@@ -172,10 +184,12 @@ export class SupabaseVectorStore {
         throw new Error(`Stats last updated failed: ${lastUpdatedError.message}`);
       }
 
+      const data = lastUpdatedData as any;
+
       return {
         totalEmbeddings: count || 0,
-        lastUpdated: lastUpdatedData?.[0]?.updated_at 
-          ? new Date(lastUpdatedData[0].updated_at) 
+        lastUpdated: data?.[0]?.updated_at
+          ? new Date(data[0].updated_at)
           : null,
       };
     } catch (error) {
@@ -189,7 +203,7 @@ export class SupabaseVectorStore {
    */
   async healthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; message: string }> {
     try {
-      const { data, error } = await this.client
+      const { data: _data, error } = await this.client
         .from('resource_embeddings')
         .select('count')
         .limit(1);

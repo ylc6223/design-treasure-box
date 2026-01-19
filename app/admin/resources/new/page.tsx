@@ -26,8 +26,7 @@ export default function NewResourcePage() {
         throw new Error(error.error || 'Failed to create resource')
       }
 
-      toast({
-        title: '创建成功',
+      toast.success('创建成功', {
         description: '资源已成功创建',
       })
 
@@ -35,10 +34,8 @@ export default function NewResourcePage() {
       router.refresh()
     } catch (error) {
       console.error('Failed to create resource:', error)
-      toast({
-        title: '创建失败',
+      toast.error('创建失败', {
         description: error instanceof Error ? error.message : '无法创建资源',
-        variant: 'destructive',
       })
       throw error
     }

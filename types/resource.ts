@@ -30,8 +30,8 @@ export const CreateResourceSchema = z.object({
   categoryId: z.string().min(1, '请选择分类'),
   tags: z.array(z.string()).min(1, '至少添加一个标签').max(10, '标签不能超过 10 个'),
   curatorNote: z.string().min(1, '策展人笔记不能为空').max(1000, '策展人笔记不能超过 1000 字符'),
-  isFeatured: z.boolean().default(false),
   curatorRating: CuratorRatingSchema,
+  isFeatured: z.boolean(),
 })
 
 // 更新资源请求 Schema（所有字段可选）

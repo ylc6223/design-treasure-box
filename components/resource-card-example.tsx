@@ -19,7 +19,7 @@ export function ResourceCardExample() {
     name: 'Coolors',
     url: 'https://coolors.co',
     description: '快速生成配色方案的在线工具，支持导出多种格式，可以锁定颜色进行调整',
-    screenshot: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800',
+    screenshotUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800',
     categoryId: 'color',
     tags: ['配色', '工具', '免费', '在线'],
     rating: {

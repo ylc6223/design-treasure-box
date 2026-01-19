@@ -9,15 +9,19 @@ import { ResourceForm } from '@/components/admin/resource-form'
 import { toast } from 'sonner'
 import type { CreateResourceRequest, ResourceResponse } from '@/types/resource'
 
-export default function EditResourcePage({ params }: { params: { id: string } }) {
+export default function EditResourcePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const [resource, setResource] = useState<ResourceResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null)
 
   useEffect(() => {
     const loadResource = async () => {
+      const { id } = await params
+      setResolvedParams({ id })
+
       try {
-        const response = await fetch(`/api/admin/resources/${params.id}`)
+        const response = await fetch(`/api/admin/resources/${id}`)
         if (!response.ok) {
           throw new Error('Failed to load resource')
         }
@@ -25,10 +29,8 @@ export default function EditResourcePage({ params }: { params: { id: string } })
         setResource(data)
       } catch (error) {
         console.error('Failed to load resource:', error)
-        toast({
-          title: '加载失败',
+        toast.error('加载失败', {
           description: '无法加载资源信息',
-          variant: 'destructive',
         })
         router.push('/admin/resources')
       } finally {
@@ -37,11 +39,13 @@ export default function EditResourcePage({ params }: { params: { id: string } })
     }
 
     loadResource()
-  }, [params.id, router, toast])
+  }, [params, router])
 
   const handleSubmit = async (data: CreateResourceRequest) => {
+    if (!resolvedParams) return
+
     try {
-      const response = await fetch(`/api/admin/resources/${params.id}`, {
+      const response = await fetch(`/api/admin/resources/${resolvedParams.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -54,8 +58,7 @@ export default function EditResourcePage({ params }: { params: { id: string } })
         throw new Error(error.error || 'Failed to update resource')
       }
 
-      toast({
-        title: '保存成功',
+      toast.success('保存成功', {
         description: '资源已成功更新',
       })
 
@@ -63,10 +66,8 @@ export default function EditResourcePage({ params }: { params: { id: string } })
       router.refresh()
     } catch (error) {
       console.error('Failed to update resource:', error)
-      toast({
-        title: '保存失败',
+      toast.error('保存失败', {
         description: error instanceof Error ? error.message : '无法更新资源',
-        variant: 'destructive',
       })
       throw error
     }

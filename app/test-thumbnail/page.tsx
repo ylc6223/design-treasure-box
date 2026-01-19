@@ -32,7 +32,6 @@ export default function TestThumbnailPage() {
             <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
               <ResourceThumbnail
                 screenshotUrl={item.screenshotUrl}
-                screenshotStatus={item.screenshotStatus}
                 name={item.name}
               />
             </div>

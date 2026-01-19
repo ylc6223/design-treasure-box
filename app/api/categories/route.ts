@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 创建分类
-    const { data: category, error } = await supabase
+    const { data: category, error } = await (supabase as any)
       .from('categories')
       .insert(data)
       .select()

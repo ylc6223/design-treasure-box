@@ -8,7 +8,7 @@
 import { config } from 'dotenv'
 import { resolve } from 'path'
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../types/database'
+import type { Database } from '../../types/database'
 
 // 加载环境变量
 config({ path: resolve(process.cwd(), '.env.local') })
@@ -135,14 +135,15 @@ async function testDataIntegrity() {
     } else if (!data) {
       logTest('Resources 数据结构正确', false, '没有数据')
     } else {
-      const hasRequiredFields = 
-        data.id && 
-        data.name && 
-        data.url && 
-        data.category_id && 
-        data.curator_rating
-      
-      logTest('Resources 数据结构正确', hasRequiredFields, 
+      const resource = data as any;
+      const hasRequiredFields =
+        resource.id &&
+        resource.name &&
+        resource.url &&
+        resource.category_id &&
+        resource.curator_rating
+
+      logTest('Resources 数据结构正确', hasRequiredFields,
         hasRequiredFields ? undefined : '缺少必填字段')
     }
   } catch (error) {
@@ -162,9 +163,10 @@ async function testAPIEndpoints() {
       .select('id')
       .limit(1)
       .single()
-    
+
     if (resources) {
-      const response = await fetch(`${baseUrl}/api/ratings/${resources.id}`)
+      const resource = resources as any;
+      const response = await fetch(`${baseUrl}/api/ratings/${resource.id}`)
       const passed = response.ok
       logTest('评分查询 API', passed, passed ? undefined : `状态码: ${response.status}`)
     } else {
