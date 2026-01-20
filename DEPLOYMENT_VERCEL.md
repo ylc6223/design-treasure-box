@@ -282,14 +282,14 @@ Vercel 提供内置监控工具：
 
 ### Q4: 截图服务无法调用
 
-**原因：** Worker 或 API 配置问题
+**原因：** GitHub Actions 或 API 配置问题
 
 **解决：**
 
-1. 验证 `WORKER_API_URL` 是否正确
-2. 检查 `DATABASE_API_KEY` 是否一致
-3. 查看 Worker 日志确认请求是否到达
-4. 检查 API 路由的 CORS 配置
+1. 验证 `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME` 和 `GITHUB_TOKEN` 是否正确配置
+2. 检查 `DATABASE_API_KEY` 是否一致（两端需同步）
+3. 查看 GitHub Actions 运行日志确认请求是否到达
+4. 检查 API 路由是否能正常访问
 
 ### Q5: 本地开发环境如何设置？
 
