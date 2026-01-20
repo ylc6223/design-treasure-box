@@ -3,6 +3,7 @@
 ## 问题说明
 
 当前遇到的错误：
+
 ```
 "insert or update on table \"ratings\" violates foreign key constraint \"ratings_resource_id_fkey\""
 ```
@@ -36,7 +37,7 @@ Service Role Key 可以绕过 RLS 策略，直接插入数据。
 编辑 `.env.local`，添加：
 
 ```env
-SUPABASE_SERVICE_ROLE_KEY=你的service_role_key
+SUPABASE_SECRET_KEY=你的service_role_key
 ```
 
 #### 3. 运行迁移脚本
@@ -91,6 +92,7 @@ SQL 文件已经生成好了，直接使用即可。
 4. 点击 **Run** 执行
 
 SQL 会自动：
+
 - 临时禁用 RLS
 - 插入 32 个资源（使用 `ON CONFLICT` 避免重复）
 - 重新启用 RLS
