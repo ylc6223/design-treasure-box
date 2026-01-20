@@ -28,8 +28,8 @@ interface Resource {
 }
 
 // 批处理配置
-// const BATCH_SIZE = 10 // 由 Next.js API 控制返回数量，这里设置一个上限安全值
-const SCREENSHOT_TIMEOUT = 15000 // 15秒超时
+const SCREENSHOT_TIMEOUT = 30000 // 增加到 30秒以应对慢速网站
+const WAIT_AFTER_LOAD = 3000 // 增加等待时间确保渲染完成
 const VIEWPORT_CONFIG = { width: 1200, height: 800 }
 const JPEG_QUALITY = 80
 
@@ -38,6 +38,11 @@ export default {
    * 定时任务处理器
    */
   async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+    // 增加随机抖动 (0-30秒)，避免多实例同时挤占 Cloudflare 浏览器启动配额
+    const jitter = Math.floor(Math.random() * 30000);
+    console.log(`⏳ 等待随机抖动 ${jitter}ms 后启动...`);
+    await new Promise(resolve => setTimeout(resolve, jitter));
+
     console.log('🚀 开始批量截图处理任务...')
     let browser = null
 
@@ -96,6 +101,16 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url)
     const path = url.pathname
+
+    // 🛡️ 安全检查：拦截所有非授权请求，防止机器人扫描消耗浏览器配额
+    // 仅健康检查 /health 允许公开访问
+    const authHeader = request.headers.get('Authorization');
+    const expectedAuth = `Bearer ${env.DATABASE_API_KEY}`;
+
+    if (path !== '/health' && authHeader !== expectedAuth) {
+      console.warn(`🛡️ 拦截到未授权访问: ${path} 来自: ${request.headers.get('CF-Connecting-IP')}`);
+      return new Response('Unauthorized Access Blocked', { status: 401 });
+    }
 
     try {
       // 根路径
@@ -173,7 +188,7 @@ async function processResource(
       `
     })
 
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, WAIT_AFTER_LOAD))
 
     // 截图
     const screenshot = await page.screenshot({
