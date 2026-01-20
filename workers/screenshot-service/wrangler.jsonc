@@ -1,9 +1,9 @@
 {
   "name": "design-treasure-screenshot",
   "main": "src/index.ts",
-  "compatibility_date": "2025-09-27",
+  "compatibility_date": "2026-01-20",
   "compatibility_flags": [
-    "nodejs_compat_v2",
+    "nodejs_compat",
     "enable_nodejs_process_v2",
     "nodejs_compat_populate_process_env"
   ],
@@ -24,6 +24,12 @@
   },
   "env": {
     "production": {
+      "compatibility_date": "2026-01-20",
+      "compatibility_flags": [
+        "nodejs_compat",
+        "enable_nodejs_process_v2",
+        "nodejs_compat_populate_process_env"
+      ],
       // 必须在这里重复定义 Bindings，因为它们不会被继承
       "browser": {
         "binding": "MYBROWSER"
@@ -39,11 +45,26 @@
         "API_BASE_URL": "https://design.thepexels.top",
         "DATABASE_API_KEY": "sb_secret_SP7zzAJrC89EBMq47GK29g_Uf6oyp20"
       },
-      "triggers": [
-        {
-          "cron": "*/5 * * * *"
-        }
-      ]
+      "triggers": {
+        "crons": [
+          "*/5 * * * *"
+        ]
+      }
+    }
+  },
+  "observability": {
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false,
+      "persist": true,
+      "head_sampling_rate": 1
     }
   }
 }

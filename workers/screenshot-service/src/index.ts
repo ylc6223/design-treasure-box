@@ -55,14 +55,16 @@ export default {
         throw new Error(`Failed to fetch tasks: ${neededResponse.status} ${await neededResponse.text()}`)
       }
 
-      const { resources } = await neededResponse.json() as { resources: Resource[] }
+      const { resources: allResources } = await neededResponse.json() as { resources: Resource[] }
 
-      if (!resources || resources.length === 0) {
+      if (!allResources || allResources.length === 0) {
         console.log('✅ 没有需要处理的资源')
         return
       }
 
-      console.log(`📋 发现 ${resources.length} 个资源待处理`)
+      // 增加防御性截断：单次只处理前 5 个，防止超时和 CPU 超限
+      const resources = allResources.slice(0, 5)
+      console.log(`📋 发现 ${allResources.length} 个待处理任务，本批次处理前 ${resources.length} 个`)
 
       // 第二步：启动浏览器
       console.log('🌐 正在启动浏览器...')
@@ -251,7 +253,7 @@ async function handleImageRequest(request: Request, env: Env): Promise<Response>
     if (ifNoneMatch === object.etag) return new Response(null, { status: 304, headers })
 
     return new Response(object.body, { headers })
-  } catch (error) {
+  } catch {
     return new Response('Error', { status: 500 })
   }
 }
