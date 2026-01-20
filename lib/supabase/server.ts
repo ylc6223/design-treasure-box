@@ -2,6 +2,7 @@
 // Supabase 客户端（服务器端）
 
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import type { Database } from '@/types/database';
 
@@ -113,20 +114,18 @@ export async function createClient() {
  * 警告：仅在受信任的服务端环境中使用，且必须配合数据库 API Key 或其他严格鉴权。
  */
 export async function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
   if (!supabaseUrl || !supabaseSecretKey) {
+    console.error('❌ Missing Supabase environment variables: ', {
+      url: !!supabaseUrl,
+      key: !!supabaseSecretKey,
+    });
     throw new Error('Missing Supabase environment variables');
   }
 
-  return createServerClient<Database>(supabaseUrl, supabaseSecretKey, {
-    cookies: {
-      getAll() {
-        return [];
-      },
-      setAll() {},
-    },
+  return createSupabaseClient<Database>(supabaseUrl, supabaseSecretKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
