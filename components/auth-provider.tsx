@@ -3,7 +3,10 @@
 import { useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/hooks/use-auth-store';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+
+// ================== 类型定义 ==================
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -12,49 +15,151 @@ interface AuthProviderProps {
   initialProfile?: Profile | null;
 }
 
+// ================== 常量 ==================
+
+/** 认证初始化超时时间（毫秒） */
+const AUTH_TIMEOUT_MS = 5000;
+
+/** 需要处理的认证事件类型 */
+type RelevantAuthEvent = 'INITIAL_SESSION' | 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED';
+
+/** 可以复用SSR数据的事件类型 */
+const SSR_REUSABLE_EVENTS: readonly RelevantAuthEvent[] = ['INITIAL_SESSION', 'SIGNED_IN'];
+
+// ================== 辅助函数 ==================
+
+/**
+ * 判断事件是否需要处理
+ */
+function isRelevantAuthEvent(event: string): event is RelevantAuthEvent {
+  return ['INITIAL_SESSION', 'SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event);
+}
+
+/**
+ * 判断是否应使用SSR提供的profile
+ * 封装复杂的条件判断，提升可读性
+ */
+function shouldUseSSRProfile(
+  event: string,
+  initialProfile: Profile | null | undefined,
+  hasSession: boolean
+): boolean {
+  return SSR_REUSABLE_EVENTS.includes(event as RelevantAuthEvent) && !!initialProfile && hasSession;
+}
+
+/**
+ * 从数据库获取用户profile
+ * 将重复的profile获取逻辑抽取为单一函数
+ */
+async function fetchUserProfile(
+  supabase: SupabaseClient<Database>,
+  userId: string
+): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching profile:', error.message);
+    return null;
+  }
+  return data;
+}
+
+// ================== 组件 ==================
+
+/**
+ * 认证状态管理Provider
+ *
+ * 职责：
+ * 1. 同步SSR获取的用户数据到客户端Store
+ * 2. 监听Supabase认证事件并更新状态
+ * 3. 提供超时保护，防止loading状态卡死
+ */
 export function AuthProvider({ children, initialProfile }: AuthProviderProps) {
-  // 确保 Supabase 客户端只创建一次，避免 useEffect 重复触发
   const supabase = useMemo(() => createClient(), []);
 
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const setLoading = useAuthStore((state) => state.setLoading);
 
+  // Effect 1: SSR数据立即同步
+  // 将服务端已获取的profile同步到客户端Store，减少loading时间
   useEffect(() => {
-    let mounted = true;
-
-    // 如果 SSR 已经拿到了 profile，先同步到 Client Store，减少 Loading 时间
     if (initialProfile) {
       console.log('Hydrating auth store with initial profile:', initialProfile.email);
       setAuth({ id: initialProfile.id, email: initialProfile.email }, initialProfile);
       setLoading(false);
     }
+  }, [initialProfile, setAuth, setLoading]);
 
-    // 安全：无论 Auth 状态如何，5秒后强制关闭 Loading
-    // 这是一个备用方案，防止某些极端情况下 onAuthStateChange 不触发
+  // Effect 2: 认证状态管理
+  // 处理认证初始化、事件监听和超时保护
+  useEffect(() => {
+    let mounted = true;
+
+    // 超时保护：防止某些极端情况下loading状态卡死
     const fallbackTimeout = setTimeout(() => {
       if (mounted) {
         console.warn('Auth initialization timeout - forcing loading to false');
         setLoading(false);
       }
-    }, 5000);
+    }, AUTH_TIMEOUT_MS);
 
+    /**
+     * 处理认证事件
+     */
+    const handleAuthEvent = async (
+      event: RelevantAuthEvent,
+      session: { user: { id: string; email?: string } } | null
+    ) => {
+      // 优先使用SSR数据，避免不必要的数据库查询
+      if (shouldUseSSRProfile(event, initialProfile, !!session?.user)) {
+        console.log(`Using initial profile from SSR for ${event}`);
+        setAuth({ id: session!.user.id, email: session!.user.email }, initialProfile!);
+        setLoading(false);
+        clearTimeout(fallbackTimeout);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        if (session?.user) {
+          const profile = await fetchUserProfile(supabase, session.user.id);
+          if (profile) {
+            setAuth({ id: session.user.id, email: session.user.email }, profile);
+          }
+        } else {
+          clearAuth();
+        }
+      } catch (err) {
+        console.error('AuthProvider callback error:', err);
+        clearAuth();
+      } finally {
+        setLoading(false);
+        clearTimeout(fallbackTimeout);
+      }
+    };
+
+    // 主动初始化：处理页面刷新时的session恢复
     const initializeAuth = async () => {
       console.log('Initializing Auth context...');
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        if (mounted && session?.user) {
-          console.log('Session found on mount:', session.user.email);
-          const { data: profile } = await (supabase as any)
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle();
 
-          if (profile) {
-            setAuth({ id: session.user.id, email: session.user.email }, profile);
+        if (mounted && session?.user) {
+          // 优先使用SSR提供的profile，避免不必要的数据库查询
+          if (initialProfile) {
+            setAuth({ id: session.user.id, email: session.user.email }, initialProfile);
+          } else {
+            const profile = await fetchUserProfile(supabase, session.user.id);
+            if (profile) {
+              setAuth({ id: session.user.id, email: session.user.email }, profile);
+            }
           }
         }
       } catch (err) {
@@ -67,63 +172,16 @@ export function AuthProvider({ children, initialProfile }: AuthProviderProps) {
       }
     };
 
-    // 1. 先进行一次主动初始化
     initializeAuth();
 
-    // 2. 监听后续状态变化
+    // 监听认证状态变化
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
 
-      // 处理认证状态变化
-      // INITIAL_SESSION: 页面加载时已有session（包括OAuth回调后的session）
-      // SIGNED_IN: 用户主动登录
-      // SIGNED_OUT: 用户登出
-      // USER_UPDATED: 用户信息更新
-      if (
-        event === 'INITIAL_SESSION' ||
-        event === 'SIGNED_IN' ||
-        event === 'SIGNED_OUT' ||
-        event === 'USER_UPDATED'
-      ) {
-        // 对于INITIAL_SESSION和SIGNED_IN，如果已经有initialProfile且session存在，优先使用SSR数据
-        // 这避免了重复的数据库查询，特别是在OAuth回调场景下
-        if (
-          (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') &&
-          initialProfile &&
-          session?.user
-        ) {
-          console.log(`Using initial profile from SSR for ${event}`);
-          setAuth({ id: session.user.id, email: session.user.email }, initialProfile);
-          setLoading(false);
-          clearTimeout(fallbackTimeout);
-          return;
-        }
-
-        setLoading(true);
-        try {
-          if (session?.user) {
-            const { data: profile, error } = await (supabase as any)
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .maybeSingle();
-
-            if (error) console.error('Error fetching profile:', error.message);
-            if (profile) {
-              setAuth({ id: session.user.id, email: session.user.email }, profile);
-            }
-          } else {
-            clearAuth();
-          }
-        } catch (err) {
-          console.error('AuthProvider callback error:', err);
-          clearAuth();
-        } finally {
-          setLoading(false);
-          clearTimeout(fallbackTimeout);
-        }
+      if (isRelevantAuthEvent(event)) {
+        await handleAuthEvent(event, session);
       }
     });
 
