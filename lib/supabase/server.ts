@@ -106,3 +106,30 @@ export async function createClient() {
     }
   );
 }
+
+/**
+ * 创建 Supabase 管理员客户端（绕过 RLS）
+ *
+ * 警告：仅在受信任的服务端环境中使用，且必须配合数据库 API Key 或其他严格鉴权。
+ */
+export async function createAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
+
+  if (!supabaseUrl || !supabaseSecretKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createServerClient<Database>(supabaseUrl, supabaseSecretKey, {
+    cookies: {
+      getAll() {
+        return [];
+      },
+      setAll() {},
+    },
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
