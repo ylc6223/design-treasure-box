@@ -33,7 +33,7 @@ window.__SUPABASE_CONFIG__ = {
           }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <Providers initialProfile={user?.profile ?? null}>
           <ThemeProvider
             attribute="class"
