@@ -48,16 +48,39 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     // 更新资源的截图信息
-    const { error } = await (supabase as any).from('resources').update(updateData).eq('id', id);
+    console.log(`[Screenshot API] Updating resource ${id} with:`, updateData);
+
+    // 使用 select() 确保我们能拿到更新后的数据，从而验证更新是否真的发生了
+    const { data, error } = await (supabase as any)
+      .from('resources')
+      .update(updateData)
+      .eq('id', id)
+      .select();
 
     if (error) {
-      console.error('Database update error:', error);
+      console.error('[Screenshot API] Database update error:', error);
       throw error;
     }
+
+    if (!data || data.length === 0) {
+      console.warn(
+        `[Screenshot API] No resource found or updated for ID: ${id}. This might be an RLS issue or invalid ID.`
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'No changes applied. Possible RLS restriction or resource not found.',
+        },
+        { status: 404 }
+      );
+    }
+
+    console.log(`[Screenshot API] Successfully updated resource ${id}`);
 
     return NextResponse.json({
       success: true,
       message: 'Screenshot info updated successfully',
+      updatedId: id,
     });
   } catch (error) {
     console.error('Failed to update screenshot info:', error);
