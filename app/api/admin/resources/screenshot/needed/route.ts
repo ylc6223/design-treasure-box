@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       .select('id, url')
       .or(`screenshot_url.is.null,screenshot_updated_at.lt.${sevenDaysAgo}`)
       .order('created_at', { ascending: true })
-      .limit(5); // 每次只分发 5 个，防止 Worker 超时被杀
+      .limit(3); // 降低到 3 个，确保免费版环境下的稳定性
 
     if (error) {
       console.error('Database query error:', error);

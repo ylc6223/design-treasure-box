@@ -37,62 +37,8 @@ export default {
   /**
    * 定时任务处理器
    */
-  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
-    // 增加随机抖动 (0-30秒)，避免多实例同时挤占 Cloudflare 浏览器启动配额
-    const jitter = Math.floor(Math.random() * 30000);
-    console.log(`⏳ 等待随机抖动 ${jitter}ms 后启动...`);
-    await new Promise(resolve => setTimeout(resolve, jitter));
-
-    console.log('🚀 开始批量截图处理任务...')
-    let browser = null
-
-    try {
-      // 第一步：任务发现 - 从 Next.js API 获取待处理资源
-      console.log(`🔍 正在向 API 获取待处理资源...`)
-
-      const neededResponse = await fetch(`${env.API_BASE_URL}/api/admin/resources/screenshot/needed`, {
-        headers: {
-          'Authorization': `Bearer ${env.DATABASE_API_KEY}`
-        }
-      })
-
-      if (!neededResponse.ok) {
-        throw new Error(`Failed to fetch tasks: ${neededResponse.status} ${await neededResponse.text()}`)
-      }
-
-      const { resources: allResources } = await neededResponse.json() as { resources: Resource[] }
-
-      if (!allResources || allResources.length === 0) {
-        console.log('✅ 没有需要处理的资源')
-        return
-      }
-
-      // 增加防御性截断：单次只处理前 5 个，防止超时和 CPU 超限
-      const resources = allResources.slice(0, 5)
-      console.log(`📋 发现 ${allResources.length} 个待处理任务，本批次处理前 ${resources.length} 个`)
-
-      // 第二步：启动浏览器
-      console.log('🌐 正在启动浏览器...')
-      browser = await puppeteer.launch(env.MYBROWSER)
-
-      // 第三步：串行处理每个资源
-      for (const resource of resources) {
-        await processResource(resource, browser, env)
-        // 批次间延迟
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      }
-
-      console.log('✅ 批量任务处理完成')
-
-    } catch (error) {
-      console.error('💥 批量处理任务失败:', error)
-      throw error
-    } finally {
-      if (browser !== null) {
-        await browser.close()
-        console.log('🔒 浏览器已关闭')
-      }
-    }
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(runScreenshotSync(env, { useJitter: true }));
   },
 
   /**
@@ -133,13 +79,11 @@ export default {
 
       // 手动触发截图任务
       if (path === '/trigger') {
-        // 这里可以接收特定的 resourceIds（由 Next.js 传过来）
-        // 不过目前的 Worker 逻辑是从 needed 接口拉取，所以 /trigger 主要是触发拉取动作
-        const scheduledHandler = this.scheduled.bind(this)
-        ctx.waitUntil(scheduledHandler({} as ScheduledEvent, env, ctx))
+        // 手动请求不需要 jitter，立即执行
+        ctx.waitUntil(runScreenshotSync(env, { useJitter: false }))
 
         return Response.json({
-          message: 'Screenshot sync triggered',
+          message: 'Screenshot sync triggered (Async)',
           timestamp: new Date().toISOString()
         })
       }
@@ -154,6 +98,75 @@ export default {
     } catch (error) {
       console.error('HTTP request failed:', error)
       return Response.json({ error: 'Internal error' }, { status: 500 })
+    }
+  }
+}
+
+/**
+ * 核心同步逻辑
+ */
+async function runScreenshotSync(env: Env, options: { useJitter: boolean }) {
+  // 1. 随机抖动 (0-30s) 只给定时任务用，手动点击即刻开始
+  if (options.useJitter) {
+    const jitter = Math.floor(Math.random() * 30000);
+    console.log(`⏳ [Scheduled] 等待随机抖动 ${jitter}ms 避开启动高峰...`);
+    await new Promise(resolve => setTimeout(resolve, jitter));
+  }
+
+  console.log('🚀 [Sync] 开始批量截图任务...');
+  let browser = null;
+
+  try {
+    // 任务发现
+    const neededResponse = await fetch(`${env.API_BASE_URL}/api/admin/resources/screenshot/needed`, {
+      headers: { 'Authorization': `Bearer ${env.DATABASE_API_KEY}` }
+    });
+
+    if (!neededResponse.ok) {
+      console.error(`❌ [Sync] 获取列表失败: ${neededResponse.status}`);
+      return;
+    }
+
+    const { resources: allResources } = await neededResponse.json() as { resources: Resource[] };
+    if (!allResources || allResources.length === 0) {
+      console.log('✅ [Sync] 无待处理任务');
+      return;
+    }
+
+    // 免费版硬限制：由于并发实例极低，这里进一步收缩到 3 个
+    const resources = allResources.slice(0, 3);
+    console.log(`📋 [Sync] 待处理: ${allResources.length}，本次处理: ${resources.length}`);
+
+    // 启动浏览器
+    console.log('🌐 [Sync] 正在尝试启动浏览器...');
+    try {
+      browser = await puppeteer.launch(env.MYBROWSER);
+    } catch (e: any) {
+      if (e.message.includes('429')) {
+        console.error('🚫 [Cloudflare] 触发频率限制 (429)。请 15 分钟后再试，当前有多任务并行。');
+      } else {
+        console.error('💥 [Cloudflare] 启动浏览器失败:', e.message);
+      }
+      return; // 优雅退出，不抛出异常
+    }
+
+    for (const resource of resources) {
+      try {
+        await processResource(resource, browser, env);
+      } catch (err: any) {
+        console.error(`❌ [Sync] 处理 ID ${resource.id} 异常:`, err.message);
+      }
+      await new Promise(resolve => setTimeout(resolve, 1500)); // 增加间歇防止 CPU 突发
+    }
+
+    console.log('✅ [Sync] 批量处理流程结束');
+
+  } catch (error: any) {
+    console.error('💥 [Sync] 流程未捕获错误:', error.message);
+  } finally {
+    if (browser !== null) {
+      await browser.close().catch(() => { });
+      console.log('🔒 [Sync] 浏览器已释放');
     }
   }
 }
