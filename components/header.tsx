@@ -1,13 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, LogIn } from 'lucide-react';
+import { Heart, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from './theme-toggle';
 import { LoginDialog } from './auth/login-dialog';
 import { UserMenu } from './auth/user-menu';
 import { cn } from '@/lib/utils';
-import type { DatabaseCategory } from '@/types/category';
 import type { Database } from '@/types/database';
 import { useState } from 'react';
 import { useAuthStore } from '@/hooks/use-auth-store';
@@ -15,9 +14,6 @@ import { useAuthStore } from '@/hooks/use-auth-store';
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export interface HeaderProps {
-  categories: DatabaseCategory[];
-  activeCategory?: string;
-  onCategoryChange?: (categoryId: string) => void;
   className?: string;
   profile?: Profile | null;
 }
@@ -27,22 +23,15 @@ export interface HeaderProps {
  *
  * 顶部导航栏，包含：
  * - Logo
- * - 分类标签切换
  * - 主题切换按钮
  * - 收藏入口
+ * - 用户菜单/登录按钮
  *
  * 特性：
  * - 简洁的顶部导航
- * - 分类标签横向滚动
  * - 响应式设计
  */
-export function Header({
-  categories,
-  activeCategory,
-  onCategoryChange,
-  className,
-  profile,
-}: HeaderProps) {
+export function Header({ className, profile }: HeaderProps) {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const storeProfile = useAuthStore((state) => state.profile);
   const currentProfile = storeProfile || profile;
@@ -59,75 +48,38 @@ export function Header({
             <span className="hidden font-bold sm:inline-block">设计百宝箱</span>
           </Link>
 
-          {/* 右侧内容 */}
-          <div className="flex items-center gap-6">
-            {/* 分类标签 */}
-            <nav className="hidden md:block">
-              <div className="flex items-center space-x-1">
-                {/* 全部 */}
-                <Button
-                  variant={!activeCategory ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => onCategoryChange?.('')}
-                  asChild={!onCategoryChange}
-                  className="shrink-0"
-                >
-                  {onCategoryChange ? <span>全部</span> : <Link href="/">全部</Link>}
-                </Button>
+          {/* 右侧操作区域 */}
+          <div className="flex items-center space-x-1 shrink-0">
+            {/* 收藏入口 */}
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              className="hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+            >
+              <Link href="/favorites">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">我的收藏</span>
+              </Link>
+            </Button>
 
-                {/* 分类标签 */}
-                {categories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant={activeCategory === category.id ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => onCategoryChange?.(category.id)}
-                    asChild={!onCategoryChange}
-                    className="shrink-0"
-                  >
-                    {onCategoryChange ? (
-                      <span>{category.name}</span>
-                    ) : (
-                      <Link href={`/category/${category.id}`}>{category.name}</Link>
-                    )}
-                  </Button>
-                ))}
-              </div>
-            </nav>
-
-            {/* 操作按钮组 */}
-            <div className="flex items-center space-x-1 shrink-0">
-              {/* 收藏入口 */}
+            {/* 用户菜单或登录按钮 */}
+            {currentProfile ? (
+              <UserMenu profile={currentProfile} />
+            ) : (
               <Button
                 variant="ghost"
                 size="icon"
-                asChild
+                onClick={() => setIsLoginOpen(true)}
                 className="hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                aria-label="登录"
               >
-                <Link href="/favorites">
-                  <Heart className="h-5 w-5" />
-                  <span className="sr-only">我的收藏</span>
-                </Link>
+                <UserCircle className="h-5 w-5" />
               </Button>
+            )}
 
-              {/* 用户菜单或登录按钮 */}
-              {currentProfile ? (
-                <UserMenu profile={currentProfile} />
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsLoginOpen(true)}
-                  className="hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                  aria-label="登录"
-                >
-                  <LogIn className="h-5 w-5" />
-                </Button>
-              )}
-
-              {/* 主题切换 */}
-              <ThemeToggle />
-            </div>
+            {/* 主题切换 */}
+            <ThemeToggle />
           </div>
         </div>
       </div>
