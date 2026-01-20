@@ -87,9 +87,14 @@ export function AuthProvider({ children, initialProfile }: AuthProviderProps) {
         event === 'SIGNED_OUT' ||
         event === 'USER_UPDATED'
       ) {
-        // 对于INITIAL_SESSION，如果已经有initialProfile且session存在，优先使用SSR数据
-        if (event === 'INITIAL_SESSION' && initialProfile && session?.user) {
-          console.log('Using initial profile from SSR for INITIAL_SESSION');
+        // 对于INITIAL_SESSION和SIGNED_IN，如果已经有initialProfile且session存在，优先使用SSR数据
+        // 这避免了重复的数据库查询，特别是在OAuth回调场景下
+        if (
+          (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') &&
+          initialProfile &&
+          session?.user
+        ) {
+          console.log(`Using initial profile from SSR for ${event}`);
           setAuth({ id: session.user.id, email: session.user.email }, initialProfile);
           setLoading(false);
           clearTimeout(fallbackTimeout);
