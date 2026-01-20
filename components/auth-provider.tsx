@@ -76,8 +76,26 @@ export function AuthProvider({ children, initialProfile }: AuthProviderProps) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
 
-      // 如果不是初始化阶段（初始化已由 initializeAuth 处理），或者出现了明确的状态转换
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+      // 处理认证状态变化
+      // INITIAL_SESSION: 页面加载时已有session（包括OAuth回调后的session）
+      // SIGNED_IN: 用户主动登录
+      // SIGNED_OUT: 用户登出
+      // USER_UPDATED: 用户信息更新
+      if (
+        event === 'INITIAL_SESSION' ||
+        event === 'SIGNED_IN' ||
+        event === 'SIGNED_OUT' ||
+        event === 'USER_UPDATED'
+      ) {
+        // 对于INITIAL_SESSION，如果已经有initialProfile且session存在，优先使用SSR数据
+        if (event === 'INITIAL_SESSION' && initialProfile && session?.user) {
+          console.log('Using initial profile from SSR for INITIAL_SESSION');
+          setAuth({ id: session.user.id, email: session.user.email }, initialProfile);
+          setLoading(false);
+          clearTimeout(fallbackTimeout);
+          return;
+        }
+
         setLoading(true);
         try {
           if (session?.user) {
@@ -99,6 +117,7 @@ export function AuthProvider({ children, initialProfile }: AuthProviderProps) {
           clearAuth();
         } finally {
           setLoading(false);
+          clearTimeout(fallbackTimeout);
         }
       }
     });
