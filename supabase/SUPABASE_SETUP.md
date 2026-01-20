@@ -24,6 +24,7 @@
 ## 3. 配置环境变量
 
 1. 复制 `.env.local.example` 为 `.env.local`：
+
    ```bash
    cp .env.local.example .env.local
    ```
@@ -58,7 +59,7 @@
    - 点击 **New OAuth App**
    - 填写应用信息：
      - **Application name**: Design Treasure Box（或你喜欢的名称）
-     - **Homepage URL**: 
+     - **Homepage URL**:
        - 开发环境：`http://localhost:3000`
        - 生产环境：`https://your-domain.com`（部署后的实际域名）
      - **Application description**: 设计资源聚合平台（可选）
@@ -70,6 +71,7 @@
    - 点击 **Save**
 
 **提示**：
+
 - 开发阶段先用 `http://localhost:3000` 作为 Homepage URL
 - 部署后可以在 GitHub OAuth App 设置中更新为生产域名
 - 或者创建两个 OAuth Apps 分别用于开发和生产环境
@@ -77,6 +79,7 @@
 ## 5. 验证配置
 
 运行开发服务器：
+
 ```bash
 pnpm dev
 ```
@@ -107,6 +110,7 @@ pnpm dev
 ### 验证截图字段
 
 在 `resources` 表中，确认包含以下截图相关字段：
+
 - `screenshot_url` - 截图 URL 地址
 - `screenshot_updated_at` - 截图更新时间
 - `screenshot_error` - 截图错误信息
@@ -118,10 +122,13 @@ pnpm dev
 ## 常见问题
 
 ### Q: 找不到 API 密钥在哪里？
+
 A: Settings → API → Project URL 和 anon public key
 
 ### Q: OAuth 回调 URL 是什么？
+
 A: `https://your-project.supabase.co/auth/v1/callback`（替换 your-project 为你的项目 ID）
 
 ### Q: 如何重置数据库密码？
+
 A: Settings → Database → Database password → Reset password

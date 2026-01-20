@@ -13,7 +13,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Edit, Trash2, ExternalLink, Search, Camera, Loader2 } from 'lucide-react';
 import {
@@ -150,7 +150,7 @@ export function ResourceTable() {
    * - 使用 toast 提示用户，而非 console.error 静默失败
    * - 保持 loading 状态管理在 finally 块，确保无论成功失败都能解除加载状态
    */
-  const loadResources = async () => {
+  const loadResources = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -183,7 +183,7 @@ export function ResourceTable() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, search, categoryFilter]);
 
   /**
    * 删除资源
@@ -241,7 +241,7 @@ export function ResourceTable() {
    *    - 用户可通过刷新页面查看最新状态
    *
    * 3. 错误处理细节：
-   *    - 解析服务端返回的具体错误信息（如 Worker 配置问题）
+   *    - 解析服务端返回的具体错误信息（如截图服务配置问题）
    *    - 使用 toast 提供明确的用户反馈
    *    - finally 块确保无论成功失败都清理 loading 状态
    */
@@ -297,7 +297,7 @@ export function ResourceTable() {
    */
   useEffect(() => {
     loadResources();
-  }, [page, search, categoryFilter]);
+  }, [loadResources]);
 
   /**
    * 根据分类 ID 获取分类名称

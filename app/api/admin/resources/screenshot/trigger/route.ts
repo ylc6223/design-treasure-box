@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/supabase/auth';
  * 触发截图生成（异步）
  *
  * 限流：单次最多 10 个资源
- * 通过 Next.js 代理调用 Worker /trigger 端点
+ * 通过 GitHub Repository Dispatch 触发截图工作流
  */
 export async function POST(request: NextRequest) {
   try {
@@ -41,27 +41,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 获取 Worker API URL
-    const workerApiUrl = process.env.WORKER_API_URL;
-    if (!workerApiUrl) {
-      console.error('WORKER_API_URL environment variable is not set');
-      return NextResponse.json({ error: 'Screenshot service is not configured' }, { status: 503 });
+    // 触发 GitHub Actions
+    const githubOwner = process.env.GITHUB_REPO_OWNER;
+    const githubRepo = process.env.GITHUB_REPO_NAME;
+    const githubToken = process.env.GITHUB_TOKEN;
+
+    if (!githubOwner || !githubRepo || !githubToken) {
+      console.error(
+        'GitHub Actions configuration is missing (GITHUB_REPO_OWNER, GITHUB_REPO_NAME, GITHUB_TOKEN)'
+      );
+      return NextResponse.json(
+        { error: 'Screenshot service (GitHub Actions) is not configured' },
+        { status: 503 }
+      );
     }
 
-    // 异步调用 Worker trigger endpoint
-    const workerResponse = await fetch(`${workerApiUrl}/trigger`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.DATABASE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ resourceIds }),
-    });
+    // 触发 GitHub Repository Dispatch
+    // 即使 GA 脚本目前可能不处理 payload，传递它也是为了将来能够支持选择性截图
+    const githubResponse = await fetch(
+      `https://api.github.com/repos/${githubOwner}/${githubRepo}/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${githubToken}`,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: 'screenshot_request',
+          client_payload: { resourceIds },
+        }),
+      }
+    );
 
-    if (!workerResponse.ok) {
-      const errorText = await workerResponse.text();
-      console.error('Worker trigger failed:', errorText);
-      return NextResponse.json({ error: 'Failed to trigger screenshot worker' }, { status: 502 });
+    if (!githubResponse.ok) {
+      const errorText = await githubResponse.text();
+      console.error('GitHub Dispatch failed:', errorText);
+      return NextResponse.json({ error: 'Failed to trigger screenshot workflow' }, { status: 502 });
     }
 
     return NextResponse.json({

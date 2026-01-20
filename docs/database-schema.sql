@@ -30,8 +30,8 @@ https://screenshots.your-domain.com/coolors-co-1704067200-abc123.jpg
 CREATE INDEX IF NOT EXISTS idx_resources_screenshot_updated 
 ON resources(screenshot_updated_at);
 
--- 查询需要更新截图的资源（用于定时任务）
--- 这个查询在 Workers 中不会用到，因为我们要对所有资源截图
+-- 查询需要更新截图的资源（用于定时任务/GitHub Actions）
+-- 获取最久未更新或从未截图的资源
 SELECT id, name, url, screenshot_url, screenshot_updated_at 
 FROM resources 
 ORDER BY screenshot_updated_at ASC NULLS FIRST;

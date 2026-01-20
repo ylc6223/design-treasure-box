@@ -8,7 +8,7 @@ import { createAdminClient } from '@/lib/supabase/server';
  * - screenshot_url IS NULL（从未生成过截图）
  * - screenshot_updated_at < NOW() - 7 days（截图已过期）
  *
- * @returns 仅返回 Worker 需要的最小字段：id, url
+ * @returns 返回截图工作流需要的最小字段：id, url
  */
 export async function GET(request: NextRequest) {
   try {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       .select('id, url')
       .or(`screenshot_url.is.null,screenshot_updated_at.lt.${sevenDaysAgo}`)
       .order('created_at', { ascending: true })
-      .limit(3); // 降低到 3 个，确保免费版环境下的稳定性
+      .limit(10); // 增加到 10 个，GitHub Actions 相比 Worker 有更宽松的执行时间限制
 
     if (error) {
       console.error('Database query error:', error);
