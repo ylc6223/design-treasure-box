@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/hooks/use-auth-store';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
+  // 确保 Supabase 客户端只创建一次，避免 useEffect 重复触发
+  const supabase = useMemo(() => createClient(), []);
+
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const setLoading = useAuthStore((state) => state.setLoading);
@@ -14,23 +16,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 监听 Auth 状态变化
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       setLoading(true);
 
-      if (session?.user) {
-        // 获取最新的 profile
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+      try {
+        if (session?.user) {
+          // 获取最新的 profile
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        setAuth({ id: session.user.id, email: session.user.email }, profile);
-      } else {
+          if (error) {
+            console.error('Error fetching profile:', error.message);
+          }
+
+          setAuth({ id: session.user.id, email: session.user.email }, profile);
+        } else {
+          clearAuth();
+        }
+      } catch (err) {
+        console.error('AuthProvider callback unexpected error:', err);
         clearAuth();
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => {
