@@ -25,30 +25,28 @@ export function createClient(): SupabaseClient<Database> {
       : (globalThis as any).__supabase_client
   ) as SupabaseClient<Database> | undefined;
 
-  // 检查已存在的实例是否“健康”（是否有基本的 URL 配置）
-  // 注意：SupabaseClient 结构较复杂，这里仅通过环境变量可用性判断是否需要重新创建
   if (globalInstance) {
-    // 如果已有实例，且当前分片拿不到环境变量，则信任已有实例
-    if (!supabaseUrl || !supabaseAnonKey) {
-      return globalInstance;
-    }
-    // 如果已有实例，但当前分片能拿到环境变量，也可以考虑直接返回实例
     return globalInstance;
   }
 
-  // 2. 如果没有实例，且当前分片也没有环境变量，报错但尝试创建（可能导致挂起）
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error(
-      'Supabase environment variables are missing in this chunk! ' +
-        'Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-    );
+  // 2. 如果没有实例，尝试从全局窗口变量中“找回”可能被 RootLayout 注入的配置
+  // 这解决了某些分片环境中 process.env 丢失的问题
+  const fallbackConfig =
+    typeof window !== 'undefined' ? (window as any).__SUPABASE_CONFIG__ : undefined;
+  const finalUrl = supabaseUrl || fallbackConfig?.url;
+  const finalKey = supabaseAnonKey || fallbackConfig?.key;
+
+  // 3. 诊断并创建
+  if (!finalUrl || !finalKey) {
+    if (typeof window !== 'undefined') {
+      console.warn('Supabase configuration is missing in this chunk! Initializing dummy client...');
+    }
   }
 
-  // 3. 创建新实例
-  const client = createBrowserClient<Database>(supabaseUrl || '', supabaseAnonKey || '');
+  const client = createBrowserClient<Database>(finalUrl || '', finalKey || '');
 
-  // 4. 只在环境变量有效的情况下才存入全局，避免“坏实例”污染全局
-  if (supabaseUrl && supabaseAnonKey) {
+  // 4. 存入全局缓存（只有在配置完整时）
+  if (finalUrl && finalKey) {
     if (typeof window !== 'undefined') {
       (window as any).__supabase_client = client;
     } else if (typeof globalThis !== 'undefined') {
