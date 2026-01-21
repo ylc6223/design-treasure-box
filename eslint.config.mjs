@@ -3,6 +3,9 @@ import nextConfig from "eslint-config-next";
 const eslintConfig = [
   ...nextConfig,
   {
+    ignores: ["references/**"],
+  },
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",

@@ -57,8 +57,13 @@ describe('POST /api/admin/resources/screenshot/trigger', () => {
     expect(data.error).toContain('array');
   });
 
-  it('should return 400 when resourceIds is empty', async () => {
+  it('should allow empty resourceIds (full batch mode)', async () => {
     const { POST } = await importRoute();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
     const request = new NextRequest('http://localhost/api/admin/resources/screenshot/trigger', {
       method: 'POST',
       headers: {
@@ -70,37 +75,41 @@ describe('POST /api/admin/resources/screenshot/trigger', () => {
 
     const response = await POST(request);
 
-    expect(response.status).toBe(400);
-  });
-
-  it('should return 400 when resourceIds exceeds limit of 10', async () => {
-    const { POST } = await importRoute();
-    const tooManyIds = Array.from({ length: 11 }, (_, i) => `id-${i}`);
-
-    const request = new NextRequest('http://localhost/api/admin/resources/screenshot/trigger', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${validApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ resourceIds: tooManyIds }),
-    });
-
-    const response = await POST(request);
-
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(200);
     const data = await response.json();
-    expect(data.error).toContain('10');
+    expect(data.success).toBe(true);
+    expect(data.message).toContain('Full batch');
   });
 
-  it('should accept exactly 10 resourceIds', async () => {
+  it('should allow undefined resourceIds (full batch mode)', async () => {
     const { POST } = await importRoute();
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ success: true }),
     });
 
-    const tenIds = Array.from({ length: 10 }, (_, i) => `id-${i}`);
+    const request = new NextRequest('http://localhost/api/admin/resources/screenshot/trigger', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${validApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+
+    const response = await POST(request);
+
+    expect(response.status).toBe(200);
+  });
+
+  it('should accept more than 10 resourceIds (limit removed)', async () => {
+    const { POST } = await importRoute();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const twelveIds = Array.from({ length: 12 }, (_, i) => `id-${i}`);
 
     const request = new NextRequest('http://localhost/api/admin/resources/screenshot/trigger', {
       method: 'POST',
@@ -108,12 +117,14 @@ describe('POST /api/admin/resources/screenshot/trigger', () => {
         Authorization: `Bearer ${validApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ resourceIds: tenIds }),
+      body: JSON.stringify({ resourceIds: twelveIds }),
     });
 
     const response = await POST(request);
 
     expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.queued).toBe(12);
   });
 
   it('should trigger GitHub Repository Dispatch', async () => {

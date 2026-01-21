@@ -20,18 +20,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const specificIds = searchParams.get('ids');
+
     const supabase = await createAdminClient();
+    let query = supabase.from('resources').select('id, url');
 
-    // 计算 7 天前的时间
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    if (specificIds) {
+      // 场景 A: 指定 ID 截图（点名重截 - 强制重新抓取）
+      const idArray = specificIds.split(',').filter(Boolean);
+      query = query.in('id', idArray);
+    } else {
+      // 场景 B: 批量增量截图（定时巡检或全量补全 - 每批 50 条）
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      query = query
+        .or(`screenshot_url.is.null,screenshot_updated_at.lt.${sevenDaysAgo}`)
+        .order('created_at', { ascending: true })
+        .limit(50);
+    }
 
-    // 获取需要截图的资源（增量过滤）
-    const { data: resources, error } = await supabase
-      .from('resources')
-      .select('id, url')
-      .or(`screenshot_url.is.null,screenshot_updated_at.lt.${sevenDaysAgo}`)
-      .order('created_at', { ascending: true })
-      .limit(10); // 增加到 10 个，GitHub Actions 相比 Worker 有更宽松的执行时间限制
+    const { data: resources, error } = await query;
 
     if (error) {
       console.error('Database query error:', error);

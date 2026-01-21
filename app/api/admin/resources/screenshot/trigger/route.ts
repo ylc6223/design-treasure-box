@@ -28,17 +28,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { resourceIds } = body;
 
-    // 参数验证
-    if (!Array.isArray(resourceIds) || resourceIds.length === 0) {
-      return NextResponse.json({ error: 'resourceIds must be a non-empty array' }, { status: 400 });
-    }
-
-    // 限流：单次最多 10 个资源
-    if (resourceIds.length > 10) {
-      return NextResponse.json(
-        { error: 'Max 10 resources per request to prevent Worker overload' },
-        { status: 400 }
-      );
+    // 参数验证：如果传了 resourceIds，必须是数组
+    if (resourceIds !== undefined && resourceIds !== null && !Array.isArray(resourceIds)) {
+      return NextResponse.json({ error: 'resourceIds must be an array' }, { status: 400 });
     }
 
     // 触发 GitHub Actions
@@ -80,10 +72,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to trigger screenshot workflow' }, { status: 502 });
     }
 
+    const count = resourceIds?.length || 0;
     return NextResponse.json({
       success: true,
-      queued: resourceIds.length,
-      message: `${resourceIds.length} screenshot(s) queued for processing`,
+      queued: count,
+      message:
+        count > 0
+          ? `${count} screenshot(s) queued for processing`
+          : 'Full batch screenshot workflow triggered',
     });
   } catch (error) {
     console.error('Failed to trigger screenshot generation:', error);

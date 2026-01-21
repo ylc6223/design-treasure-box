@@ -35,6 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# references
+/references/
+
 # supabase
 # 注意：supabase/migrations/ 目录中的 SQL 文件应该提交到 Git
 # 只忽略临时生成的 SQL 文件
