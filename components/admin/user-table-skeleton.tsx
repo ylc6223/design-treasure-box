@@ -10,47 +10,59 @@ import {
 
 export function UserTableSkeleton() {
   return (
-    <div className="space-y-6 p-6">
-      {/* Search Bar Skeleton */}
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-10 flex-1 max-w-md" />
-        <Skeleton className="h-5 w-[100px]" />
+    <div className="space-y-4">
+      {/* Toolbar Skeleton */}
+      <div className="flex items-center justify-between p-4 bg-background/50">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-[250px]" />
+        </div>
       </div>
 
       {/* Table Skeleton */}
-      <div className="rounded-lg border border-border/50 bg-background/30">
+      <div className="relative w-full overflow-auto">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-border/50">
-              <TableHead className="font-semibold">用户</TableHead>
-              <TableHead className="font-semibold">邮箱</TableHead>
-              <TableHead className="font-semibold">角色</TableHead>
-              <TableHead className="font-semibold">注册时间</TableHead>
-              <TableHead className="text-right font-semibold">操作</TableHead>
+            <TableRow>
+              <TableHead className="w-[80px] h-10 text-center">头像</TableHead>
+              <TableHead className="h-10">用户</TableHead>
+              <TableHead className="h-10 text-center">角色</TableHead>
+              <TableHead className="h-10 text-center">注册时间</TableHead>
+              <TableHead className="h-10 text-center">在籍时长</TableHead>
+              <TableHead className="w-[120px] h-10 text-center">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <TableRow key={i} className="border-border/50">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
                 <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-9 w-9 rounded-full ring-2 ring-background" />
-                    <Skeleton className="h-4 w-[120px]" />
+                  <div className="flex justify-center">
+                    <Skeleton className="h-8 w-8 rounded-full" />
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[180px]" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-[120px]" />
+                    <Skeleton className="h-3 w-[150px]" />
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-6 w-[90px]" />
+                  <div className="flex justify-center">
+                    <Skeleton className="h-5 w-[60px] rounded-full" />
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-[100px]" />
+                  <div className="flex justify-center">
+                    <Skeleton className="h-4 w-[100px]" />
+                  </div>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <Skeleton className="h-4 w-[60px]" />
-                    <Skeleton className="h-6 w-11" />
+                <TableCell>
+                  <div className="flex justify-center">
+                    <Skeleton className="h-4 w-[40px]" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-center">
+                    <Skeleton className="h-8 w-8 rounded-md" />
                   </div>
                 </TableCell>
               </TableRow>
@@ -60,14 +72,11 @@ export function UserTableSkeleton() {
       </div>
 
       {/* Pagination Skeleton */}
-      <div className="flex items-center justify-between px-1">
-        <Skeleton className="h-4 w-[120px]" />
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-[60px]" />
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-[60px]" />
+      <div className="flex items-center justify-end space-x-2 p-4">
+        <Skeleton className="h-4 w-[100px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-8 w-[70px]" />
+          <Skeleton className="h-8 w-[70px]" />
         </div>
       </div>
     </div>

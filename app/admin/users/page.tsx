@@ -10,15 +10,11 @@ export const metadata = {
 
 export default function UsersPage() {
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-            用户管理
-          </h1>
-          <p className="text-text-secondary mt-2 text-lg">管理用户账号和角色权限</p>
-        </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">用户管理</h1>
+        <p className="text-sm text-muted-foreground">查看所有用户、管理角色权限及账号状态</p>
       </div>
 
       {/* Statistics */}
@@ -27,7 +23,7 @@ export default function UsersPage() {
       </Suspense>
 
       {/* User Table */}
-      <div className="rounded-xl border bg-card/50 backdrop-blur-sm shadow-sm">
+      <div className="border rounded-lg shadow-sm bg-card">
         <Suspense fallback={<UserTableSkeleton />}>
           <UserTable />
         </Suspense>
