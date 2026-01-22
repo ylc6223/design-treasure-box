@@ -6,6 +6,7 @@ import { DockSidebar } from './dock-sidebar';
 import { AIPromptInput } from './ai-prompt-input';
 import { AIChatInterface } from './ai-chat-interface';
 import { Header } from './header';
+import { BackToTop } from './back-to-top';
 import { useCategories } from '@/hooks/use-categories';
 import type { Database } from '@/types/database';
 
@@ -77,6 +78,9 @@ export function LayoutWrapper({ children, profile }: LayoutWrapperProps) {
 
       {/* 底部 AI Prompt 输入框 - 聊天面板打开时自动隐藏 */}
       <AIPromptInput onSubmit={handleAIPromptSubmit} isHidden={isChatOpen} />
+
+      {/* 回到顶部按钮 */}
+      <BackToTop />
 
       {/* AI Chat Interface - 右侧滑出聊天界面 */}
       <AIChatInterface isOpen={isChatOpen} onClose={handleChatClose} initialQuery={initialQuery} />
