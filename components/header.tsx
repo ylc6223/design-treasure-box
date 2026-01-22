@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, UserCircle, Menu, Home, Shield, LogOut, User } from 'lucide-react';
+import { Heart, UserCircle, Menu, Home, Shield, LogOut, User, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from './theme-toggle';
 import { LoginDialog } from './auth/login-dialog';
@@ -19,9 +19,10 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 export interface HeaderProps {
   className?: string;
   profile?: Profile | null;
+  onAskAI?: () => void;
 }
 
-export function Header({ className, profile }: HeaderProps) {
+export function Header({ className, profile, onAskAI }: HeaderProps) {
   const router = useRouter();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -53,6 +54,15 @@ export function Header({ className, profile }: HeaderProps) {
           <div className="flex items-center gap-1">
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onAskAI}
+                className="justify-start md:justify-center font-medium"
+              >
+                <Sparkles className="h-5 w-5" />
+              </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -113,6 +123,17 @@ export function Header({ className, profile }: HeaderProps) {
                         <Link href="/">
                           <Home className="mr-3 h-5 w-5" /> 首页探索
                         </Link>
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start h-12 rounded-xl"
+                        onClick={() => {
+                          onAskAI?.();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Sparkles className="mr-3 h-5 w-5 text-primary" /> AI 设计助手
                       </Button>
 
                       <Button

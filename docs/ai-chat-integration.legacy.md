@@ -86,7 +86,7 @@ const handleChatClose = () => {
 
 ## 测试覆盖
 
-### 集成测试 (components/__tests__/home-page-ai-integration.test.tsx)
+### 集成测试 (components/**tests**/home-page-ai-integration.test.tsx)
 
 - ✅ 应该渲染 AI 输入框
 - ✅ 应该渲染 AI 聊天界面（初始关闭）

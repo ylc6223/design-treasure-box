@@ -3,14 +3,8 @@
 import { useState, useEffect } from 'react';
 import { X, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  ChatContainerRoot,
-  ChatContainerContent,
-} from '@/components/prompt-kit/chat-container';
-import {
-  Message,
-  MessageContent,
-} from '@/components/prompt-kit/message';
+import { ChatContainerRoot, ChatContainerContent } from '@/components/prompt-kit/chat-container';
+import { Message, MessageContent } from '@/components/prompt-kit/message';
 import {
   PromptInput,
   PromptInputTextarea,
@@ -55,7 +49,7 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    
+
     // 直接发送选中的选项作为新查询
     handleSendMessage(answer, true);
   };
@@ -76,7 +70,7 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
       setMessages((prev) => [...prev, userMessage]);
       setInput('');
     }
-    
+
     setIsLoading(true);
 
     try {
@@ -91,7 +85,7 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
           filters: {
             maxResults: 5,
           },
-          conversationHistory: messages.map(msg => ({
+          conversationHistory: messages.map((msg) => ({
             type: msg.type,
             content: msg.content,
           })),
@@ -128,7 +122,7 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Failed to send message:', error);
-      
+
       // 显示错误消息
       const errorMessage: ExtendedChatMessage = {
         id: `error-${Date.now()}`,
@@ -137,7 +131,7 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
         content: `抱歉，处理您的请求时出现错误：${error instanceof Error ? error.message : '未知错误'}。请稍后重试。`,
         timestamp: new Date(),
       };
-      
+
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -165,8 +159,6 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
     // TODO: 打开资源链接
     console.log('Visit resource:', resourceId);
   };
-
-
 
   return (
     <>
@@ -198,216 +190,207 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ 
+            transition={{
               type: 'spring',
               damping: 30,
               stiffness: 300,
-              mass: 0.8
+              mass: 0.8,
             }}
             className={cn(
-              'fixed top-0 right-0 h-full bg-background shadow-2xl z-50',
-              'flex flex-col',
+              'fixed top-0 right-0 h-full bg-background/95 backdrop-blur-xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.25)] z-50',
+              'flex flex-col border-l border-border/40',
               // Responsive layout
-              // Mobile: full screen
               'w-full',
-              // Tablet: adjusted width (768px-1199px)
-              'sm:w-[90%] sm:max-w-[400px] sm:border-l',
-              // Desktop: fixed width panel (≥1200px)
-              'lg:w-[450px] lg:max-w-[450px]',
-              // XL: larger fixed width (≥1440px)
-              'xl:w-[500px] xl:max-w-[500px]'
+              // Tablet & Desktop: fixed width
+              'sm:w-[340px] lg:w-[380px] xl:w-[400px]'
             )}
           >
-        {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-          className="flex items-center justify-between p-4 border-b shrink-0"
-        >
-          <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-semibold truncate">AI 设计助手</h2>
-            <p className="text-sm text-muted-foreground truncate">为您推荐最合适的设计资源</p>
-          </div>
-          <button
-            onClick={onClose}
-            className={cn(
-              'p-2 hover:bg-accent rounded-lg transition-colors shrink-0 ml-2',
-              // Mobile: more prominent close button
-              'sm:p-2'
-            )}
-            aria-label="关闭聊天"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </motion.div>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="flex items-center justify-between px-6 py-5 border-b border-border/40 shrink-0"
+            >
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-bold tracking-tight">AI 设计助手</h2>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <p className="text-[11px] font-medium text-muted-foreground/80 uppercase tracking-wider">
+                    在线交流中
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className={cn(
+                  'p-2 hover:bg-accent rounded-full transition-all duration-200 shrink-0 ml-2 group',
+                  'hover:rotate-90'
+                )}
+                aria-label="关闭聊天"
+              >
+                <X className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+              </button>
+            </motion.div>
 
-        {/* Chat Container */}
-        <div className="flex-1 overflow-hidden relative">
-          <ChatContainerRoot className="h-full">
-            <ChatContainerContent className={cn(
-              'space-y-6 py-6',
-              // Responsive padding
-              'px-3 sm:px-4'
-            )}>
-              {messages.length === 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.4 }}
-                  className={cn(
-                    'text-center text-muted-foreground py-8',
-                    // Responsive text size
-                    'text-sm sm:text-base'
-                  )}
-                >
-                  <p>开始对话，我会帮您找到最合适的设计资源</p>
-                </motion.div>
-              )}
-
-              {messages.map((message, index) => {
-                const isAssistant = message.type === 'assistant';
-                const hasResources = message.resources && message.resources.length > 0;
-                const hasClarificationQuestions = message.clarificationQuestions && message.clarificationQuestions.length > 0;
-
-                return (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      delay: index * 0.05,
-                      duration: 0.3,
-                      ease: 'easeOut'
-                    }}
-                  >
-                    <Message
+            {/* Chat Container */}
+            <div className="flex-1 overflow-hidden relative">
+              <ChatContainerRoot className="h-full">
+                <ChatContainerContent className={cn('space-y-8 py-8 px-6', 'scrollbar-hide')}>
+                  {messages.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
                       className={cn(
-                        'flex w-full flex-col gap-2',
-                        isAssistant ? 'items-start' : 'items-end'
+                        'text-center text-muted-foreground py-8',
+                        // Responsive text size
+                        'text-sm sm:text-base'
                       )}
                     >
-                    {isAssistant ? (
-                      <div className="group flex w-full flex-col gap-3">
-                        {/* 澄清问题 - 快速回复按钮（一次显示所有选项） */}
-                        {hasClarificationQuestions ? (
-                          <ClarificationMessage
-                            questions={message.clarificationQuestions!}
-                            onAnswerSelect={handleClarificationAnswer}
-                          />
-                        ) : (
-                          <>
-                            {/* 文本内容 - 只在没有澄清问题时显示 */}
-                            {message.content && (
+                      <p>开始对话，我会帮您找到最合适的设计资源</p>
+                    </motion.div>
+                  )}
+
+                  {messages.map((message, index) => {
+                    const isAssistant = message.type === 'assistant';
+                    const hasResources = message.resources && message.resources.length > 0;
+                    const hasClarificationQuestions =
+                      message.clarificationQuestions && message.clarificationQuestions.length > 0;
+
+                    return (
+                      <motion.div
+                        key={message.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: index * 0.05,
+                          duration: 0.3,
+                          ease: 'easeOut',
+                        }}
+                      >
+                        <Message
+                          className={cn(
+                            'flex w-full flex-col gap-2',
+                            isAssistant ? 'items-start' : 'items-end'
+                          )}
+                        >
+                          {isAssistant ? (
+                            <div className="group flex w-full flex-col gap-3">
+                              {/* 澄清问题 - 快速回复按钮（一次显示所有选项） */}
+                              {hasClarificationQuestions ? (
+                                <ClarificationMessage
+                                  questions={message.clarificationQuestions!}
+                                  onAnswerSelect={handleClarificationAnswer}
+                                />
+                              ) : (
+                                <>
+                                  {/* 文本内容 - 只在没有澄清问题时显示 */}
+                                  {message.content && (
+                                    <MessageContent
+                                      className={cn(
+                                        'text-foreground prose w-full min-w-0 flex-1 rounded-2xl bg-secondary/50 backdrop-blur-sm',
+                                        'p-4 text-sm leading-relaxed border border-border/30'
+                                      )}
+                                      markdown
+                                    >
+                                      {message.content}
+                                    </MessageContent>
+                                  )}
+
+                                  {/* 资源推荐 */}
+                                  {hasResources && (
+                                    <ResourceMessage
+                                      resources={message.resources as ResourceRecommendation[]}
+                                      onResourceClick={handleResourceClick}
+                                      onFavorite={handleFavorite}
+                                      onVisit={handleVisit}
+                                    />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="group flex w-full flex-col items-end gap-1">
                               <MessageContent
                                 className={cn(
-                                  'text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-secondary',
-                                  // Responsive padding and text size
-                                  'p-2.5 sm:p-3 text-sm sm:text-base'
+                                  'bg-primary text-primary-foreground rounded-2xl whitespace-pre-wrap font-medium',
+                                  'max-w-[90%] sm:max-w-[85%] px-4 py-2.5 text-sm shadow-sm'
                                 )}
-                                markdown
                               >
                                 {message.content}
                               </MessageContent>
-                            )}
+                            </div>
+                          )}
+                        </Message>
+                      </motion.div>
+                    );
+                  })}
 
-                            {/* 资源推荐 */}
-                            {hasResources && (
-                              <ResourceMessage
-                                resources={message.resources as ResourceRecommendation[]}
-                                onResourceClick={handleResourceClick}
-                                onFavorite={handleFavorite}
-                                onVisit={handleVisit}
-                              />
-                            )}
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="group flex w-full flex-col items-end gap-1">
-                        <MessageContent className={cn(
-                          'bg-primary text-primary-foreground rounded-3xl whitespace-pre-wrap',
-                          // Responsive sizing
-                          'max-w-[90%] sm:max-w-[85%] px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base'
-                        )}>
-                          {message.content}
-                        </MessageContent>
-                      </div>
-                    )}
-                  </Message>
-                  </motion.div>
-                );
-              })}
-
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Message className="flex w-full flex-col items-start gap-2">
-                    <div className="group flex w-full flex-col gap-0">
-                      <div className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0">
-                        <DotsLoader />
-                      </div>
-                    </div>
-                  </Message>
-                </motion.div>
-              )}
-            </ChatContainerContent>
-          </ChatContainerRoot>
-        </div>
-
-        {/* Input Area */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.3 }}
-          className={cn(
-            'p-4 border-t shrink-0',
-            // Mobile: slightly smaller padding
-            'sm:p-4'
-          )}
-        >
-          <PromptInput
-            isLoading={isLoading}
-            value={input}
-            onValueChange={setInput}
-            onSubmit={handleSubmit}
-            className="border-input bg-background relative w-full rounded-3xl border p-0 pt-1 shadow-sm"
-          >
-            <div className="flex flex-col">
-              <PromptInputTextarea
-                placeholder="描述您需要的设计资源..."
-                className={cn(
-                  'min-h-[44px] pt-3 pl-4 leading-[1.3]',
-                  // Responsive text size
-                  'text-sm sm:text-base'
-                )}
-              />
-
-              <PromptInputActions className="mt-2 flex w-full items-center justify-end gap-2 p-2">
-                <Button
-                  size="icon"
-                  disabled={!input.trim() || isLoading}
-                  onClick={handleSubmit}
-                  className={cn(
-                    'rounded-full',
-                    // Responsive button size
-                    'size-8 sm:size-9'
+                  {isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Message className="flex w-full flex-col items-start gap-2">
+                        <div className="group flex w-full flex-col gap-0">
+                          <div className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0">
+                            <DotsLoader />
+                          </div>
+                        </div>
+                      </Message>
+                    </motion.div>
                   )}
-                  aria-label="发送消息"
-                >
-                  {isLoading ? (
-                    <span className="size-3 rounded-xs bg-white" />
-                  ) : (
-                    <Send size={16} className="sm:size-[18px]" />
-                  )}
-                </Button>
-              </PromptInputActions>
+                </ChatContainerContent>
+              </ChatContainerRoot>
             </div>
-          </PromptInput>
-        </motion.div>
+
+            {/* Input Area */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
+              className="p-6 border-t border-border/40 shrink-0 bg-background/50"
+            >
+              <PromptInput
+                isLoading={isLoading}
+                value={input}
+                onValueChange={setInput}
+                onSubmit={handleSubmit}
+                className="border-input bg-background relative w-full rounded-3xl border p-0 pt-1 shadow-sm transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+              >
+                <div className="flex flex-col">
+                  <PromptInputTextarea
+                    placeholder="试着问问：找一些简约风格的配色网站..."
+                    className="min-h-[44px] pt-3 px-4 leading-[1.5] text-sm placeholder:text-muted-foreground/50"
+                  />
+
+                  <PromptInputActions className="mt-2 flex w-full items-center justify-end gap-2 p-2">
+                    <Button
+                      size="icon"
+                      disabled={!input.trim() || isLoading}
+                      onClick={handleSubmit}
+                      className={cn(
+                        'rounded-full',
+                        // Responsive button size
+                        'size-8 sm:size-9'
+                      )}
+                      aria-label="发送消息"
+                    >
+                      {isLoading ? (
+                        <span className="size-3 rounded-xs bg-white" />
+                      ) : (
+                        <Send size={16} className="sm:size-[18px]" />
+                      )}
+                    </Button>
+                  </PromptInputActions>
+                </div>
+              </PromptInput>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

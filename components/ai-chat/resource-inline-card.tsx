@@ -22,14 +22,14 @@ export interface ResourceInlineCardProps {
 
 /**
  * ResourceInlineCard 组件（简化版）
- * 
+ *
  * 用于聊天界面的简化资源卡片
  * - 默认状态：缩略图(48x48) + 名称 + 评分 + 类别
  * - 悬停：显示阴影效果
  * - 点击：展开详细信息（Sheet）
  * - 移动端：Sheet 从底部滑出（80vh）
  * - 桌面端：Sheet 从底部滑出（可考虑后续改为 Popover）
- * 
+ *
  * @param resource - 资源数据
  * @param isFavorited - 是否已收藏
  * @param onViewDetails - 查看详情回调
@@ -79,9 +79,9 @@ export function ResourceInlineCard({
       >
         {/* 缩略图 */}
         <div className="relative w-12 h-12 rounded-md overflow-hidden shrink-0 bg-muted">
-          {!imageError ? (
+          {!imageError && resource.screenshotUrl ? (
             <Image
-              src={resource.screenshotUrl || ''}
+              src={resource.screenshotUrl}
               alt={resource.name}
               fill
               className="object-cover"
@@ -107,9 +107,7 @@ export function ResourceInlineCard({
           </div>
           <div className="flex items-center gap-2 mt-1">
             <RatingStars rating={resource.rating.overall} size="sm" />
-            <span className="text-xs text-muted-foreground truncate">
-              {resource.categoryId}
-            </span>
+            <span className="text-xs text-muted-foreground truncate">{resource.categoryId}</span>
           </div>
         </div>
 
@@ -127,9 +125,9 @@ export function ResourceInlineCard({
           <div className="mt-6 space-y-6">
             {/* 大图预览 */}
             <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
-              {!imageError ? (
+              {!imageError && resource.screenshotUrl ? (
                 <Image
-                  src={resource.screenshotUrl || ''}
+                  src={resource.screenshotUrl}
                   alt={resource.name}
                   fill
                   className="object-cover"

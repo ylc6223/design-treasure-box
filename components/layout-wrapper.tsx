@@ -61,7 +61,7 @@ export function LayoutWrapper({ children, profile }: LayoutWrapperProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
       {/* 顶部 Header */}
-      <Header profile={profile} />
+      <Header profile={profile} onAskAI={() => setIsChatOpen(true)} />
 
       <div className="flex flex-1">
         {/* 左侧 Dock 导航 */}
