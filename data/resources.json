@@ -6,12 +6,7 @@
     "description": "快速生成配色方案的在线工具，支持导出多种格式，可以锁定颜色进行调整",
     "screenshot": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800",
     "categoryId": "color",
-    "tags": [
-      "配色",
-      "工具",
-      "免费",
-      "在线"
-    ],
+    "tags": ["配色", "工具", "免费", "在线"],
     "rating": {
       "overall": 4.5,
       "usability": 5,
@@ -32,12 +27,7 @@
     "description": "Adobe 官方配色工具，支持多种配色规则，可以从图片提取配色",
     "screenshot": "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800",
     "categoryId": "color",
-    "tags": [
-      "配色",
-      "Adobe",
-      "免费",
-      "专业"
-    ],
+    "tags": ["配色", "Adobe", "免费", "专业"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -58,12 +48,7 @@
     "description": "精选配色方案分享平台，每天更新，可以按流行度和时间排序",
     "screenshot": "https://images.unsplash.com/photo-1525909002-1b05e0c869d8?w=800",
     "categoryId": "color",
-    "tags": [
-      "配色",
-      "灵感",
-      "免费",
-      "社区"
-    ],
+    "tags": ["配色", "灵感", "免费", "社区"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -84,12 +69,7 @@
     "description": "实用优先的 CSS 框架，提供大量预设类名，快速构建现代网站",
     "screenshot": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800",
     "categoryId": "css",
-    "tags": [
-      "CSS",
-      "框架",
-      "免费",
-      "开源"
-    ],
+    "tags": ["CSS", "框架", "免费", "开源"],
     "rating": {
       "overall": 5,
       "usability": 4.5,
@@ -110,12 +90,7 @@
     "description": "即用型 CSS 动画库，包含80+种动画效果，简单易用",
     "screenshot": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800",
     "categoryId": "css",
-    "tags": [
-      "CSS",
-      "动画",
-      "免费",
-      "开源"
-    ],
+    "tags": ["CSS", "动画", "免费", "开源"],
     "rating": {
       "overall": 4.5,
       "usability": 5,
@@ -136,12 +111,7 @@
     "description": "开源 UI 元素库，提供大量可复制的 CSS 和 Tailwind 组件",
     "screenshot": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800",
     "categoryId": "css",
-    "tags": [
-      "CSS",
-      "组件",
-      "免费",
-      "开源"
-    ],
+    "tags": ["CSS", "组件", "免费", "开源"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -162,12 +132,7 @@
     "description": "Google 提供的免费字体库，包含1000+种开源字体",
     "screenshot": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800",
     "categoryId": "font",
-    "tags": [
-      "字体",
-      "免费",
-      "Google",
-      "开源"
-    ],
+    "tags": ["字体", "免费", "Google", "开源"],
     "rating": {
       "overall": 5,
       "usability": 5,
@@ -188,12 +153,7 @@
     "description": "字体配对灵感网站，展示 Google Fonts 的最佳组合",
     "screenshot": "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800",
     "categoryId": "font",
-    "tags": [
-      "字体",
-      "配对",
-      "免费",
-      "灵感"
-    ],
+    "tags": ["字体", "配对", "免费", "灵感"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -214,12 +174,7 @@
     "description": "精选免费商用字体，提供字体生成器工具",
     "screenshot": "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800",
     "categoryId": "font",
-    "tags": [
-      "字体",
-      "免费",
-      "商用",
-      "工具"
-    ],
+    "tags": ["字体", "免费", "商用", "工具"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -240,12 +195,7 @@
     "description": "简洁美观的开源图标库，支持 React、Vue 等多个框架",
     "screenshot": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800",
     "categoryId": "icon",
-    "tags": [
-      "图标",
-      "免费",
-      "开源",
-      "SVG"
-    ],
+    "tags": ["图标", "免费", "开源", "SVG"],
     "rating": {
       "overall": 5,
       "usability": 5,
@@ -266,12 +216,7 @@
     "description": "Tailwind CSS 团队打造的精美 SVG 图标库",
     "screenshot": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
     "categoryId": "icon",
-    "tags": [
-      "图标",
-      "免费",
-      "Tailwind",
-      "SVG"
-    ],
+    "tags": ["图标", "免费", "Tailwind", "SVG"],
     "rating": {
       "overall": 4.5,
       "usability": 5,
@@ -292,12 +237,7 @@
     "description": "统一的图标框架，集成了150,000+个图标，支持所有流行图标库",
     "screenshot": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800",
     "categoryId": "icon",
-    "tags": [
-      "图标",
-      "免费",
-      "集合",
-      "SVG"
-    ],
+    "tags": ["图标", "免费", "集合", "SVG"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -318,12 +258,7 @@
     "description": "全球顶尖设计师作品展示平台，UI/UX 设计灵感宝库",
     "screenshot": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
     "categoryId": "inspiration",
-    "tags": [
-      "灵感",
-      "设计",
-      "社区",
-      "作品集"
-    ],
+    "tags": ["灵感", "设计", "社区", "作品集"],
     "rating": {
       "overall": 5,
       "usability": 4.5,
@@ -344,12 +279,7 @@
     "description": "Adobe 旗下创意作品展示平台，涵盖各类设计领域",
     "screenshot": "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800",
     "categoryId": "inspiration",
-    "tags": [
-      "灵感",
-      "Adobe",
-      "作品集",
-      "社区"
-    ],
+    "tags": ["灵感", "Adobe", "作品集", "社区"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -370,12 +300,7 @@
     "description": "视觉灵感搜索引擎，海量设计图片和创意收藏",
     "screenshot": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800",
     "categoryId": "inspiration",
-    "tags": [
-      "灵感",
-      "图片",
-      "收藏",
-      "搜索"
-    ],
+    "tags": ["灵感", "图片", "收藏", "搜索"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -396,12 +321,7 @@
     "description": "全球最佳网站设计奖项平台，展示获奖网站作品",
     "screenshot": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800",
     "categoryId": "website",
-    "tags": [
-      "网站",
-      "获奖",
-      "灵感",
-      "高端"
-    ],
+    "tags": ["网站", "获奖", "灵感", "高端"],
     "rating": {
       "overall": 5,
       "usability": 4.5,
@@ -422,12 +342,7 @@
     "description": "精选网站设计案例库，按风格、类型、主题分类",
     "screenshot": "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800",
     "categoryId": "website",
-    "tags": [
-      "网站",
-      "案例",
-      "分类",
-      "灵感"
-    ],
+    "tags": ["网站", "案例", "分类", "灵感"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -448,12 +363,7 @@
     "description": "落地页设计灵感库，收录优秀的产品落地页设计",
     "screenshot": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800",
     "categoryId": "website",
-    "tags": [
-      "网站",
-      "落地页",
-      "灵感",
-      "产品"
-    ],
+    "tags": ["网站", "落地页", "灵感", "产品"],
     "rating": {
       "overall": 4,
       "usability": 4,
@@ -474,12 +384,7 @@
     "description": "基于 Radix UI 的精美组件库，可复制粘贴，完全可定制",
     "screenshot": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800",
     "categoryId": "ui-kit",
-    "tags": [
-      "UI组件",
-      "React",
-      "免费",
-      "开源"
-    ],
+    "tags": ["UI组件", "React", "免费", "开源"],
     "rating": {
       "overall": 5,
       "usability": 5,
@@ -500,12 +405,7 @@
     "description": "简单、模块化、可访问的 React 组件库",
     "screenshot": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800",
     "categoryId": "ui-kit",
-    "tags": [
-      "UI组件",
-      "React",
-      "免费",
-      "可访问性"
-    ],
+    "tags": ["UI组件", "React", "免费", "可访问性"],
     "rating": {
       "overall": 4.5,
       "usability": 5,
@@ -526,12 +426,7 @@
     "description": "Tailwind CSS 组件库，提供大量预设计组件和主题",
     "screenshot": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800",
     "categoryId": "ui-kit",
-    "tags": [
-      "UI组件",
-      "Tailwind",
-      "免费",
-      "主题"
-    ],
+    "tags": ["UI组件", "Tailwind", "免费", "主题"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -552,12 +447,7 @@
     "description": "免费在线设备样机生成器，支持多种设备型号",
     "screenshot": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800",
     "categoryId": "mockup",
-    "tags": [
-      "样机",
-      "免费",
-      "在线",
-      "设备"
-    ],
+    "tags": ["样机", "免费", "在线", "设备"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -578,12 +468,7 @@
     "description": "专业样机生成工具，提供海量高质量样机模板",
     "screenshot": "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800",
     "categoryId": "mockup",
-    "tags": [
-      "样机",
-      "专业",
-      "模板",
-      "高质量"
-    ],
+    "tags": ["样机", "专业", "模板", "高质量"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -604,12 +489,7 @@
     "description": "免费样机资源下载站，每周更新，质量精选",
     "screenshot": "https://images.unsplash.com/photo-1547658719-da2b51169166?w=800",
     "categoryId": "mockup",
-    "tags": [
-      "样机",
-      "免费",
-      "下载",
-      "PSD"
-    ],
+    "tags": ["样机", "免费", "下载", "PSD"],
     "rating": {
       "overall": 4,
       "usability": 4,
@@ -630,12 +510,7 @@
     "description": "精选渐变色方案分享平台，可一键复制 CSS 代码",
     "screenshot": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800",
     "categoryId": "color",
-    "tags": [
-      "配色",
-      "渐变",
-      "免费",
-      "CSS"
-    ],
+    "tags": ["配色", "渐变", "免费", "CSS"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -656,12 +531,7 @@
     "description": "CSS 技巧和教程网站，涵盖前端开发各个方面",
     "screenshot": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800",
     "categoryId": "css",
-    "tags": [
-      "CSS",
-      "教程",
-      "技巧",
-      "社区"
-    ],
+    "tags": ["CSS", "教程", "技巧", "社区"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -682,12 +552,7 @@
     "description": "AI 驱动的字体配对工具，自动生成和谐的字体组合",
     "screenshot": "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800",
     "categoryId": "font",
-    "tags": [
-      "字体",
-      "AI",
-      "配对",
-      "免费"
-    ],
+    "tags": ["字体", "AI", "配对", "免费"],
     "rating": {
       "overall": 4,
       "usability": 4.5,
@@ -708,12 +573,7 @@
     "description": "全球最大的免费图标库，包含数百万个图标",
     "screenshot": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800",
     "categoryId": "icon",
-    "tags": [
-      "图标",
-      "免费",
-      "海量",
-      "多风格"
-    ],
+    "tags": ["图标", "免费", "海量", "多风格"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -734,12 +594,7 @@
     "description": "移动应用设计参考库，收录顶级 App 的界面设计",
     "screenshot": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800",
     "categoryId": "inspiration",
-    "tags": [
-      "灵感",
-      "移动端",
-      "App",
-      "UI"
-    ],
+    "tags": ["灵感", "移动端", "App", "UI"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -760,12 +615,7 @@
     "description": "蚂蚁集团企业级 UI 设计语言和 React 组件库",
     "screenshot": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800",
     "categoryId": "ui-kit",
-    "tags": [
-      "UI组件",
-      "React",
-      "企业级",
-      "免费"
-    ],
+    "tags": ["UI组件", "React", "企业级", "免费"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -786,12 +636,7 @@
     "description": "Google Material Design 的 React 实现，组件丰富完善",
     "screenshot": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800",
     "categoryId": "ui-kit",
-    "tags": [
-      "UI组件",
-      "React",
-      "Material",
-      "免费"
-    ],
+    "tags": ["UI组件", "React", "Material", "免费"],
     "rating": {
       "overall": 4.5,
       "usability": 4.5,
@@ -812,12 +657,7 @@
     "description": "Web 和移动端 UI 设计灵感库，按组件类型分类",
     "screenshot": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800",
     "categoryId": "inspiration",
-    "tags": [
-      "灵感",
-      "UI",
-      "组件",
-      "分类"
-    ],
+    "tags": ["灵感", "UI", "组件", "分类"],
     "rating": {
       "overall": 4,
       "usability": 4.5,

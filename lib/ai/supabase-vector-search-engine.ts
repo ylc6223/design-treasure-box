@@ -48,10 +48,7 @@ export class SupabaseVectorSearchEngine {
   /**
    * 向量搜索（替换原有的 search 方法）
    */
-  async search(
-    query: string,
-    options: VectorSearchOptions = {}
-  ): Promise<VectorMatch[]> {
+  async search(query: string, options: VectorSearchOptions = {}): Promise<VectorMatch[]> {
     try {
       // 生成查询向量
       const queryEmbedding = await this.provider.generateEmbedding(query);
@@ -87,10 +84,7 @@ export class SupabaseVectorSearchEngine {
   /**
    * 查找相似资源
    */
-  async findSimilar(
-    resourceId: string,
-    options: VectorSearchOptions = {}
-  ): Promise<VectorMatch[]> {
+  async findSimilar(resourceId: string, options: VectorSearchOptions = {}): Promise<VectorMatch[]> {
     try {
       const resource = this.resources.get(resourceId);
       if (!resource) {

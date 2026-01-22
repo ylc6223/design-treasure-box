@@ -24,9 +24,9 @@ export interface ResourcePreviewCardProps {
 
 /**
  * ResourcePreviewCard 组件
- * 
+ *
  * 通用的资源预览卡片组件，用于在聊天界面和其他场景中显示资源
- * 
+ *
  * Features:
  * - 缩略图显示（支持加载失败处理）
  * - 精选标识
@@ -53,11 +53,7 @@ export function ResourcePreviewCard({
 
   return (
     <Card
-      className={cn(
-        'overflow-hidden transition-all duration-200',
-        'hover:shadow-md',
-        className
-      )}
+      className={cn('overflow-hidden transition-all duration-200', 'hover:shadow-md', className)}
     >
       <div className={cn('flex gap-3', isCompact ? 'p-3' : 'p-4')}>
         {/* 缩略图 */}

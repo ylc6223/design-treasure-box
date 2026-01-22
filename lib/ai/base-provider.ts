@@ -1,10 +1,10 @@
-import { 
-  AIProvider, 
-  AICapabilities, 
-  ChatMessage, 
-  ChatOptions, 
-  ChatResponse, 
-  ChatChunk 
+import {
+  AIProvider,
+  AICapabilities,
+  ChatMessage,
+  ChatOptions,
+  ChatResponse,
+  ChatChunk,
 } from '@/types/ai-chat';
 
 /**
@@ -20,7 +20,7 @@ export abstract class BaseAIProvider implements AIProvider {
    * 抽象方法：生成聊天完成
    */
   abstract generateChatCompletion(
-    messages: ChatMessage[], 
+    messages: ChatMessage[],
     options?: ChatOptions
   ): Promise<ChatResponse>;
 
@@ -28,7 +28,7 @@ export abstract class BaseAIProvider implements AIProvider {
    * 抽象方法：流式聊天完成
    */
   abstract streamChatCompletion(
-    messages: ChatMessage[], 
+    messages: ChatMessage[],
     options?: ChatOptions
   ): AsyncIterable<ChatChunk>;
 
@@ -54,7 +54,7 @@ export abstract class BaseAIProvider implements AIProvider {
       if (!message.content || typeof message.content !== 'string') {
         throw new Error('Each message must have valid content');
       }
-      
+
       if (!['user', 'assistant', 'system'].includes(message.type)) {
         throw new Error('Invalid message type');
       }
@@ -71,24 +71,24 @@ export abstract class BaseAIProvider implements AIProvider {
       if (typeof options.maxTokens !== 'number' || options.maxTokens <= 0) {
         throw new Error('maxTokens must be a positive number');
       }
-      
+
       if (options.maxTokens > this.capabilities.maxTokens) {
         throw new Error(`maxTokens cannot exceed ${this.capabilities.maxTokens}`);
       }
     }
 
     if (options.temperature !== undefined) {
-      if (typeof options.temperature !== 'number' || 
-          options.temperature < 0 || 
-          options.temperature > 2) {
+      if (
+        typeof options.temperature !== 'number' ||
+        options.temperature < 0 ||
+        options.temperature > 2
+      ) {
         throw new Error('temperature must be between 0 and 2');
       }
     }
 
     if (options.topP !== undefined) {
-      if (typeof options.topP !== 'number' || 
-          options.topP < 0 || 
-          options.topP > 1) {
+      if (typeof options.topP !== 'number' || options.topP < 0 || options.topP > 1) {
         throw new Error('topP must be between 0 and 1');
       }
     }
@@ -108,23 +108,25 @@ export abstract class BaseAIProvider implements AIProvider {
    */
   protected handleAPIError(error: any, operation: string): never {
     console.error(`${this.name} ${operation} error:`, error);
-    
+
     if (error.response?.status === 401) {
       throw new Error(`Authentication failed for ${this.name}. Please check your API key.`);
     }
-    
+
     if (error.response?.status === 429) {
       throw new Error(`Rate limit exceeded for ${this.name}. Please try again later.`);
     }
-    
+
     if (error.response?.status >= 500) {
       throw new Error(`${this.name} service is temporarily unavailable. Please try again later.`);
     }
-    
+
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      throw new Error(`Cannot connect to ${this.name} service. Please check your network connection.`);
+      throw new Error(
+        `Cannot connect to ${this.name} service. Please check your network connection.`
+      );
     }
-    
+
     throw new Error(`${this.name} ${operation} failed: ${error.message || 'Unknown error'}`);
   }
 
@@ -137,31 +139,34 @@ export abstract class BaseAIProvider implements AIProvider {
     delay: number = 1000
   ): Promise<T> {
     let lastError: Error;
-    
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         return await operation();
       } catch (error) {
         lastError = error as Error;
-        
+
         // 如果是认证错误或客户端错误，不重试
-        if (error instanceof Error && 
-            (error.message.includes('Authentication failed') ||
-             error.message.includes('Invalid'))) {
+        if (
+          error instanceof Error &&
+          (error.message.includes('Authentication failed') || error.message.includes('Invalid'))
+        ) {
           throw error;
         }
-        
+
         if (attempt === maxRetries) {
           break;
         }
-        
+
         // 指数退避
         const waitTime = delay * Math.pow(2, attempt - 1);
-        console.warn(`${this.name} operation failed (attempt ${attempt}/${maxRetries}), retrying in ${waitTime}ms...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        console.warn(
+          `${this.name} operation failed (attempt ${attempt}/${maxRetries}), retrying in ${waitTime}ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
       }
     }
-    
+
     throw lastError!;
   }
 

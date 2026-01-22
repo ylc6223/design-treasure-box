@@ -5,6 +5,7 @@
 ## 脚本列表
 
 ### 数据维护
+
 - `update-resource-ids.js` - 更新资源ID格式
 - `test-vector-migration.ts` - 测试向量数据迁移
 
@@ -21,6 +22,7 @@ npx tsx scripts/maintenance/test-vector-migration.ts
 ## 安全注意事项
 
 ⚠️ **重要提醒**：
+
 - 这些脚本可能修改生产数据
 - 执行前必须先备份相关数据
 - 建议先在测试环境验证

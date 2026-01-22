@@ -12,13 +12,7 @@ import type { Resource } from '@/types';
 vi.mock('next/image', () => ({
   default: ({ src, alt, onError, onLoad }: any) => {
     return (
-      <img
-        src={src}
-        alt={alt}
-        onError={onError}
-        onLoad={onLoad}
-        data-testid="preview-image"
-      />
+      <img src={src} alt={alt} onError={onError} onLoad={onLoad} data-testid="preview-image" />
     );
   },
 }));
@@ -67,12 +61,7 @@ describe('ResourcePreviewCard', () => {
     });
 
     it('应该渲染资源缩略图', () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       const image = screen.getByTestId('preview-image');
       expect(image).toHaveAttribute('src', mockResource.screenshot);
@@ -80,24 +69,14 @@ describe('ResourcePreviewCard', () => {
     });
 
     it('应该显示精选标识', () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       expect(screen.getByText('精选')).toBeInTheDocument();
     });
 
     it('不应该显示精选标识（非精选资源）', () => {
       const nonFeaturedResource = { ...mockResource, isFeatured: false };
-      render(
-        <ResourcePreviewCard
-          resource={nonFeaturedResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={nonFeaturedResource} onFavorite={mockOnFavorite} />);
 
       expect(screen.queryByText('精选')).not.toBeInTheDocument();
     });
@@ -174,12 +153,7 @@ describe('ResourcePreviewCard', () => {
   describe('操作按钮', () => {
     it('应该调用收藏回调', async () => {
       const user = userEvent.setup();
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       const favoriteButton = screen.getByLabelText('收藏');
       await user.click(favoriteButton);
@@ -203,12 +177,7 @@ describe('ResourcePreviewCard', () => {
 
     it('应该调用访问回调', async () => {
       const user = userEvent.setup();
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onVisit={mockOnVisit}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onVisit={mockOnVisit} />);
 
       const visitButton = screen.getByText('访问');
       await user.click(visitButton);
@@ -219,12 +188,7 @@ describe('ResourcePreviewCard', () => {
 
     it('应该调用查看详情回调', async () => {
       const user = userEvent.setup();
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onViewDetails={mockOnViewDetails}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onViewDetails={mockOnViewDetails} />);
 
       const detailsButton = screen.getByText('详情');
       await user.click(detailsButton);
@@ -234,11 +198,7 @@ describe('ResourcePreviewCard', () => {
     });
 
     it('不应该渲染未提供的操作按钮', () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} />);
 
       expect(screen.queryByLabelText('收藏')).not.toBeInTheDocument();
       expect(screen.queryByText('访问')).not.toBeInTheDocument();
@@ -248,15 +208,10 @@ describe('ResourcePreviewCard', () => {
 
   describe('图片加载处理', () => {
     it('应该处理图片加载失败', async () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       const image = screen.getByTestId('preview-image');
-      
+
       // 触发图片加载失败
       image.dispatchEvent(new Event('error'));
 
@@ -266,12 +221,7 @@ describe('ResourcePreviewCard', () => {
     });
 
     it('应该显示加载状态', () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       // 加载状态应该显示（在图片加载完成前）
       const loadingSpinner = document.querySelector('.animate-spin');
@@ -279,15 +229,10 @@ describe('ResourcePreviewCard', () => {
     });
 
     it('应该在图片加载完成后隐藏加载状态', async () => {
-      render(
-        <ResourcePreviewCard
-          resource={mockResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={mockResource} onFavorite={mockOnFavorite} />);
 
       const image = screen.getByTestId('preview-image');
-      
+
       // 触发图片加载完成
       image.dispatchEvent(new Event('load'));
 
@@ -364,19 +309,15 @@ describe('ResourcePreviewCard', () => {
         name: '这是一个非常非常非常非常非常非常长的资源名称，应该被截断显示',
       };
 
-      render(
-        <ResourcePreviewCard
-          resource={longNameResource}
-          onFavorite={mockOnFavorite}
-        />
-      );
+      render(<ResourcePreviewCard resource={longNameResource} onFavorite={mockOnFavorite} />);
 
       const title = screen.getByText(longNameResource.name);
       expect(title).toHaveClass('line-clamp-1');
     });
 
     it('应该处理长匹配理由', () => {
-      const longReason = '这是一个非常非常非常非常非常非常长的匹配理由，应该被截断为两行显示，超出的部分会被省略号替代';
+      const longReason =
+        '这是一个非常非常非常非常非常非常长的匹配理由，应该被截断为两行显示，超出的部分会被省略号替代';
 
       render(
         <ResourcePreviewCard

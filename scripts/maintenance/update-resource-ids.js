@@ -45,7 +45,7 @@ const resourcesPath = path.join(__dirname, '../data/resources.json');
 const resources = JSON.parse(fs.readFileSync(resourcesPath, 'utf8'));
 
 // 更新 ID
-const updatedResources = resources.map(resource => {
+const updatedResources = resources.map((resource) => {
   const newId = idMapping[resource.id];
   if (!newId) {
     console.warn(`Warning: No UUID mapping found for ${resource.id}`);
@@ -53,7 +53,7 @@ const updatedResources = resources.map(resource => {
   }
   return {
     ...resource,
-    id: newId
+    id: newId,
   };
 });
 

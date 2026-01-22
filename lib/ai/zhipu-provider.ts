@@ -1,13 +1,13 @@
 import { createZhipu } from 'zhipu-ai-provider';
 import { generateText, streamText } from 'ai';
 import { BaseAIProvider } from './base-provider';
-import { 
-  AICapabilities, 
-  ChatMessage, 
-  ChatOptions, 
-  ChatResponse, 
+import {
+  AICapabilities,
+  ChatMessage,
+  ChatOptions,
+  ChatResponse,
   ChatChunk,
-  ZhipuAIConfig 
+  ZhipuAIConfig,
 } from '@/types/ai-chat';
 
 /**
@@ -32,7 +32,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
   constructor(config: ZhipuAIConfig) {
     super();
     this.config = config;
-    
+
     // 创建智谱AI客户端
     this.zhipuClient = createZhipu({
       apiKey: config.apiKey,
@@ -46,7 +46,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
    * 生成聊天完成
    */
   async generateChatCompletion(
-    messages: ChatMessage[], 
+    messages: ChatMessage[],
     options?: ChatOptions
   ): Promise<ChatResponse> {
     this.validateMessages(messages);
@@ -74,7 +74,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
    * 流式聊天完成
    */
   async *streamChatCompletion(
-    messages: ChatMessage[], 
+    messages: ChatMessage[],
     options?: ChatOptions
   ): AsyncIterable<ChatChunk> {
     this.validateMessages(messages);
@@ -106,20 +106,23 @@ export class ZhipuAIProvider extends BaseAIProvider {
       return await this.withRetry(async () => {
         // 使用智谱AI的嵌入API
         const embeddingModel = this.config.embeddingModel || 'embedding-2';
-        
+
         // 注意：zhipu-ai-provider可能需要直接调用API
         // 这里使用简化的实现，实际可能需要调用智谱的嵌入端点
-        const response = await fetch(`${this.config.baseURL || 'https://open.bigmodel.cn'}/api/paas/v4/embeddings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.config.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: embeddingModel,
-            input: text,
-          }),
-        });
+        const response = await fetch(
+          `${this.config.baseURL || 'https://open.bigmodel.cn'}/api/paas/v4/embeddings`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this.config.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: embeddingModel,
+              input: text,
+            }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Embedding API error: ${response.statusText}`);
@@ -144,18 +147,21 @@ export class ZhipuAIProvider extends BaseAIProvider {
     try {
       return await this.withRetry(async () => {
         const embeddingModel = this.config.embeddingModel || 'embedding-2';
-        
-        const response = await fetch(`${this.config.baseURL || 'https://open.bigmodel.cn'}/api/paas/v4/embeddings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.config.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: embeddingModel,
-            input: texts,
-          }),
-        });
+
+        const response = await fetch(
+          `${this.config.baseURL || 'https://open.bigmodel.cn'}/api/paas/v4/embeddings`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this.config.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: embeddingModel,
+              input: texts,
+            }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Batch embedding API error: ${response.statusText}`);
@@ -173,7 +179,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
    * 转换消息格式为智谱AI格式
    */
   protected convertMessages(messages: ChatMessage[]): any[] {
-    return messages.map(msg => ({
+    return messages.map((msg) => ({
       role: msg.type === 'assistant' ? 'assistant' : msg.type === 'system' ? 'system' : 'user',
       content: msg.content,
     }));
@@ -185,11 +191,13 @@ export class ZhipuAIProvider extends BaseAIProvider {
   protected convertResponse(response: any): ChatResponse {
     return {
       content: response.text,
-      usage: response.usage ? {
-        promptTokens: response.usage.promptTokens,
-        completionTokens: response.usage.completionTokens,
-        totalTokens: response.usage.totalTokens,
-      } : undefined,
+      usage: response.usage
+        ? {
+            promptTokens: response.usage.promptTokens,
+            completionTokens: response.usage.completionTokens,
+            totalTokens: response.usage.totalTokens,
+          }
+        : undefined,
       finishReason: this.mapFinishReason(response.finishReason),
     };
   }
@@ -209,7 +217,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
    */
   private mapFinishReason(reason: string | undefined): ChatResponse['finishReason'] {
     if (!reason) return undefined;
-    
+
     switch (reason) {
       case 'stop':
         return 'stop';
@@ -245,7 +253,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
    */
   updateConfig(config: Partial<ZhipuAIConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     // 如果API密钥或基础URL改变，重新创建客户端
     if (config.apiKey || config.baseURL) {
       this.zhipuClient = createZhipu({
@@ -253,7 +261,7 @@ export class ZhipuAIProvider extends BaseAIProvider {
         baseURL: this.config.baseURL,
       });
     }
-    
+
     console.log('ZhipuAI Provider config updated');
   }
 }

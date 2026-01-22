@@ -13,12 +13,7 @@ import type { Resource } from '@/types';
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt, onError }: any) => (
-    <img
-      src={src}
-      alt={alt}
-      onError={onError}
-      data-testid="resource-image"
-    />
+    <img src={src} alt={alt} onError={onError} data-testid="resource-image" />
   ),
 }));
 
@@ -65,24 +60,16 @@ describe('ResourceMessage', () => {
 
   describe('基本渲染', () => {
     it('应该渲染资源推荐', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       expect(screen.getByText('Test Resource')).toBeInTheDocument();
-      expect(screen.getByText('This resource matches your requirements perfectly')).toBeInTheDocument();
+      expect(
+        screen.getByText('This resource matches your requirements perfectly')
+      ).toBeInTheDocument();
     });
 
     it('应该显示资源截图', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       const image = screen.getByTestId('resource-image');
       expect(image).toHaveAttribute('src', 'https://example.com/screenshot.jpg');
@@ -90,34 +77,19 @@ describe('ResourceMessage', () => {
     });
 
     it('应该显示精选标识', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       expect(screen.getByText('精选')).toBeInTheDocument();
     });
 
     it('应该显示评分', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       expect(screen.getByText('4.5')).toBeInTheDocument();
     });
 
     it('应该显示匹配方面标签', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       expect(screen.getByText('color')).toBeInTheDocument();
       expect(screen.getByText('tool')).toBeInTheDocument();
@@ -127,12 +99,7 @@ describe('ResourceMessage', () => {
 
   describe('图片加载错误处理', () => {
     it('应该在图片加载失败时显示占位符', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       const image = screen.getByTestId('resource-image');
       fireEvent.error(image);
@@ -143,12 +110,7 @@ describe('ResourceMessage', () => {
 
   describe('用户交互', () => {
     it('应该在点击收藏按钮时调用 onFavorite', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       const favoriteButton = screen.getByLabelText('收藏');
       fireEvent.click(favoriteButton);
@@ -157,12 +119,7 @@ describe('ResourceMessage', () => {
     });
 
     it('应该在点击访问按钮时调用 onVisit', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       const visitButton = screen.getByText('访问');
       fireEvent.click(visitButton);
@@ -171,12 +128,7 @@ describe('ResourceMessage', () => {
     });
 
     it('应该在点击详情按钮时调用 onResourceClick', () => {
-      render(
-        <ResourceMessage
-          resources={[mockRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[mockRecommendation]} {...mockHandlers} />);
 
       const detailsButton = screen.getByText('详情');
       fireEvent.click(detailsButton);
@@ -195,12 +147,7 @@ describe('ResourceMessage', () => {
         },
       ];
 
-      render(
-        <ResourceMessage
-          resources={recommendations}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={recommendations} {...mockHandlers} />);
 
       expect(screen.getByText('Test Resource')).toBeInTheDocument();
       expect(screen.getByText('Test Resource 2')).toBeInTheDocument();
@@ -214,12 +161,7 @@ describe('ResourceMessage', () => {
         relevanceScore: 0.85,
       };
 
-      render(
-        <ResourceMessage
-          resources={[highRelevanceRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[highRelevanceRecommendation]} {...mockHandlers} />);
 
       expect(screen.getByText('高度匹配')).toBeInTheDocument();
     });
@@ -230,12 +172,7 @@ describe('ResourceMessage', () => {
         relevanceScore: 0.5,
       };
 
-      render(
-        <ResourceMessage
-          resources={[lowRelevanceRecommendation]}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceMessage resources={[lowRelevanceRecommendation]} {...mockHandlers} />);
 
       expect(screen.queryByText('高度匹配')).not.toBeInTheDocument();
     });
@@ -243,12 +180,7 @@ describe('ResourceMessage', () => {
 
   describe('空状态', () => {
     it('应该在没有资源时不渲染任何内容', () => {
-      const { container } = render(
-        <ResourceMessage
-          resources={[]}
-          {...mockHandlers}
-        />
-      );
+      const { container } = render(<ResourceMessage resources={[]} {...mockHandlers} />);
 
       expect(container.firstChild).toBeNull();
     });

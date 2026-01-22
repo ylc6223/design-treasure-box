@@ -18,13 +18,13 @@ export interface ClarificationMessageProps {
 
 /**
  * ClarificationMessage 组件（快速回复按钮版本）
- * 
+ *
  * 一次性显示所有澄清选项的快速回复按钮组
  * - 移除步骤式逻辑，一次显示所有问题和选项
  * - 圆角胶囊样式按钮（rounded-full）
  * - 依次出现动画（每个按钮延迟 0.05s）
  * - 用户可以点击任意选项或直接在输入框输入
- * 
+ *
  * @param questions - 澄清问题数组
  * @param onAnswerSelect - 选项选择回调
  * @param className - 额外的 CSS 类名

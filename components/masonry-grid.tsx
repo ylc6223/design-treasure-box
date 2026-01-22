@@ -1,58 +1,49 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { ResourceCard } from './resource-card'
-import { cn } from '@/lib/utils'
-import type { Resource } from '@/types'
+import * as React from 'react';
+import { ResourceCard } from './resource-card';
+import { cn } from '@/lib/utils';
+import type { Resource } from '@/types';
 
 export interface MasonryGridProps {
-  resources: Resource[]
-  isFavorited: (id: string) => boolean
-  onFavorite: (id: string) => void
-  className?: string
+  resources: Resource[];
+  isFavorited: (id: string) => boolean;
+  onFavorite: (id: string) => void;
+  className?: string;
 }
 
 /**
  * MasonryGrid 组件
- * 
+ *
  * 瀑布流布局展示资源卡片
- * 
+ *
  * 响应式列数：
  * - XL (≥1440px): 5列
  * - Desktop (≥1200px): 4列
  * - Tablet (768-1199px): 3列
  * - Mobile (<768px): 2列
- * 
+ *
  * 特性：
  * - CSS Grid 瀑布流布局
  * - Stagger fade-in 加载动画
  * - 响应式列数
  */
-export function MasonryGrid({
-  resources,
-  isFavorited,
-  onFavorite,
-  className,
-}: MasonryGridProps) {
-  const [mounted, setMounted] = React.useState(false)
+export function MasonryGrid({ resources, isFavorited, onFavorite, className }: MasonryGridProps) {
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (resources.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <p className="text-lg font-medium text-muted-foreground">
-            暂无资源
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            请尝试其他筛选条件
-          </p>
+          <p className="text-lg font-medium text-muted-foreground">暂无资源</p>
+          <p className="mt-2 text-sm text-muted-foreground">请尝试其他筛选条件</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -70,10 +61,7 @@ export function MasonryGrid({
       {resources.map((resource, index) => (
         <div
           key={resource.id}
-          className={cn(
-            'opacity-0 animate-fade-in',
-            mounted && 'opacity-100'
-          )}
+          className={cn('opacity-0 animate-fade-in', mounted && 'opacity-100')}
           style={{
             animationDelay: `${index * 50}ms`,
             animationFillMode: 'forwards',
@@ -87,5 +75,5 @@ export function MasonryGrid({
         </div>
       ))}
     </div>
-  )
+  );
 }

@@ -1,5 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-import type { VectorDatabase, ResourceMetadata, VectorSearchOptions, VectorSearchResult } from '@/types/supabase-vector';
+import type {
+  VectorDatabase,
+  ResourceMetadata,
+  VectorSearchOptions,
+  VectorSearchResult,
+} from '@/types/supabase-vector';
 
 /**
  * Supabase 向量存储服务
@@ -17,16 +22,12 @@ export class SupabaseVectorStore {
     }
 
     // 使用 secret key 创建管理员客户端
-    this.client = createClient<VectorDatabase>(
-      supabaseUrl,
-      supabaseSecretKey,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
+    this.client = createClient<VectorDatabase>(supabaseUrl, supabaseSecretKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
   }
 
   /**
@@ -36,12 +37,7 @@ export class SupabaseVectorStore {
     queryEmbedding: number[],
     options: VectorSearchOptions = {}
   ): Promise<VectorSearchResult[]> {
-    const {
-      limit = 10,
-      minSimilarity = 0.3,
-      categoryFilter,
-      minRating,
-    } = options;
+    const { limit = 10, minSimilarity = 0.3, categoryFilter, minRating } = options;
 
     try {
       const rpcParams: Record<string, unknown> = {
@@ -66,7 +62,7 @@ export class SupabaseVectorStore {
       }
 
       // @ts-ignore - data type inference issue
-      return data.map(row => ({
+      return data.map((row) => ({
         resourceId: row.resource_id,
         similarity: row.similarity,
         metadata: row.metadata,
@@ -118,7 +114,7 @@ export class SupabaseVectorStore {
     }>
   ): Promise<void> {
     try {
-      const records = embeddings.map(item => ({
+      const records = embeddings.map((item) => ({
         resource_id: item.resourceId,
         embedding: item.embedding,
         content: item.content,
@@ -188,9 +184,7 @@ export class SupabaseVectorStore {
 
       return {
         totalEmbeddings: count || 0,
-        lastUpdated: data?.[0]?.updated_at
-          ? new Date(data[0].updated_at)
-          : null,
+        lastUpdated: data?.[0]?.updated_at ? new Date(data[0].updated_at) : null,
       };
     } catch (error) {
       console.error('Supabase stats error:', error);

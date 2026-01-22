@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,35 +9,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { User, Settings, LogOut, Shield } from 'lucide-react'
-import type { Database } from '@/types/database'
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { User, Settings, LogOut, Shield } from 'lucide-react';
+import type { Database } from '@/types/database';
 
-type Profile = Database['public']['Tables']['profiles']['Row']
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface UserMenuProps {
-  profile: Profile
+  profile: Profile;
 }
 
 export function UserMenu({ profile }: UserMenuProps) {
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
-  }
+    await supabase.auth.signOut();
+    router.refresh();
+  };
 
   const getInitials = (name: string | null) => {
-    if (!name) return profile.email.charAt(0).toUpperCase()
+    if (!name) return profile.email.charAt(0).toUpperCase();
     return name
       .split(' ')
       .map((n) => n[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   return (
     <DropdownMenu>
@@ -65,12 +65,8 @@ export function UserMenu({ profile }: UserMenuProps) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {profile.name || '用户'}
-            </p>
-            <p className="text-xs leading-none text-text-muted">
-              {profile.email}
-            </p>
+            <p className="text-sm font-medium leading-none">{profile.name || '用户'}</p>
+            <p className="text-xs leading-none text-text-muted">{profile.email}</p>
           </div>
         </DropdownMenuLabel>
 
@@ -104,5 +100,5 @@ export function UserMenu({ profile }: UserMenuProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

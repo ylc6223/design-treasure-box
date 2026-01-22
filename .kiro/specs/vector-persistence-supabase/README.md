@@ -45,8 +45,8 @@ CREATE TABLE resource_embeddings (
 );
 
 -- 向量索引（余弦相似度）
-CREATE INDEX resource_embeddings_embedding_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_embedding_idx
+ON resource_embeddings
 USING ivfflat (embedding vector_cosine_ops);
 ```
 
@@ -61,26 +61,31 @@ USING ivfflat (embedding vector_cosine_ops);
 ## 实施计划
 
 ### 阶段 1: 基础设施 (Tasks 1-2)
+
 - Supabase 数据库架构设置
 - pgvector 扩展和索引配置
 - 客户端集成和基础 API
 
 ### 阶段 2: 核心服务 (Tasks 3-4)
+
 - 向量持久化服务实现
 - 增量同步机制开发
 - 缓存层和性能优化
 
 ### 阶段 3: 监控运维 (Tasks 6-7)
+
 - 配置管理和环境支持
 - 性能监控和健康检查
 - 错误处理和监控机制
 
 ### 阶段 4: 迁移集成 (Tasks 8-9)
+
 - 数据迁移工具开发
 - 完全替换现有向量搜索服务
 - 生产环境部署
 
 ### 阶段 5: 验证优化 (Tasks 11-13)
+
 - 端到端集成测试
 - 性能基准测试
 - 生产环境验证
@@ -114,16 +119,19 @@ EMBEDDING_BATCH_SIZE=50
 ## 迁移策略
 
 ### 1. 数据库优先架构
+
 - 完全依赖 Supabase PostgreSQL + pgvector
 - 移除所有旧向量搜索相关代码
 - 所有向量操作都通过数据库执行
 
 ### 2. 零停机部署
+
 - 数据库架构预先创建
 - 后台同步向量数据
 - 原子性切换搜索后端
 
 ### 3. 完整替换策略
+
 - 不保留原有向量搜索代码
 - 彻底重构向量搜索服务
 - 确保生产环境的一致性
@@ -162,4 +170,4 @@ EMBEDDING_BATCH_SIZE=50
 
 ---
 
-*本方案基于当前项目的实际情况设计，充分考虑了现有技术栈和业务需求，确保平滑迁移和长期可维护性。*
+_本方案基于当前项目的实际情况设计，充分考虑了现有技术栈和业务需求，确保平滑迁移和长期可维护性。_

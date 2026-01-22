@@ -14,16 +14,19 @@ sql/
 ## 使用说明
 
 ### manual/ - 手动执行脚本
+
 - 需要在Supabase Dashboard的SQL编辑器中手动执行
 - 通常用于一次性的数据库操作或修复
 - 文件命名：`{purpose}_{description}.sql`
 
 ### seeds/ - 种子数据脚本
+
 - 用于初始化数据库数据
 - 包含测试数据和基础数据
 - 文件命名：`seed_{table_name}.sql`
 
 ### utilities/ - 工具SQL脚本
+
 - 数据库维护和优化脚本
 - 修复和更新脚本
 - 文件命名：`{action}_{target}.sql`

@@ -5,6 +5,7 @@
 ## ⚠️ 重要更新
 
 根据最新的仓库 issue，prompt-kit MCP 配置已更改：
+
 - **旧版本**: `"args": ["-y", "shadcn@canary", "registry:mcp"]`
 - **新版本**: `"args": ["-y", "shadcn@canary", "mcp"]`
 
@@ -135,6 +136,7 @@
 配置完成后，您可以使用以下自然语言提示：
 
 ### shadcn 组件
+
 ```
 安装一个按钮组件
 添加一个数据表格组件到我的项目
@@ -142,6 +144,7 @@
 ```
 
 ### prompt-kit 组件
+
 ```
 显示所有可用的 prompt-kit 组件
 将 prompt-kit 的 PromptInput 组件添加到我的项目中
@@ -149,6 +152,7 @@
 ```
 
 ### 组合使用
+
 ```
 使用 shadcn 的 Card 组件和 prompt-kit 的 PromptInput 创建一个聊天界面
 构建一个包含 shadcn 按钮和 prompt-kit 消息组件的应用
@@ -213,7 +217,8 @@
 // 正确：包含 {name} 占位符
 "@prompt-kit": "https://www.prompt-kit.com/c/{name}.json"
 ```
-```
+
+````
 
 ### 环境变量
 
@@ -222,7 +227,7 @@
 ```env
 REGISTRY_TOKEN=your_token_here
 API_KEY=your_api_key_here
-```
+````
 
 ## 故障排除
 
@@ -246,6 +251,7 @@ API_KEY=your_api_key_here
 ### 验证配置
 
 配置完成后，在 AI 工具中运行：
+
 ```
 列出所有可用的 MCP 工具
 显示 shadcn 和 prompt-kit 的连接状态

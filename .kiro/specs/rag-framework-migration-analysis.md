@@ -7,16 +7,19 @@
 ## 候选框架对比
 
 ### LangChain
+
 **版本**: v0.1.x (TypeScript)
 **生态**: 最成熟，组件最丰富
 **学习曲线**: 陡峭，概念复杂
 
 ### LlamaIndex
+
 **版本**: v0.3.x (TypeScript)
 **生态**: 专注RAG，相对简单
 **学习曲线**: 中等，文档较好
 
 ### Vercel AI SDK + 自定义
+
 **版本**: v3.x
 **生态**: 轻量，与Next.js深度集成
 **学习曲线**: 平缓，已在使用
@@ -26,6 +29,7 @@
 ### 1. LangChain迁移方案
 
 #### 1.1 架构映射
+
 ```typescript
 // 当前架构 → LangChain架构
 VercelAIRAGEngine → ChatOpenAI + RetrievalQAChain
@@ -37,6 +41,7 @@ GuidedQuestioningEngine → ConversationChain + PromptTemplate
 #### 1.2 核心组件迁移
 
 **向量存储迁移**
+
 ```typescript
 // 现有实现
 class SupabaseVectorStore {
@@ -45,47 +50,49 @@ class SupabaseVectorStore {
     return this.client.rpc('match_resources', {
       query_embedding: embedding,
       match_threshold: options.minSimilarity,
-      match_count: options.limit
+      match_count: options.limit,
     });
   }
 }
 
 // LangChain实现
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { SupabaseVectorStore } from 'langchain/vectorstores/supabase';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
 const vectorStore = new SupabaseVectorStore(
   new OpenAIEmbeddings(), // 需要替换为智谱AI
   {
     client: supabaseClient,
-    tableName: "resource_embeddings",
-    queryName: "match_resources"
+    tableName: 'resource_embeddings',
+    queryName: 'match_resources',
   }
 );
 ```
 
 **RAG链构建**
+
 ```typescript
 // LangChain RAG实现
-import { RetrievalQAChain } from "langchain/chains";
-import { ChatOpenAI } from "langchain/chat_models/openai";
+import { RetrievalQAChain } from 'langchain/chains';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
 
 const chain = RetrievalQAChain.fromLLM(
   new ChatOpenAI(), // 需要自定义智谱AI适配器
   vectorStore.asRetriever({
-    searchType: "similarity",
-    searchKwargs: { k: 5 }
+    searchType: 'similarity',
+    searchKwargs: { k: 5 },
   })
 );
 
 const response = await chain.call({
-  query: "推荐颜色工具"
+  query: '推荐颜色工具',
 });
 ```
 
 #### 1.3 实施难度评估
 
 **🔴 高难度项目**
+
 1. **智谱AI适配器开发**
    - LangChain没有官方智谱AI支持
    - 需要实现ChatModel和Embeddings接口
@@ -102,6 +109,7 @@ const response = await chain.call({
    - 估计工作量：2-3周
 
 **🟡 中等难度项目**
+
 1. **流式响应适配**
    - LangChain支持流式，但API不同
    - 需要适配现有前端接口
@@ -113,6 +121,7 @@ const response = await chain.call({
    - 估计工作量：1-2周
 
 **🟢 低难度项目**
+
 1. **基础配置迁移**
    - 环境变量和配置文件
    - 估计工作量：1-2天
@@ -120,6 +129,7 @@ const response = await chain.call({
 ### 2. LlamaIndex迁移方案
 
 #### 2.1 架构映射
+
 ```typescript
 // 当前架构 → LlamaIndex架构
 VercelAIRAGEngine → QueryEngine + ResponseSynthesizer
@@ -128,39 +138,32 @@ SupabaseVectorStore → SupabaseVectorStore (需要适配)
 ```
 
 #### 2.2 核心实现
+
 ```typescript
 // LlamaIndex实现示例
-import { 
-  VectorStoreIndex, 
-  QueryEngine,
-  ServiceContext,
-  StorageContext
-} from "llamaindex";
+import { VectorStoreIndex, QueryEngine, ServiceContext, StorageContext } from 'llamaindex';
 
 // 构建索引
 const serviceContext = ServiceContext.fromDefaults({
   llm: new CustomZhipuLLM(), // 需要自定义
-  embedModel: new CustomZhipuEmbedding() // 需要自定义
+  embedModel: new CustomZhipuEmbedding(), // 需要自定义
 });
 
 const storageContext = StorageContext.fromDefaults({
-  vectorStore: new SupabaseVectorStore() // 需要适配
+  vectorStore: new SupabaseVectorStore(), // 需要适配
 });
 
-const index = await VectorStoreIndex.fromVectorStore(
-  vectorStore,
-  serviceContext,
-  storageContext
-);
+const index = await VectorStoreIndex.fromVectorStore(vectorStore, serviceContext, storageContext);
 
 // 查询
 const queryEngine = index.asQueryEngine();
-const response = await queryEngine.query("推荐颜色工具");
+const response = await queryEngine.query('推荐颜色工具');
 ```
 
 #### 2.3 实施难度评估
 
 **🔴 高难度项目**
+
 1. **智谱AI集成**
    - LlamaIndex对智谱AI支持有限
    - 需要实现LLM和Embedding接口
@@ -172,6 +175,7 @@ const response = await queryEngine.query("推荐颜色工具");
    - 估计工作量：1-2周
 
 **🟡 中等难度项目**
+
 1. **查询引擎定制**
    - 需要适配现有的混合搜索逻辑
    - 估计工作量：1-2周
@@ -186,6 +190,7 @@ const response = await queryEngine.query("推荐颜色工具");
 ### 3.1 迁移风险评估
 
 **🚨 高风险**
+
 1. **功能回归风险**
    - 引导式提问可能无法完全复现
    - 混合搜索效果可能下降
@@ -202,6 +207,7 @@ const response = await queryEngine.query("推荐颜色工具");
    - 调试难度增加
 
 **⚠️ 中等风险**
+
 1. **开发周期延长**
    - 学习曲线导致开发效率下降
    - 调试和优化需要更多时间
@@ -213,6 +219,7 @@ const response = await queryEngine.query("推荐颜色工具");
 ### 3.2 收益评估
 
 **✅ 潜在收益**
+
 1. **生态系统优势**
    - 丰富的插件和扩展
    - 社区支持和最佳实践
@@ -229,6 +236,7 @@ const response = await queryEngine.query("推荐颜色工具");
    - 高级RAG技术
 
 **❌ 收益有限**
+
 1. **当前功能已满足需求**
    - 现有RAG效果良好
    - 用户体验稳定
@@ -242,11 +250,13 @@ const response = await queryEngine.query("推荐颜色工具");
 ### 4.1 推荐方案：保持现状 + 渐进优化
 
 **理由：**
+
 1. **风险收益比不合理**：迁移风险高，但收益有限
 2. **现有架构已经成熟**：功能完整，性能良好
 3. **业务优先级**：应该专注于产品功能而非技术重构
 
 **具体建议：**
+
 1. **短期**：按照roadmap进行渐进式优化
 2. **中期**：关注业务增长和用户体验
 3. **长期**：根据业务需求决定是否需要框架级别的改变
@@ -262,18 +272,18 @@ class HybridRAGEngine {
     private coreEngine: VercelAIRAGEngine, // 保留现有核心
     private langchainAgent?: Agent // 可选的LangChain Agent
   ) {}
-  
+
   async generateResponse(query: string, options: RAGOptions) {
     // 优先使用现有引擎
     if (this.shouldUseCoreEngine(query, options)) {
       return this.coreEngine.generateResponse(query, options);
     }
-    
+
     // 复杂场景使用LangChain
     if (this.langchainAgent && this.needsAgentCapabilities(query)) {
       return this.langchainAgent.run(query);
     }
-    
+
     return this.coreEngine.generateResponse(query, options);
   }
 }
@@ -282,12 +292,14 @@ class HybridRAGEngine {
 ### 4.3 迁移时机建议
 
 **适合迁移的时机：**
+
 1. **业务规模显著增长**（资源数量 > 1000）
 2. **需要复杂Agent能力**（多步推理、工具调用）
 3. **团队技术栈统一需求**
 4. **现有架构遇到瓶颈**
 
 **不适合迁移的情况：**
+
 1. **当前功能满足需求**
 2. **团队资源有限**
 3. **业务处于快速迭代期**

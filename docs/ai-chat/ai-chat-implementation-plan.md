@@ -157,6 +157,7 @@
 
 - [ ] 创建 `lib/ai/query-analyzer.ts`
 - [ ] 实现**关键词密度计算**:
+
   ```typescript
   calculateKeywordDensity(query: string): DensityLevel
   ```
@@ -164,7 +165,9 @@
   - 停用词过滤（的、是、网站...）
   - 有效关键词提取
   - 密度等级判定（低/中/高）
+
 - [ ] 实现**核心维度识别**:
+
   ```typescript
   extractDimensions(query: string): {
     categories?: string[],
@@ -178,12 +181,15 @@
   - 风格关键词库（极简、复古...）
   - 颜色关键词库
   - 受众关键词库（B2B、年轻...）
+
 - [ ] 实现**清晰度判定逻辑**:
+
   ```typescript
   determineClarity(density: DensityLevel, dimensions: Dimensions): ClarityLevel
   ```
 
   - 参考文档中的判定矩阵
+
 - [ ] 编写单元测试（覆盖率 ≥ 80%）
 
 **测试用例**:
@@ -221,20 +227,25 @@ describe('QueryAnalyzer', () => {
 
 - [ ] 创建 `lib/ai/vector-search.ts`
 - [ ] 实现**查询向量化**:
+
   ```typescript
   async embedQuery(query: string): Promise<number[]>
   ```
 
   - 调用智谱AI embedding-3模型
   - 添加缓存（相同查询24小时内复用）
+
 - [ ] 实现**相似度计算**:
+
   ```typescript
   calculateSimilarity(queryEmbedding: number[], resourceEmbedding: number[]): number
   ```
 
   - 余弦相似度算法
   - 返回0-1的分数
+
 - [ ] 实现**Top-K检索**:
+
   ```typescript
   async searchTopK(query: string, k: number = 10, filters?: SearchFilters): Promise<SearchResult[]>
   ```
@@ -242,6 +253,7 @@ describe('QueryAnalyzer', () => {
   - 应用筛选条件（类别、评分...）
   - 按相似度排序
   - 返回Top-K结果
+
 - [ ] 实现筛选条件逻辑:
   - [ ] `categories`: 类别筛选
   - [ ] `minRating`: 最低评分
@@ -267,6 +279,7 @@ describe('QueryAnalyzer', () => {
 
 - [ ] 创建 `lib/ai/recommendation-engine.ts`
 - [ ] 实现**推荐理由生成**:
+
   ```typescript
   async generateRecommendationReasons(
     results: SearchResult[],
@@ -278,14 +291,18 @@ describe('QueryAnalyzer', () => {
   - 为每个结果生成1-2句话的推荐理由
   - 说明"为什么匹配"（颜色、风格、行业...）
   - 控制生成成本（每条 ≤ 50字）
+
 - [ ] 实现**匹配度计算**:
+
   ```typescript
   calculateMatchConfidence(result: SearchResult, analysis: QueryAnalysis): number
   ```
 
   - 综合考虑相似度和维度匹配度
   - 返回0-100的分数
+
 - [ ] 实现**短路逻辑（L1/L2切换）**:
+
   ```typescript
   shouldUseL1(analysis: QueryAnalysis): boolean {
     return analysis.query.length < 5 && hasCoreKeywords(analysis);
@@ -294,7 +311,9 @@ describe('QueryAnalyzer', () => {
 
   - 简单查询用L1（纯向量检索）
   - 复杂查询用L2（RAG + 生成）
+
 - [ ] 实现智能约束放松（Phase 1简化版）:
+
   ```typescript
   async constraintRelaxation(
     query: string,
@@ -345,6 +364,7 @@ describe('QueryAnalyzer', () => {
   ```
 
 - [ ] 实现响应文本生成：
+
   ```typescript
   function generateResponseText(results: SearchResult[], analysis: QueryAnalysis): string;
   ```
@@ -352,6 +372,7 @@ describe('QueryAnalyzer', () => {
   - 根据清晰度生成不同话术
   - 清晰："找到X个匹配资源..."
   - 模糊："为您推荐以下资源，如果需要调整请告诉我..."
+
 - [ ] 添加请求/响应日志（用于调试）
 - [ ] 编写端到端集成测试
 - [ ] 手动测试常见场景（至少10个）
@@ -399,6 +420,7 @@ describe('QueryAnalyzer', () => {
 
 - [ ] 创建 `lib/ai/clarification-generator.ts`
 - [ ] 实现**缺失维度检测**:
+
   ```typescript
   detectMissingDimensions(analysis: QueryAnalysis): DimensionType[]
   ```
@@ -406,7 +428,9 @@ describe('QueryAnalyzer', () => {
   - 根据清晰度判定缺失哪些维度
   - 高模糊：检测所有缺失维度
   - 中等模糊：检测最重要的缺失维度
+
 - [ ] 实现**澄清问题生成**:
+
   ```typescript
   async generateClarificationQuestions(
     query: string,
@@ -417,7 +441,9 @@ describe('QueryAnalyzer', () => {
   - 为每个缺失维度生成1个问题
   - 提供2-4个预设选项
   - 问题自然、友好
+
 - [ ] 实现**澄清策略选择**:
+
   ```typescript
   selectClarificationStrategy(analysis: QueryAnalysis): 'batch' | 'single' | 'suggestion'
   ```
@@ -425,6 +451,7 @@ describe('QueryAnalyzer', () => {
   - 高模糊 → batch（批量澄清）
   - 中等模糊 → single（单次澄清）
   - 低模糊 → suggestion（非侵入式建议）
+
 - [ ] 编写单元测试
 
 **验收标准**:
@@ -452,18 +479,22 @@ describe('QueryAnalyzer', () => {
   }
   ```
 - [ ] 实现**反馈记录**:
+
   ```typescript
   recordFeedback(query: string, feedback: string): void
   ```
 
   - 记录用户的迭代反馈（"不要太极简"、"更现代一点"）
+
 - [ ] 实现**记忆应用**:
+
   ```typescript
   applyPreferencesToSearch(filters: SearchFilters): SearchFilters
   ```
 
   - 后续搜索自动应用会话偏好
   - 排除用户不喜欢的风格
+
 - [ ] 实现**会话持久化**（现有功能已实现，验证可用）
 - [ ] 测试记忆功能（5+场景）
 
@@ -495,6 +526,7 @@ describe('QueryAnalyzer', () => {
   - [ ] `components/ai-chat/clarification-message.tsx`
   - [ ] 支持批量、单次、非侵入式三种模式
 - [ ] 实现**三阶段加载逻辑**:
+
   ```typescript
   const [loadingStage, setLoadingStage] = useState<'skeleton' | 'partial' | 'complete'>('skeleton');
   ```
@@ -502,6 +534,7 @@ describe('QueryAnalyzer', () => {
   - 阶段1：显示骨架屏
   - 阶段2：填充Top 1-3
   - 阶段3：懒加载剩余
+
 - [ ] 优化动画和过渡效果（使用Motion）
 
 **验收标准**:
@@ -520,25 +553,31 @@ describe('QueryAnalyzer', () => {
 **任务清单**:
 
 - [ ] 实现**迭代指令识别**:
+
   ```typescript
   isIterationQuery(input: string, lastResults: SearchResult[]): boolean
   ```
 
   - 识别"再推荐一些类似的"
   - 识别"不要XXX"、"更XXX"
+
 - [ ] 实现**基于结果的扩展搜索**:
+
   ```typescript
   async expandSearch(results: SearchResult[]): Promise<SearchResult[]>
   ```
 
   - 基于当前结果的风格/类别扩展
   - 返回新的推荐集合
+
 - [ ] 实现**排除式搜索**:
+
   ```typescript
   async searchWithExclusions(query: string, exclusions: string[]): Promise<SearchResult[]>
   ```
 
   - 从搜索结果中排除指定风格/类别
+
 - [ ] UI：在每组结果末尾添加迭代入口
   - [ ] "不喜欢这组？告诉我调整方向"
   - [ ] 快捷指令按钮
@@ -575,19 +614,23 @@ describe('QueryAnalyzer', () => {
 
 - [ ] 创建 `lib/ai/constraint-relaxation.ts`
 - [ ] 实现**维度拆解推荐**:
+
   ```typescript
   async relaxByDimension(query: string): Promise<DimensionGroup[]>
   ```
 
   - 尝试 A+B, B+C, A+C 的组合
   - 返回分组结果
+
 - [ ] 实现**语义关联拓展**:
+
   ```typescript
   async expandBySemanticRelation(term: string): Promise<string[]>
   ```
 
   - "蒸汽朋克" → ["工业风", "复古机械", "深色金属风"]
   - 使用AI生成关联词
+
 - [ ] 实现**可删除标签UI**:
   - [ ] 在结果顶部展示搜索条件
   - [ ] 支持点击删除标签
@@ -639,11 +682,13 @@ describe('QueryAnalyzer', () => {
 **任务清单**:
 
 - [ ] 实现**查询缓存**:
+
   ```typescript
   const cache = new LRUCache<string, ChatResponse>({ max: 100, ttl: 24 * 60 * 60 * 1000 });
   ```
 
   - 相同查询24小时内直接返回缓存
+
 - [ ] 优化**embedding生成**:
   - [ ] 批量生成（一次生成多个query）
   - [ ] 结果持久化到数据库

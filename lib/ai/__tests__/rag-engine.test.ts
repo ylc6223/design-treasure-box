@@ -28,7 +28,8 @@ class MockAIProvider implements AIProvider {
 
   async generateChatCompletion(): Promise<any> {
     return {
-      content: '基于搜索结果，我推荐以下资源：\n\n1. **Coolors** - 这是一个优秀的配色工具，界面简洁，功能强大。\n\n推荐理由：\n- 高评分资源（4.5/5.0）\n- 完全免费使用\n- 适合快速生成配色方案',
+      content:
+        '基于搜索结果，我推荐以下资源：\n\n1. **Coolors** - 这是一个优秀的配色工具，界面简洁，功能强大。\n\n推荐理由：\n- 高评分资源（4.5/5.0）\n- 完全免费使用\n- 适合快速生成配色方案',
       usage: {
         promptTokens: 100,
         completionTokens: 50,
@@ -56,7 +57,7 @@ class MockAIProvider implements AIProvider {
   }
 
   async generateEmbeddings(texts: string[]): Promise<number[][]> {
-    return Promise.all(texts.map(t => this.generateEmbedding(t)));
+    return Promise.all(texts.map((t) => this.generateEmbedding(t)));
   }
 
   private simpleHash(str: string): number {
@@ -178,7 +179,7 @@ describe('VercelAIRAGEngine', () => {
         categories: ['color'],
       });
 
-      response.searchResults.forEach(result => {
+      response.searchResults.forEach((result) => {
         expect(result.resource.categoryId).toBe('color');
       });
     });
@@ -189,7 +190,7 @@ describe('VercelAIRAGEngine', () => {
         minRating,
       });
 
-      response.searchResults.forEach(result => {
+      response.searchResults.forEach((result) => {
         expect(result.resource.rating.overall).toBeGreaterThanOrEqual(minRating);
       });
     });
@@ -250,13 +251,13 @@ describe('VercelAIRAGEngine', () => {
 
       expect(results.length).toBeGreaterThan(0);
       expect(results.length).toBeLessThanOrEqual(3);
-      expect(results.every(r => r.resource.id !== 'coolors-1')).toBe(true);
+      expect(results.every((r) => r.resource.id !== 'coolors-1')).toBe(true);
     });
 
     it('应该包含匹配理由', async () => {
       const results = await ragEngine.getSimilarResources('coolors-1', 3);
 
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.matchReason).toBeTruthy();
         expect(result.matchReason).toContain('相似度');
       });
@@ -303,34 +304,28 @@ describe('VercelAIRAGEngine', () => {
   describe('属性测试：推荐质量', () => {
     it('Property: 任何查询都应该返回最多5个资源推荐', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          async (query) => {
-            const response = await ragEngine.generateResponse(query, {
-              maxResults: 5,
-            });
+        fc.asyncProperty(fc.string({ minLength: 1, maxLength: 50 }), async (query) => {
+          const response = await ragEngine.generateResponse(query, {
+            maxResults: 5,
+          });
 
-            expect(response.searchResults.length).toBeLessThanOrEqual(5);
-          }
-        ),
+          expect(response.searchResults.length).toBeLessThanOrEqual(5);
+        }),
         { numRuns: 5 }
       );
     });
 
     it('Property: 所有推荐都应该包含匹配理由', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          async (query) => {
-            const response = await ragEngine.generateResponse(query);
+        fc.asyncProperty(fc.string({ minLength: 1, maxLength: 50 }), async (query) => {
+          const response = await ragEngine.generateResponse(query);
 
-            response.searchResults.forEach(result => {
-              expect(result.matchReason).toBeTruthy();
-              expect(typeof result.matchReason).toBe('string');
-              expect(result.matchReason.length).toBeGreaterThan(0);
-            });
-          }
-        ),
+          response.searchResults.forEach((result) => {
+            expect(result.matchReason).toBeTruthy();
+            expect(typeof result.matchReason).toBe('string');
+            expect(result.matchReason.length).toBeGreaterThan(0);
+          });
+        }),
         { numRuns: 5 }
       );
     });
@@ -338,7 +333,7 @@ describe('VercelAIRAGEngine', () => {
     it('Property: 响应时间应该被正确记录', async () => {
       await fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 2, maxLength: 50 }).filter(s => s.trim().length > 0),
+          fc.string({ minLength: 2, maxLength: 50 }).filter((s) => s.trim().length > 0),
           async (query) => {
             const response = await ragEngine.generateResponse(query);
 
@@ -428,11 +423,9 @@ describe('VercelAIRAGEngine', () => {
         },
       ];
 
-      const response = await ragEngine.generateResponse(
-        '还有其他的吗？',
-        undefined,
-        { conversationHistory }
-      );
+      const response = await ragEngine.generateResponse('还有其他的吗？', undefined, {
+        conversationHistory,
+      });
 
       expect(response).toHaveProperty('content');
       expect(response).toHaveProperty('searchResults');
@@ -460,17 +453,14 @@ describe('VercelAIRAGEngine', () => {
 
     it('Property: 澄清问题数量应该合理（不超过3个）', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          fc.string({ minLength: 1, maxLength: 10 }),
-          async (query) => {
-            const response = await ragEngine.generateResponse(query);
+        fc.asyncProperty(fc.string({ minLength: 1, maxLength: 10 }), async (query) => {
+          const response = await ragEngine.generateResponse(query);
 
-            if (response.needsClarification && response.clarificationQuestions) {
-              expect(response.clarificationQuestions.length).toBeLessThanOrEqual(3);
-              expect(response.clarificationQuestions.length).toBeGreaterThan(0);
-            }
+          if (response.needsClarification && response.clarificationQuestions) {
+            expect(response.clarificationQuestions.length).toBeLessThanOrEqual(3);
+            expect(response.clarificationQuestions.length).toBeGreaterThan(0);
           }
-        ),
+        }),
         { numRuns: 10 }
       );
     });

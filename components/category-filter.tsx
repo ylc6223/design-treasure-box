@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import type { DatabaseCategory } from '@/types/category'
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import type { DatabaseCategory } from '@/types/category';
 
 export interface CategoryFilterProps {
-  categories: DatabaseCategory[]
-  activeCategory?: string
-  onCategoryChange: (categoryId: string | undefined) => void
-  className?: string
+  categories: DatabaseCategory[];
+  activeCategory?: string;
+  onCategoryChange: (categoryId: string | undefined) => void;
+  className?: string;
 }
 
 /**
  * CategoryFilter 组件
- * 
+ *
  * 分类筛选标签栏，用于在瀑布流上方切换不同分类
- * 
+ *
  * @param categories - 分类列表
  * @param activeCategory - 当前激活的分类 ID
  * @param onCategoryChange - 分类切换回调
@@ -51,18 +51,13 @@ export function CategoryFilter({
           onClick={() => onCategoryChange(category.id)}
           className={cn(
             'rounded-full transition-all',
-            activeCategory === category.id &&
-              'text-[var(--accent-foreground)]'
+            activeCategory === category.id && 'text-[var(--accent-foreground)]'
           )}
-          style={
-            activeCategory === category.id
-              ? { backgroundColor: category.color }
-              : undefined
-          }
+          style={activeCategory === category.id ? { backgroundColor: category.color } : undefined}
         >
           {category.name}
         </Button>
       ))}
     </div>
-  )
+  );
 }

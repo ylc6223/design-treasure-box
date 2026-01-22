@@ -7,7 +7,7 @@
 ```
 scripts/
 ├── database/         # 数据库相关脚本
-├── development/      # 开发工具脚本  
+├── development/      # 开发工具脚本
 ├── maintenance/      # 维护脚本
 └── README.md        # 本文档
 ```
@@ -40,16 +40,19 @@ npx tsx scripts/database/verify-categories-migration.ts
 ## 脚本分类
 
 ### 📊 database/ - 数据库脚本
+
 - 数据迁移和同步
 - 数据验证和修复
 - SQL生成工具
 
 ### 🛠️ development/ - 开发工具
+
 - 环境状态检查
 - 开发辅助工具
 - 测试脚本
 
 ### 🔧 maintenance/ - 维护脚本
+
 - 生产环境维护
 - 数据清理和优化
 - 系统修复工具
@@ -59,11 +62,13 @@ npx tsx scripts/database/verify-categories-migration.ts
 ### 标准迁移流程
 
 1. **环境检查**
+
    ```bash
    npx tsx scripts/development/check-database-status.ts
    ```
 
 2. **数据迁移**
+
    ```bash
    npx tsx scripts/database/migrate-categories.ts
    npx tsx scripts/database/migrate-resources.ts
@@ -77,6 +82,7 @@ npx tsx scripts/database/verify-categories-migration.ts
 ## 安全注意事项
 
 ⚠️ **重要提醒**：
+
 - 生产环境操作前必须先在测试环境验证
 - 重要数据操作前请先备份
 - 维护脚本需要特别谨慎，可能影响生产数据
@@ -127,38 +133,38 @@ npx tsc --noEmit scripts/database/migrate-categories.ts
  * 用途：具体功能说明
  */
 
-import { createClient } from '@supabase/supabase-js'
-import { config } from 'dotenv'
+import { createClient } from '@supabase/supabase-js';
+import { config } from 'dotenv';
 
-config({ path: '.env.local' })
+config({ path: '.env.local' });
 
 async function main() {
   try {
-    console.log('🚀 开始执行脚本...')
-    
+    console.log('🚀 开始执行脚本...');
+
     // 环境变量检查
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SECRET_KEY
-    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('缺少必要的环境变量')
+      throw new Error('缺少必要的环境变量');
     }
-    
+
     // 脚本主要逻辑
-    
-    console.log('✅ 脚本执行完成')
+
+    console.log('✅ 脚本执行完成');
   } catch (error) {
-    console.error('❌ 脚本执行失败:', error)
-    process.exit(1)
+    console.error('❌ 脚本执行失败:', error);
+    process.exit(1);
   }
 }
 
-main()
+main();
 ```
 
 ## 相关文档
 
 - [数据库脚本说明](./database/README.md)
-- [开发工具说明](./development/README.md)  
+- [开发工具说明](./development/README.md)
 - [维护脚本说明](./maintenance/README.md)
 - [项目结构规范](../PROJECT_STRUCTURE.md)

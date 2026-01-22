@@ -13,27 +13,32 @@
 ## 统一的数据类型
 
 ### 时间字段
-- **数据库类型**: `TIMESTAMPTZ` 
+
+- **数据库类型**: `TIMESTAMPTZ`
 - **返回类型**: `string` (ISO 8601 格式，如 "2024-01-01T00:00:00.000Z")
 - **前端校验**: `z.string()` (不使用 `z.string().datetime()`)
 - **示例**: `"2024-01-01T00:00:00.000Z"`
 
 ### 数值字段
+
 - **评分值**: `number` (0-5，步长 0.5)
 - **计数器**: `number` (整数，≥0)
 - **前端校验**: `z.number()` 配合相应约束
 
 ### 布尔字段
+
 - **数据库类型**: `BOOLEAN`
 - **返回类型**: `boolean`
 - **前端校验**: `z.boolean()`
 
 ### JSON 字段
+
 - **数据库类型**: `JSONB`
 - **返回类型**: `object` (已解析的 JSON 对象)
 - **前端校验**: 具体的对象 schema
 
 ### 数组字段
+
 - **数据库类型**: `TEXT[]`
 - **返回类型**: `string[]`
 - **前端校验**: `z.array(z.string())`
@@ -41,6 +46,7 @@
 ## 字段映射规则
 
 ### 前端 → 数据库
+
 ```typescript
 // 前端提交数据
 {
@@ -60,6 +66,7 @@
 ```
 
 ### 数据库 → 前端
+
 ```typescript
 // 数据库返回数据
 {
@@ -81,6 +88,7 @@
 ## 具体实现
 
 ### 评分数据类型
+
 ```typescript
 // 前端 Schema
 export const RatingSchema = z.object({
@@ -94,7 +102,7 @@ export const RatingSchema = z.object({
 // 数据库字段类型
 {
   overall: DECIMAL(2,1),
-  usability: DECIMAL(2,1), 
+  usability: DECIMAL(2,1),
   aesthetics: DECIMAL(2,1),
   update_frequency: DECIMAL(2,1),
   free_level: DECIMAL(2,1)
@@ -102,6 +110,7 @@ export const RatingSchema = z.object({
 ```
 
 ### 时间字段处理
+
 ```typescript
 // 前端 Schema - 使用 string 而不是 datetime()
 export const UserRatingSchema = z.object({
@@ -111,37 +120,36 @@ export const UserRatingSchema = z.object({
   createdAt: z.string(), // ISO 8601 字符串
   updatedAt: z.string(), // ISO 8601 字符串
   // ...其他字段
-})
+});
 ```
 
 ### API 响应处理
+
 ```typescript
 // API 直接返回数据库数据，不做类型转换
 export const POST = withErrorHandler(async (request: NextRequest) => {
   // ... 业务逻辑
-  
-  const { data, error } = await supabase
-    .from('ratings')
-    .insert(ratingData)
-    .select()
-    .single()
+
+  const { data, error } = await supabase.from('ratings').insert(ratingData).select().single();
 
   // 直接返回，不做字段名转换
   return successResponse({
     success: true,
     data: data, // 保持数据库原始字段名和类型
-  })
-})
+  });
+});
 ```
 
 ## 验证规则
 
 ### 前端验证
+
 - 使用 Zod schema 进行运行时验证
 - Schema 定义必须与数据库返回类型完全一致
 - 不在前端进行类型转换
 
 ### 后端验证
+
 - API 层使用相同的 Zod schema 验证请求数据
 - 数据库层使用 SQL 约束确保数据完整性
 - 不在 API 层进行数据类型转换

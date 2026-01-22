@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ResourceForm } from '@/components/admin/resource-form'
-import { toast } from 'sonner'
-import type { CreateResourceRequest } from '@/types/resource'
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ResourceForm } from '@/components/admin/resource-form';
+import { toast } from 'sonner';
+import type { CreateResourceRequest } from '@/types/resource';
 
 export default function NewResourcePage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleSubmit = async (data: CreateResourceRequest) => {
     try {
@@ -19,31 +19,31 @@ export default function NewResourcePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to create resource')
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create resource');
       }
 
       toast.success('创建成功', {
         description: '资源已成功创建',
-      })
+      });
 
-      router.push('/admin/resources')
-      router.refresh()
+      router.push('/admin/resources');
+      router.refresh();
     } catch (error) {
-      console.error('Failed to create resource:', error)
+      console.error('Failed to create resource:', error);
       toast.error('创建失败', {
         description: error instanceof Error ? error.message : '无法创建资源',
-      })
-      throw error
+      });
+      throw error;
     }
-  }
+  };
 
   const handleCancel = () => {
-    router.push('/admin/resources')
-  }
+    router.push('/admin/resources');
+  };
 
   return (
     <div className="space-y-6">
@@ -56,9 +56,7 @@ export default function NewResourcePage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">新建资源</h1>
-          <p className="text-text-secondary mt-2">
-            添加新的设计资源到网站
-          </p>
+          <p className="text-text-secondary mt-2">添加新的设计资源到网站</p>
         </div>
       </div>
 
@@ -66,5 +64,5 @@ export default function NewResourcePage() {
         <ResourceForm onSubmit={handleSubmit} onCancel={handleCancel} />
       </div>
     </div>
-  )
+  );
 }

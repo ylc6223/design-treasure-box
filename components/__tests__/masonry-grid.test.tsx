@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { MasonryGrid } from '../masonry-grid'
-import type { Resource } from '@/types'
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MasonryGrid } from '../masonry-grid';
+import type { Resource } from '@/types';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt }: any) => <img src={src} alt={alt} />,
-}))
+}));
 
 const mockResources: Resource[] = [
   {
@@ -72,64 +72,50 @@ const mockResources: Resource[] = [
     viewCount: 150,
     favoriteCount: 75,
   },
-]
+];
 
 describe('MasonryGrid', () => {
   it('renders all resources', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     render(
-      <MasonryGrid
-        resources={mockResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={mockResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
-    expect(screen.getByText('Test Resource 1')).toBeInTheDocument()
-    expect(screen.getByText('Test Resource 2')).toBeInTheDocument()
-    expect(screen.getByText('Test Resource 3')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Test Resource 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Resource 2')).toBeInTheDocument();
+    expect(screen.getByText('Test Resource 3')).toBeInTheDocument();
+  });
 
   it('displays empty state when no resources', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
-    render(
-      <MasonryGrid
-        resources={[]}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+    render(<MasonryGrid resources={[]} isFavorited={isFavorited} onFavorite={onFavorite} />);
 
-    expect(screen.getByText('暂无资源')).toBeInTheDocument()
-    expect(screen.getByText('请尝试其他筛选条件')).toBeInTheDocument()
-  })
+    expect(screen.getByText('暂无资源')).toBeInTheDocument();
+    expect(screen.getByText('请尝试其他筛选条件')).toBeInTheDocument();
+  });
 
   it('applies responsive grid classes', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     const { container } = render(
-      <MasonryGrid
-        resources={mockResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={mockResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
-    const grid = container.querySelector('.grid')
-    expect(grid).toHaveClass('grid-cols-2') // Mobile
-    expect(grid).toHaveClass('md:grid-cols-3') // Tablet
-    expect(grid).toHaveClass('lg:grid-cols-4') // Desktop
-    expect(grid).toHaveClass('xl:grid-cols-5') // XL
-  })
+    const grid = container.querySelector('.grid');
+    expect(grid).toHaveClass('grid-cols-2'); // Mobile
+    expect(grid).toHaveClass('md:grid-cols-3'); // Tablet
+    expect(grid).toHaveClass('lg:grid-cols-4'); // Desktop
+    expect(grid).toHaveClass('xl:grid-cols-5'); // XL
+  });
 
   it('applies custom className', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     const { container } = render(
       <MasonryGrid
@@ -138,73 +124,61 @@ describe('MasonryGrid', () => {
         onFavorite={onFavorite}
         className="custom-class"
       />
-    )
+    );
 
-    const grid = container.querySelector('.grid')
-    expect(grid).toHaveClass('custom-class')
-  })
+    const grid = container.querySelector('.grid');
+    expect(grid).toHaveClass('custom-class');
+  });
 
   it('passes correct props to ResourceCard', () => {
-    const isFavorited = vi.fn((id) => id === 'test-1')
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn((id) => id === 'test-1');
+    const onFavorite = vi.fn();
 
     render(
-      <MasonryGrid
-        resources={mockResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={mockResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
     // 验证 isFavorited 被调用
-    expect(isFavorited).toHaveBeenCalledWith('test-1')
-    expect(isFavorited).toHaveBeenCalledWith('test-2')
-    expect(isFavorited).toHaveBeenCalledWith('test-3')
-  })
+    expect(isFavorited).toHaveBeenCalledWith('test-1');
+    expect(isFavorited).toHaveBeenCalledWith('test-2');
+    expect(isFavorited).toHaveBeenCalledWith('test-3');
+  });
 
   it('applies stagger animation delay', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     const { container } = render(
-      <MasonryGrid
-        resources={mockResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={mockResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
-    const cards = container.querySelectorAll('.animate-fade-in')
-    
+    const cards = container.querySelectorAll('.animate-fade-in');
+
     // 第一个卡片延迟 0ms
-    expect(cards[0]).toHaveStyle({ animationDelay: '0ms' })
-    
+    expect(cards[0]).toHaveStyle({ animationDelay: '0ms' });
+
     // 第二个卡片延迟 50ms
-    expect(cards[1]).toHaveStyle({ animationDelay: '50ms' })
-    
+    expect(cards[1]).toHaveStyle({ animationDelay: '50ms' });
+
     // 第三个卡片延迟 100ms
-    expect(cards[2]).toHaveStyle({ animationDelay: '100ms' })
-  })
+    expect(cards[2]).toHaveStyle({ animationDelay: '100ms' });
+  });
 
   it('renders correct number of cards', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     const { container } = render(
-      <MasonryGrid
-        resources={mockResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={mockResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
-    const cards = container.querySelectorAll('.animate-fade-in')
-    expect(cards).toHaveLength(mockResources.length)
-  })
+    const cards = container.querySelectorAll('.animate-fade-in');
+    expect(cards).toHaveLength(mockResources.length);
+  });
 
   it('handles single resource', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     render(
       <MasonryGrid
@@ -212,31 +186,27 @@ describe('MasonryGrid', () => {
         isFavorited={isFavorited}
         onFavorite={onFavorite}
       />
-    )
+    );
 
-    expect(screen.getByText('Test Resource 1')).toBeInTheDocument()
-    expect(screen.queryByText('Test Resource 2')).not.toBeInTheDocument()
-  })
+    expect(screen.getByText('Test Resource 1')).toBeInTheDocument();
+    expect(screen.queryByText('Test Resource 2')).not.toBeInTheDocument();
+  });
 
   it('handles large number of resources', () => {
-    const isFavorited = vi.fn(() => false)
-    const onFavorite = vi.fn()
+    const isFavorited = vi.fn(() => false);
+    const onFavorite = vi.fn();
 
     const manyResources = Array.from({ length: 20 }, (_, i) => ({
       ...mockResources[0],
       id: `test-${i}`,
       name: `Test Resource ${i}`,
-    }))
+    }));
 
     const { container } = render(
-      <MasonryGrid
-        resources={manyResources}
-        isFavorited={isFavorited}
-        onFavorite={onFavorite}
-      />
-    )
+      <MasonryGrid resources={manyResources} isFavorited={isFavorited} onFavorite={onFavorite} />
+    );
 
-    const cards = container.querySelectorAll('.animate-fade-in')
-    expect(cards).toHaveLength(20)
-  })
-})
+    const cards = container.querySelectorAll('.animate-fade-in');
+    expect(cards).toHaveLength(20);
+  });
+});

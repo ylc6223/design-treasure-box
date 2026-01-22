@@ -21,7 +21,7 @@ DESIGN SPECIFICATION
    - 毛玻璃效果和微妙阴影
 
 3. Color Palette (支持深色/浅色双主题):
-   
+
    浅色模式 (Light):
    - Background: #FAFAFA (浅灰白) - 主背景
    - Surface: #FFFFFF (纯白) - 卡片/Dock背景
@@ -30,7 +30,7 @@ DESIGN SPECIFICATION
    - Text Secondary: #737373 (中灰) - 次要文字
    - Accent: #000000 (纯黑) - 强调/按钮
    - Highlight: #F59E0B (琥珀) - 评分星星
-   
+
    深色模式 (Dark):
    - Background: #0A0A0A (近黑) - 主背景
    - Surface: #171717 (深灰) - 卡片/Dock背景
@@ -61,7 +61,7 @@ graph TB
     subgraph NextJS["Next.js 16 App Router"]
         Layout[Root Layout]
         ThemeProvider[ThemeProvider]
-        
+
         subgraph Routes["App Routes"]
             Home["/ (HomePage)"]
             Category["/category/[id]"]
@@ -69,7 +69,7 @@ graph TB
             Favorites["/favorites"]
             Search["/search"]
         end
-        
+
         subgraph UIComponents["shadcn/ui Components"]
             Card[Card]
             Button[Button]
@@ -79,7 +79,7 @@ graph TB
             Tooltip[Tooltip]
             ScrollArea[ScrollArea]
         end
-        
+
         subgraph CustomComponents["Custom Components"]
             DockSidebar[DockSidebar]
             AIPromptInput[AIPromptInput]
@@ -89,25 +89,25 @@ graph TB
             Header[Header]
             ThemeToggle[ThemeToggle]
         end
-        
+
         subgraph Hooks["Custom Hooks"]
             useFavorites[useFavorites]
             useSearch[useSearch]
             useResources[useResources]
             useTheme[useTheme]
         end
-        
+
         subgraph State["State Management"]
             TanStackQuery[TanStack Query]
             LocalStorage[LocalStorage - Favorites/Theme]
         end
     end
-    
+
     subgraph Data["Data Layer"]
         PresetData["/data/resources.json"]
         Categories["/data/categories.json"]
     end
-    
+
     Layout --> ThemeProvider
     ThemeProvider --> Routes
     Routes --> UIComponents
@@ -119,17 +119,17 @@ graph TB
 
 ### 技术栈详情
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Next.js | 16.x | App Router, SSG/SSR, 文件路由 |
-| React | 19.x | UI 框架 |
-| shadcn/ui | latest | UI 组件库 (基于 Radix UI) |
-| Tailwind CSS | 4.x | 原子化 CSS |
-| TanStack Query | 5.x | 数据获取与缓存 |
-| React Hook Form | 7.x | 表单处理 |
-| Zod | 3.x | 数据验证 |
-| Lucide React | latest | 图标库 (禁止使用 emoji) |
-| next-themes | latest | 深色/浅色主题切换 |
+| 技术            | 版本   | 用途                          |
+| --------------- | ------ | ----------------------------- |
+| Next.js         | 16.x   | App Router, SSG/SSR, 文件路由 |
+| React           | 19.x   | UI 框架                       |
+| shadcn/ui       | latest | UI 组件库 (基于 Radix UI)     |
+| Tailwind CSS    | 4.x    | 原子化 CSS                    |
+| TanStack Query  | 5.x    | 数据获取与缓存                |
+| React Hook Form | 7.x    | 表单处理                      |
+| Zod             | 3.x    | 数据验证                      |
+| Lucide React    | latest | 图标库 (禁止使用 emoji)       |
+| next-themes     | latest | 深色/浅色主题切换             |
 
 ## Components and Interfaces
 
@@ -155,20 +155,20 @@ interface Resource {
 
 // 评分接口
 interface Rating {
-  overall: number;        // 综合评分 0-5
-  usability: number;      // 实用性
-  aesthetics: number;     // 美观度
+  overall: number; // 综合评分 0-5
+  usability: number; // 实用性
+  aesthetics: number; // 美观度
   updateFrequency: number; // 更新频率
-  freeLevel: number;      // 免费程度
+  freeLevel: number; // 免费程度
 }
 
 // 分类接口
 interface Category {
   id: string;
   name: string;
-  icon: string;           // Lucide icon name
+  icon: string; // Lucide icon name
   description: string;
-  color: string;          // 分类主题色
+  color: string; // 分类主题色
 }
 
 // 收藏项接口
@@ -180,16 +180,16 @@ interface FavoriteItem {
 
 ### shadcn/ui 组件使用
 
-| 组件 | 用途 |
-|------|------|
-| `Card` | 资源卡片容器 |
-| `Button` | 操作按钮 (收藏、访问、提交) |
-| `Input` | AI Prompt 输入框 |
-| `Badge` | 标签、精选标识 |
-| `Dialog` | 资源详情弹窗 (可选) |
-| `Tooltip` | Dock 图标提示 |
-| `ScrollArea` | 主内容区滚动 |
-| `Skeleton` | 加载占位 |
+| 组件         | 用途                        |
+| ------------ | --------------------------- |
+| `Card`       | 资源卡片容器                |
+| `Button`     | 操作按钮 (收藏、访问、提交) |
+| `Input`      | AI Prompt 输入框            |
+| `Badge`      | 标签、精选标识              |
+| `Dialog`     | 资源详情弹窗 (可选)         |
+| `Tooltip`    | Dock 图标提示               |
+| `ScrollArea` | 主内容区滚动                |
+| `Skeleton`   | 加载占位                    |
 
 ### Component Hierarchy
 
@@ -228,6 +228,7 @@ RootLayout
 ### 自定义组件规格
 
 #### DockSidebar
+
 ```typescript
 interface DockSidebarProps {
   categories: Category[];
@@ -238,6 +239,7 @@ interface DockSidebarProps {
 ```
 
 #### AIPromptInput
+
 ```typescript
 interface AIPromptInputProps {
   onSubmit: (prompt: string) => void;
@@ -248,6 +250,7 @@ interface AIPromptInputProps {
 ```
 
 #### MasonryGrid
+
 ```typescript
 interface MasonryGridProps {
   resources: Resource[];
@@ -258,6 +261,7 @@ interface MasonryGridProps {
 ```
 
 #### ResourceCard
+
 ```typescript
 interface ResourceCardProps {
   resource: Resource;
@@ -274,14 +278,56 @@ interface ResourceCardProps {
 
 ```typescript
 const categories: Category[] = [
-  { id: 'color', name: '配色工具', icon: 'Palette', description: '调色板、配色方案生成器', color: '#E94560' },
-  { id: 'css', name: 'CSS模板', icon: 'Code', description: 'CSS框架、样式库、动画效果', color: '#00D9FF' },
-  { id: 'font', name: '字体资源', icon: 'Type', description: '免费字体、字体配对工具', color: '#F8B500' },
+  {
+    id: 'color',
+    name: '配色工具',
+    icon: 'Palette',
+    description: '调色板、配色方案生成器',
+    color: '#E94560',
+  },
+  {
+    id: 'css',
+    name: 'CSS模板',
+    icon: 'Code',
+    description: 'CSS框架、样式库、动画效果',
+    color: '#00D9FF',
+  },
+  {
+    id: 'font',
+    name: '字体资源',
+    icon: 'Type',
+    description: '免费字体、字体配对工具',
+    color: '#F8B500',
+  },
   { id: 'icon', name: '图标库', icon: 'Shapes', description: '图标集、SVG资源', color: '#7B68EE' },
-  { id: 'inspiration', name: '设计灵感', icon: 'Sparkles', description: '优秀设计案例、灵感画廊', color: '#FF6B6B' },
-  { id: 'website', name: '网站案例', icon: 'Globe', description: '优秀网站设计展示', color: '#4ECDC4' },
-  { id: 'ui-kit', name: 'UI组件', icon: 'Layout', description: 'UI Kit、设计系统', color: '#95E1D3' },
-  { id: 'mockup', name: '样机素材', icon: 'Smartphone', description: '设备样机、场景模板', color: '#DDA0DD' },
+  {
+    id: 'inspiration',
+    name: '设计灵感',
+    icon: 'Sparkles',
+    description: '优秀设计案例、灵感画廊',
+    color: '#FF6B6B',
+  },
+  {
+    id: 'website',
+    name: '网站案例',
+    icon: 'Globe',
+    description: '优秀网站设计展示',
+    color: '#4ECDC4',
+  },
+  {
+    id: 'ui-kit',
+    name: 'UI组件',
+    icon: 'Layout',
+    description: 'UI Kit、设计系统',
+    color: '#95E1D3',
+  },
+  {
+    id: 'mockup',
+    name: '样机素材',
+    icon: 'Smartphone',
+    description: '设备样机、场景模板',
+    color: '#DDA0DD',
+  },
 ];
 ```
 
@@ -298,59 +344,69 @@ interface StoredFavorites {
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: 资源数据完整性
-*For any* Resource object in the system, it SHALL contain all required fields: name, url, description, screenshot, categoryId, tags (non-empty array), rating (with all dimensions), and curatorNote.
+
+_For any_ Resource object in the system, it SHALL contain all required fields: name, url, description, screenshot, categoryId, tags (non-empty array), rating (with all dimensions), and curatorNote.
 **Validates: Requirements 1.3, 2.3**
 
 ### Property 2: 分类筛选正确性
-*For any* category selection, all returned resources SHALL have a categoryId matching the selected category.
+
+_For any_ category selection, all returned resources SHALL have a categoryId matching the selected category.
 **Validates: Requirements 1.2**
 
 ### Property 3: 搜索筛选正确性
-*For any* search query and tag filter combination, all returned resources SHALL either contain the search keyword in name/description/tags OR contain all selected tags.
+
+_For any_ search query and tag filter combination, all returned resources SHALL either contain the search keyword in name/description/tags OR contain all selected tags.
 **Validates: Requirements 3.1, 3.2, 3.3**
 
 ### Property 4: 收藏操作 Round-Trip
-*For any* resource, adding it to favorites then removing it SHALL result in the favorites list being unchanged from the original state.
+
+_For any_ resource, adding it to favorites then removing it SHALL result in the favorites list being unchanged from the original state.
 **Validates: Requirements 4.1, 4.4**
 
 ### Property 5: 收藏持久化
-*For any* favorites list state, storing to localStorage then retrieving SHALL produce an equivalent list.
+
+_For any_ favorites list state, storing to localStorage then retrieving SHALL produce an equivalent list.
 **Validates: Requirements 4.5**
 
 ### Property 6: 评分范围约束
-*For any* Rating object, all rating values (overall, usability, aesthetics, updateFrequency, freeLevel) SHALL be in the range [0, 5] with 0.5 precision.
+
+_For any_ Rating object, all rating values (overall, usability, aesthetics, updateFrequency, freeLevel) SHALL be in the range [0, 5] with 0.5 precision.
 **Validates: Requirements 2.1**
 
 ### Property 7: 排序正确性
-*For any* list of resources sorted by viewCount/favoriteCount (descending) or createdAt (descending), the resulting order SHALL be monotonically non-increasing by the sort key.
+
+_For any_ list of resources sorted by viewCount/favoriteCount (descending) or createdAt (descending), the resulting order SHALL be monotonically non-increasing by the sort key.
 **Validates: Requirements 5.2, 5.3**
 
 ### Property 8: 精选标识一致性
-*For any* resource with isFeatured=true, the rendered ResourceCard SHALL display the featured badge element.
+
+_For any_ resource with isFeatured=true, the rendered ResourceCard SHALL display the featured badge element.
 **Validates: Requirements 5.4**
 
 ### Property 9: 预置数据完整性
-*For any* category in the system, there SHALL exist at least one resource with that categoryId in the preset data, and all preset resources SHALL have valid rating and non-empty tags.
+
+_For any_ category in the system, there SHALL exist at least one resource with that categoryId in the preset data, and all preset resources SHALL have valid rating and non-empty tags.
 **Validates: Requirements 8.2, 8.3**
 
 ### Property 10: 详情页数据完整性
-*For any* resource detail page, the rendered content SHALL include: screenshot, full description, all tags, rating breakdown (all dimensions), and at least one related resource.
+
+_For any_ resource detail page, the rendered content SHALL include: screenshot, full description, all tags, rating breakdown (all dimensions), and at least one related resource.
 **Validates: Requirements 6.2**
 
 ## Error Handling
 
 ### 错误场景处理
 
-| 场景 | 处理策略 |
-|------|----------|
-| 资源图片加载失败 | 显示占位图，带分类图标 |
+| 场景                | 处理策略                 |
+| ------------------- | ------------------------ |
+| 资源图片加载失败    | 显示占位图，带分类图标   |
 | LocalStorage 不可用 | 降级为内存存储，提示用户 |
-| 搜索无结果 | 显示热门推荐和搜索建议 |
-| 资源链接失效 | 标记为"待验证"，显示警告 |
-| 数据解析错误 | 使用默认值，记录错误日志 |
+| 搜索无结果          | 显示热门推荐和搜索建议   |
+| 资源链接失效        | 标记为"待验证"，显示警告 |
+| 数据解析错误        | 使用默认值，记录错误日志 |
 
 ### 错误边界
 
@@ -358,11 +414,11 @@ interface StoredFavorites {
 // 组件级错误边界
 class ResourceErrorBoundary extends React.Component {
   state = { hasError: false };
-  
+
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-  
+
   render() {
     if (this.state.hasError) {
       return <ErrorFallback message="资源加载失败" />;
@@ -392,8 +448,8 @@ class ResourceErrorBoundary extends React.Component {
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
@@ -402,16 +458,16 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.test.{ts,tsx}'],
   },
-})
+});
 ```
 
 ### 测试覆盖范围
 
-| 测试类型 | 覆盖内容 |
-|----------|----------|
-| 单元测试 | 组件渲染、用户交互、边界情况 |
+| 测试类型 | 覆盖内容                                 |
+| -------- | ---------------------------------------- |
+| 单元测试 | 组件渲染、用户交互、边界情况             |
 | 属性测试 | 数据完整性、搜索筛选、收藏操作、排序逻辑 |
-| 集成测试 | 页面导航、状态持久化 |
+| 集成测试 | 页面导航、状态持久化                     |
 
 ### 属性测试标注格式
 
@@ -420,9 +476,7 @@ export default defineConfig({
 // Validates: Requirements 3.1, 3.2, 3.3
 test.prop([resourceArb, searchQueryArb, tagsArb], (resources, query, tags) => {
   const results = filterResources(resources, query, tags);
-  return results.every(r => 
-    matchesQuery(r, query) || containsAllTags(r, tags)
-  );
+  return results.every((r) => matchesQuery(r, query) || containsAllTags(r, tags));
 });
 ```
 
@@ -505,7 +559,7 @@ test.prop([resourceArb, searchQueryArb, tagsArb], (resources, query, tags) => {
 - 宽度: 64px
 - 高度: auto (内容自适应，不铺满整个视口高度)
 - 位置: 固定左侧，垂直居中 (top: 50%, transform: translateY(-50%))
-- 背景: 
+- 背景:
   - 浅色模式: rgba(255,255,255,0.9) + backdrop-blur-xl
   - 深色模式: rgba(30,30,30,0.9) + backdrop-blur-xl
 - 圆角: 16px (整体容器)
@@ -535,12 +589,12 @@ test.prop([resourceArb, searchQueryArb, tagsArb], (resources, query, tags) => {
 - 位置: 固定底部, 距底 24px, 水平居中于主内容区
 - 宽度: max-w-2xl (672px), 居中显示
 - 高度: 56px
-- 背景: 
+- 背景:
   - 浅色模式: rgba(255,255,255,0.9) + backdrop-blur-xl
   - 深色模式: rgba(30,30,30,0.9) + backdrop-blur-xl
 - 边框: 1px solid var(--border)
 - 圆角: 28px (胶囊形)
-- 阴影: 
+- 阴影:
   - 浅色模式: 0 4px 24px rgba(0,0,0,0.1)
   - 深色模式: 0 4px 24px rgba(0,0,0,0.3)
 - 输入框: 无边框, 透明背景
@@ -574,12 +628,12 @@ export function useScrollVisibility(hideDelay = 300) {
 
       if (isScrolling) {
         setIsVisible(false)
-        
+
         // 清除之前的定时器
         if (scrollTimeoutRef.current) {
           clearTimeout(scrollTimeoutRef.current)
         }
-        
+
         // 滚动停止后延迟显示
         scrollTimeoutRef.current = setTimeout(() => {
           setIsVisible(true)
@@ -602,15 +656,15 @@ export function useScrollVisibility(hideDelay = 300) {
 // components/AIPromptInput.tsx 使用示例
 export function AIPromptInput({ onSubmit }: AIPromptInputProps) {
   const isVisible = useScrollVisibility(300)
-  
+
   return (
     <div
       className={cn(
         "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
         "max-w-2xl w-full px-4",
         "transition-all duration-200 ease-out",
-        isVisible 
-          ? "opacity-100 translate-y-0" 
+        isVisible
+          ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-5 pointer-events-none"
       )}
     >
@@ -644,11 +698,11 @@ export function AIPromptInput({ onSubmit }: AIPromptInputProps) {
 图标: Sparkles (精选), Star/StarHalf (评分), Heart (收藏), ExternalLink (访问)
 
 样式规格:
-- 背景: 
+- 背景:
   - 浅色模式: var(--surface) (#FFFFFF)
   - 深色模式: var(--surface-dark) (#1E1E1E)
 - 圆角: 12px
-- 阴影: 
+- 阴影:
   - 浅色模式: 0 1px 3px rgba(0,0,0,0.1)
   - 深色模式: 0 1px 3px rgba(0,0,0,0.3)
 - 悬停: translateY(-4px) + shadow 增强
@@ -658,25 +712,25 @@ export function AIPromptInput({ onSubmit }: AIPromptInputProps) {
 
 ### 响应式断点
 
-| 断点 | 宽度 | Dock | 瀑布流列数 | AI Input |
-|------|------|------|-----------|----------|
-| Desktop XL | ≥1440px | 显示 | 5列 | 居中 max-w-3xl |
-| Desktop | ≥1200px | 显示 | 4列 | 居中 max-w-2xl |
-| Tablet | 768-1199px | 折叠为图标 | 3列 | 全宽 -48px |
-| Mobile | <768px | 底部 Tab Bar | 2列 | 全宽 -32px |
+| 断点       | 宽度       | Dock         | 瀑布流列数 | AI Input       |
+| ---------- | ---------- | ------------ | ---------- | -------------- |
+| Desktop XL | ≥1440px    | 显示         | 5列        | 居中 max-w-3xl |
+| Desktop    | ≥1200px    | 显示         | 4列        | 居中 max-w-2xl |
+| Tablet     | 768-1199px | 折叠为图标   | 3列        | 全宽 -48px     |
+| Mobile     | <768px     | 底部 Tab Bar | 2列        | 全宽 -32px     |
 
 ### 动效设计
 
-| 元素 | 动效 | 时长 | 缓动 |
-|------|------|------|------|
-| 卡片悬停 | translateY(-4px) + shadow | 200ms | ease-out |
-| Dock 图标悬停 | scale(1.2) | 150ms | spring |
-| 页面切换 | fade + slide | 300ms | ease-in-out |
-| 收藏按钮 | heart pulse + scale | 400ms | bounce |
-| AI Input 聚焦 | border glow | 200ms | ease |
-| AI Input 滚动隐藏 | opacity(0) + translateY(20px) | 200ms | ease-out |
-| AI Input 滚动恢复 | opacity(1) + translateY(0) | 200ms | ease-out |
-| 瀑布流加载 | stagger fade-in | 50ms/item | ease-out |
+| 元素              | 动效                          | 时长      | 缓动        |
+| ----------------- | ----------------------------- | --------- | ----------- |
+| 卡片悬停          | translateY(-4px) + shadow     | 200ms     | ease-out    |
+| Dock 图标悬停     | scale(1.2)                    | 150ms     | spring      |
+| 页面切换          | fade + slide                  | 300ms     | ease-in-out |
+| 收藏按钮          | heart pulse + scale           | 400ms     | bounce      |
+| AI Input 聚焦     | border glow                   | 200ms     | ease        |
+| AI Input 滚动隐藏 | opacity(0) + translateY(20px) | 200ms     | ease-out    |
+| AI Input 滚动恢复 | opacity(1) + translateY(0)    | 200ms     | ease-out    |
+| 瀑布流加载        | stagger fade-in               | 50ms/item | ease-out    |
 
 ### 颜色系统 (Tailwind CSS 4 + next-themes)
 
@@ -685,15 +739,15 @@ export function AIPromptInput({ onSubmit }: AIPromptInputProps) {
 
 /* 浅色模式 (默认) */
 :root {
-  --background: #FAFAFA;
-  --surface: #FFFFFF;
-  --border: #E5E5E5;
+  --background: #fafafa;
+  --surface: #ffffff;
+  --border: #e5e5e5;
   --text-primary: #171717;
   --text-secondary: #737373;
-  --text-muted: #A3A3A3;
+  --text-muted: #a3a3a3;
   --accent: #000000;
-  --accent-foreground: #FFFFFF;
-  --highlight: #F59E0B;
+  --accent-foreground: #ffffff;
+  --highlight: #f59e0b;
   --glass: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(0, 0, 0, 0.05);
   --shadow: rgba(0, 0, 0, 0.1);
@@ -702,15 +756,15 @@ export function AIPromptInput({ onSubmit }: AIPromptInputProps) {
 
 /* 深色模式 */
 .dark {
-  --background: #0A0A0A;
+  --background: #0a0a0a;
   --surface: #171717;
   --border: #262626;
-  --text-primary: #FAFAFA;
-  --text-secondary: #A3A3A3;
+  --text-primary: #fafafa;
+  --text-secondary: #a3a3a3;
   --text-muted: #737373;
-  --accent: #FFFFFF;
+  --accent: #ffffff;
   --accent-foreground: #000000;
-  --highlight: #FBBF24;
+  --highlight: #fbbf24;
   --glass: rgba(23, 23, 23, 0.8);
   --glass-border: rgba(255, 255, 255, 0.1);
   --shadow: rgba(0, 0, 0, 0.3);
@@ -762,7 +816,7 @@ import { Button } from '@/components/ui/button'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  
+
   return (
     <Button
       variant="ghost"

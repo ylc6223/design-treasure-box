@@ -21,11 +21,11 @@ types/
 
 ```typescript
 interface Rating {
-  overall: number;        // 综合评分
-  usability: number;      // 实用性
-  aesthetics: number;     // 美观度
+  overall: number; // 综合评分
+  usability: number; // 实用性
+  aesthetics: number; // 美观度
   updateFrequency: number; // 更新频率
-  freeLevel: number;      // 免费程度
+  freeLevel: number; // 免费程度
 }
 ```
 
@@ -41,11 +41,11 @@ interface Resource {
   description: string;
   screenshot: string;
   categoryId: string;
-  tags: string[];         // 至少包含一个标签
+  tags: string[]; // 至少包含一个标签
   rating: Rating;
   curatorNote: string;
   isFeatured: boolean;
-  createdAt: string;      // ISO 8601 格式
+  createdAt: string; // ISO 8601 格式
   viewCount: number;
   favoriteCount: number;
 }
@@ -59,9 +59,9 @@ interface Resource {
 interface Category {
   id: string;
   name: string;
-  icon: string;           // Lucide icon 名称
+  icon: string; // Lucide icon 名称
   description: string;
-  color: string;          // 十六进制颜色 (#RRGGBB)
+  color: string; // 十六进制颜色 (#RRGGBB)
 }
 ```
 
@@ -72,7 +72,7 @@ interface Category {
 ```typescript
 interface FavoriteItem {
   resourceId: string;
-  addedAt: string;        // ISO 8601 格式
+  addedAt: string; // ISO 8601 格式
 }
 ```
 
@@ -84,7 +84,7 @@ localStorage 中存储的收藏数据结构。
 interface StoredFavorites {
   version: number;
   items: FavoriteItem[];
-  lastUpdated: string;    // ISO 8601 格式
+  lastUpdated: string; // ISO 8601 格式
 }
 ```
 
@@ -103,13 +103,7 @@ interface StoredFavorites {
 ### 1. 导入类型
 
 ```typescript
-import {
-  type Resource,
-  type Category,
-  type Rating,
-  ResourceSchema,
-  CategorySchema,
-} from '@/types'
+import { type Resource, type Category, type Rating, ResourceSchema, CategorySchema } from '@/types';
 ```
 
 ### 2. 创建对象
@@ -135,20 +129,20 @@ const resource: Resource = {
   createdAt: '2024-01-01T00:00:00.000Z',
   viewCount: 1000,
   favoriteCount: 250,
-}
+};
 ```
 
 ### 3. 验证数据
 
 ```typescript
 // 验证从 API 或文件读取的数据
-const result = ResourceSchema.safeParse(data)
+const result = ResourceSchema.safeParse(data);
 
 if (result.success) {
-  const resource: Resource = result.data
+  const resource: Resource = result.data;
   // 使用验证后的数据
 } else {
-  console.error('数据验证失败:', result.error)
+  console.error('数据验证失败:', result.error);
 }
 ```
 
@@ -156,7 +150,7 @@ if (result.success) {
 
 ```typescript
 function isValidResource(data: unknown): data is Resource {
-  return ResourceSchema.safeParse(data).success
+  return ResourceSchema.safeParse(data).success;
 }
 ```
 
@@ -191,11 +185,11 @@ interface PaginatedResult<T> {
 
 ```typescript
 // localStorage 键名
-STORAGE_KEYS.FAVORITES  // 'design-treasure-box-favorites'
-STORAGE_KEYS.THEME      // 'design-treasure-box-theme'
+STORAGE_KEYS.FAVORITES; // 'design-treasure-box-favorites'
+STORAGE_KEYS.THEME; // 'design-treasure-box-theme'
 
 // 收藏数据版本号
-FAVORITES_VERSION       // 1
+FAVORITES_VERSION; // 1
 ```
 
 ## 验证规则
@@ -230,6 +224,7 @@ pnpm test types/__tests__/index.test.ts
 ```
 
 测试覆盖：
+
 - ✅ 有效数据验证
 - ✅ 无效数据拒绝
 - ✅ 边界情况处理

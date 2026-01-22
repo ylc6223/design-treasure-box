@@ -15,24 +15,24 @@ graph TB
         HS[Hybrid Search]
         VS[Vector Search Engine]
     end
-    
+
     subgraph "向量服务层"
         VPS[Vector Persistence Service]
         ES[Embedding Sync Service]
         VC[Vector Cache]
     end
-    
+
     subgraph "数据层"
         SB[(Supabase PostgreSQL)]
         PGV[pgvector Extension]
         VI[Vector Index]
     end
-    
+
     subgraph "外部服务"
         ZAI[智谱 AI Embeddings]
         RES[Resources JSON]
     end
-    
+
     RAG --> HS
     HS --> VS
     VS --> VPS
@@ -48,16 +48,19 @@ graph TB
 ### 核心组件
 
 #### 1. Vector Persistence Service (VPS)
+
 - **职责**: 向量数据的持久化存储和检索
 - **接口**: 提供向量搜索、存储、更新、删除操作
 - **特性**: 支持批量操作、缓存、错误处理
 
 #### 2. Embedding Sync Service (ESS)
+
 - **职责**: 资源数据与向量的同步管理
 - **接口**: 增量同步、全量同步、状态检查
 - **特性**: 智能变更检测、错误重试、日志记录
 
 #### 3. Vector Cache Layer
+
 - **职责**: 提供向量数据的内存缓存，提升查询性能
 - **策略**: LRU 缓存、TTL 过期、预热机制
 - **用途**: 减少数据库查询压力，提升响应速度
@@ -73,30 +76,26 @@ interface VectorPersistenceService {
     queryEmbedding: number[],
     options: VectorSearchOptions
   ): Promise<VectorSearchResult[]>;
-  
+
   // 批量向量搜索
-  batchSearchSimilar(
-    queries: VectorQuery[]
-  ): Promise<VectorSearchResult[][]>;
-  
+  batchSearchSimilar(queries: VectorQuery[]): Promise<VectorSearchResult[][]>;
+
   // 向量存储
   upsertEmbedding(
     resourceId: string,
     embedding: number[],
     metadata: ResourceMetadata
   ): Promise<void>;
-  
+
   // 批量向量存储
-  batchUpsertEmbeddings(
-    embeddings: VectorEmbedding[]
-  ): Promise<void>;
-  
+  batchUpsertEmbeddings(embeddings: VectorEmbedding[]): Promise<void>;
+
   // 向量删除
   deleteEmbedding(resourceId: string): Promise<void>;
-  
+
   // 健康检查
   healthCheck(): Promise<HealthStatus>;
-  
+
   // 性能统计
   getStats(): Promise<VectorStoreStats>;
 }
@@ -137,16 +136,16 @@ interface ResourceMetadata {
 interface EmbeddingSyncService {
   // 增量同步
   syncIncrementalEmbeddings(): Promise<SyncResult>;
-  
+
   // 全量同步
   syncAllEmbeddings(force?: boolean): Promise<SyncResult>;
-  
+
   // 单个资源同步
   syncResourceEmbedding(resourceId: string): Promise<void>;
-  
+
   // 检查同步状态
   getSyncStatus(): Promise<SyncStatus>;
-  
+
   // 获取同步日志
   getSyncLogs(limit?: number): Promise<SyncLog[]>;
 }
@@ -174,28 +173,22 @@ interface SyncStatus {
 interface SupabaseVectorStore {
   // 数据库初始化
   initialize(): Promise<void>;
-  
+
   // 创建表和索引
   createSchema(): Promise<void>;
-  
+
   // 向量搜索（使用 SQL 函数）
-  searchVectors(
-    queryVector: number[],
-    options: SearchOptions
-  ): Promise<VectorMatch[]>;
-  
+  searchVectors(queryVector: number[], options: SearchOptions): Promise<VectorMatch[]>;
+
   // 批量插入向量
   insertVectors(vectors: VectorRecord[]): Promise<void>;
-  
+
   // 更新向量
-  updateVector(
-    resourceId: string,
-    vector: VectorRecord
-  ): Promise<void>;
-  
+  updateVector(resourceId: string, vector: VectorRecord): Promise<void>;
+
   // 删除向量
   deleteVector(resourceId: string): Promise<void>;
-  
+
   // 获取统计信息
   getVectorStats(): Promise<VectorStats>;
 }
@@ -228,44 +221,46 @@ CREATE TABLE resource_embeddings (
 );
 
 -- 创建向量索引（余弦相似度）
-CREATE INDEX resource_embeddings_embedding_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_embedding_idx
+ON resource_embeddings
 USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 100);
 
 -- 创建资源ID索引
-CREATE INDEX resource_embeddings_resource_id_idx 
+CREATE INDEX resource_embeddings_resource_id_idx
 ON resource_embeddings (resource_id);
 
 -- 创建更新时间索引
-CREATE INDEX resource_embeddings_updated_at_idx 
+CREATE INDEX resource_embeddings_updated_at_idx
 ON resource_embeddings (updated_at);
 
 -- 创建元数据索引（类别）- 使用 BTREE 进行精确匹配
-CREATE INDEX resource_embeddings_category_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_category_idx
+ON resource_embeddings
 USING BTREE ((metadata->>'category'));
 
 -- 创建元数据索引（评分）
-CREATE INDEX resource_embeddings_rating_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_rating_idx
+ON resource_embeddings
 USING BTREE (((metadata->>'rating')::numeric));
 ```
 
 #### 索引选择说明
 
 **类别索引使用 BTREE 的原因：**
+
 - **精确匹配优化：** 项目主要进行 `metadata->>'category' = 'color-tools'` 等精确匹配查询
 - **少量类别：** 仅有 8 个固定类别，BTREE 索引效率更高
 - **存储开销小：** 相比 GIN 索引，BTREE 占用更少存储空间
 - **维护成本低：** 更新和维护开销较小
 
 **如需支持文本搜索，可选择 GIN 索引：**
+
 ```sql
 -- 启用 pg_trgm 扩展（如需模糊搜索）
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX resource_embeddings_category_gin_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_category_gin_idx
+ON resource_embeddings
 USING GIN ((metadata->>'category') gin_trgm_ops);
 ```
 
@@ -294,7 +289,7 @@ BEGIN
     1 - (re.embedding <=> query_embedding) as similarity,
     re.metadata
   FROM resource_embeddings re
-  WHERE 
+  WHERE
     1 - (re.embedding <=> query_embedding) > match_threshold
     AND (category_filter IS NULL OR re.metadata->>'category' = ANY(category_filter))
     AND (min_rating IS NULL OR (re.metadata->>'rating')::numeric >= min_rating)
@@ -354,58 +349,70 @@ interface Database {
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: 向量数据一致性
-*For any* 资源数据更新操作，向量存储中的对应向量数据应该与资源的最新状态保持一致
+
+_For any_ 资源数据更新操作，向量存储中的对应向量数据应该与资源的最新状态保持一致
 **Validates: Requirements 1.2, 1.3, 3.2**
 
 ### Property 2: 搜索结果相似度单调性
-*For any* 向量搜索查询，返回的结果应该按照相似度降序排列，且所有结果的相似度都应该大于等于设定的阈值
+
+_For any_ 向量搜索查询，返回的结果应该按照相似度降序排列，且所有结果的相似度都应该大于等于设定的阈值
 **Validates: Requirements 4.2, 4.3**
 
 ### Property 3: 增量同步幂等性
-*For any* 资源数据集合，多次执行增量同步操作应该产生相同的最终向量状态
+
+_For any_ 资源数据集合，多次执行增量同步操作应该产生相同的最终向量状态
 **Validates: Requirements 3.1, 3.2, 3.3**
 
 ### Property 4: 向量存储持久化
-*For any* 成功存储的向量数据，在系统重启后应该能够完整恢复并保持搜索功能正常
+
+_For any_ 成功存储的向量数据，在系统重启后应该能够完整恢复并保持搜索功能正常
 **Validates: Requirements 1.1, 1.4**
 
 ### Property 5: 错误处理完整性
-*For any* 数据库连接或操作失败的情况，向量服务应该记录详细错误信息并抛出明确的异常，不应该静默失败
+
+_For any_ 数据库连接或操作失败的情况，向量服务应该记录详细错误信息并抛出明确的异常，不应该静默失败
 **Validates: Requirements 5.1, 5.2, 5.3**
 
 ### Property 6: 批量操作原子性
-*For any* 批量向量操作，要么全部成功，要么全部失败，不应该出现部分成功的中间状态
+
+_For any_ 批量向量操作，要么全部成功，要么全部失败，不应该出现部分成功的中间状态
 **Validates: Requirements 1.5, 4.5**
 
 ### Property 7: 元数据过滤准确性
-*For any* 带有元数据过滤条件的搜索查询，返回的所有结果都应该满足指定的过滤条件
+
+_For any_ 带有元数据过滤条件的搜索查询，返回的所有结果都应该满足指定的过滤条件
 **Validates: Requirements 4.4, 2.5**
 
 ### Property 8: 性能指标监控完整性
-*For any* 向量服务操作，相关的性能指标（响应时间、成功率等）都应该被正确记录和统计
+
+_For any_ 向量服务操作，相关的性能指标（响应时间、成功率等）都应该被正确记录和统计
 **Validates: Requirements 7.1, 7.2, 7.4**
 
 ## Error Handling
 
 ### 1. 数据库连接错误
+
 - **检测**: 连接超时、认证失败、网络中断
 - **处理**: 自动重试（指数退避）、记录详细错误日志、抛出明确异常
 - **恢复**: 连接恢复后自动恢复服务
 
 ### 2. 向量搜索错误
+
 - **检测**: 查询超时、索引损坏、维度不匹配
 - **处理**: 记录错误详情、返回错误状态、触发告警
 - **恢复**: 问题修复后自动恢复向量搜索
 
 ### 3. 同步服务错误
+
 - **检测**: API 调用失败、数据格式错误、并发冲突
 - **处理**: 错误重试、跳过问题资源、记录失败日志
 - **恢复**: 定期重试失败的同步任务
 
 ### 4. 数据一致性错误
+
 - **检测**: 向量与资源数据不匹配、重复记录、孤立数据
 - **处理**: 数据校验、自动修复、手动干预接口
 - **恢复**: 全量同步修复数据一致性
@@ -413,12 +420,14 @@ interface Database {
 ## Testing Strategy
 
 ### Unit Testing
+
 - **向量存储操作**: 测试 CRUD 操作的正确性
 - **相似度计算**: 验证搜索算法的准确性
 - **同步逻辑**: 测试增量同步的边界条件
 - **错误处理**: 模拟各种异常情况
 
 ### Property-Based Testing
+
 - **Property 1**: 使用随机资源数据测试向量一致性
 - **Property 2**: 生成随机查询验证搜索结果排序
 - **Property 3**: 多次执行同步操作验证幂等性
@@ -429,12 +438,14 @@ interface Database {
 - **Property 8**: 监控所有操作的性能指标
 
 ### Integration Testing
+
 - **端到端流程**: 从资源更新到向量搜索的完整流程
 - **数据库集成**: 与 Supabase 的实际交互测试
 - **性能测试**: 大量数据下的搜索性能验证
 - **并发测试**: 多用户同时访问的稳定性测试
 
 ### Configuration
+
 - 每个属性测试运行最少 100 次迭代
 - 使用真实的 Supabase 测试环境
 - 集成 CI/CD 流水线自动执行测试

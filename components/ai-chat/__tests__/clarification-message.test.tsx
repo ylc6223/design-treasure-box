@@ -1,6 +1,6 @@
 /**
  * ClarificationMessage 组件测试（快速回复按钮版本）
- * 
+ *
  * Feature: ai-chat-assistant, Property 4: 模糊查询的引导式提问
  * Validates: Requirements 3.1, 3.2, 3.3, 3.4
  */
@@ -33,12 +33,7 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
 
   describe('渲染', () => {
     it('应该一次性渲染所有问题', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={mockQuestions} {...mockHandlers} />);
 
       // 应该显示所有问题文本
       expect(screen.getByText('您需要什么类型的设计资源？')).toBeInTheDocument();
@@ -46,12 +41,7 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
     });
 
     it('应该一次性渲染所有选项按钮', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={mockQuestions} {...mockHandlers} />);
 
       // 第一个问题的选项
       expect(screen.getByRole('button', { name: 'UI灵感' })).toBeInTheDocument();
@@ -65,12 +55,7 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
     });
 
     it('应该使用圆角胶囊样式', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={mockQuestions} {...mockHandlers} />);
 
       const button = screen.getByRole('button', { name: 'UI灵感' });
       expect(button).toHaveClass('rounded-full');
@@ -79,12 +64,7 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
 
   describe('交互', () => {
     it('应该在点击选项时调用 onAnswerSelect', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={mockQuestions} {...mockHandlers} />);
 
       const button = screen.getByRole('button', { name: 'UI灵感' });
       fireEvent.click(button);
@@ -94,12 +74,7 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
     });
 
     it('应该为每个选项调用正确的回调', () => {
-      render(
-        <ClarificationMessage
-          questions={mockQuestions}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={mockQuestions} {...mockHandlers} />);
 
       // 点击第一个问题的选项
       fireEvent.click(screen.getByRole('button', { name: '字体资源' }));
@@ -113,23 +88,13 @@ describe('ClarificationMessage - 快速回复按钮版本', () => {
 
   describe('边界情况', () => {
     it('应该在没有问题时不渲染任何内容', () => {
-      const { container } = render(
-        <ClarificationMessage
-          questions={[]}
-          {...mockHandlers}
-        />
-      );
+      const { container } = render(<ClarificationMessage questions={[]} {...mockHandlers} />);
 
       expect(container.firstChild).toBeNull();
     });
 
     it('应该处理只有一个问题的情况', () => {
-      render(
-        <ClarificationMessage
-          questions={[mockQuestions[0]]}
-          {...mockHandlers}
-        />
-      );
+      render(<ClarificationMessage questions={[mockQuestions[0]]} {...mockHandlers} />);
 
       expect(screen.getByText('您需要什么类型的设计资源？')).toBeInTheDocument();
       expect(screen.queryByText('您偏好什么风格？')).not.toBeInTheDocument();

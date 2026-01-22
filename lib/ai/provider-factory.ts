@@ -100,7 +100,7 @@ export class AIProviderFactory {
       };
     }>;
   } {
-    const providers = Array.from(this.providers.values()).map(provider => ({
+    const providers = Array.from(this.providers.values()).map((provider) => ({
       name: provider.name,
       version: provider.version,
       capabilities: {
@@ -122,7 +122,7 @@ export class AIProviderFactory {
    */
   getProvidersByCapability(capability: keyof AIProvider['capabilities']): AIProvider[] {
     return Array.from(this.providers.values()).filter(
-      provider => provider.capabilities[capability] === true
+      (provider) => provider.capabilities[capability] === true
     );
   }
 

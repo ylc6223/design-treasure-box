@@ -1,6 +1,6 @@
 /**
  * ResourceInlineCard 组件测试
- * 
+ *
  * Feature: ai-chat-assistant
  * Validates: Requirements 4.1, 4.2, 4.3, 4.4
  */
@@ -45,30 +45,20 @@ describe('ResourceInlineCard', () => {
 
   describe('简化版卡片渲染', () => {
     it('应该显示缩略图、名称、评分和类别', () => {
-      render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceInlineCard resource={mockResource} {...mockHandlers} />);
 
       // 名称
       expect(screen.getByText('Dribbble')).toBeInTheDocument();
-      
+
       // 类别
       expect(screen.getByText('ui-inspiration')).toBeInTheDocument();
-      
+
       // 精选标识
       expect(screen.getByText('精选')).toBeInTheDocument();
     });
 
     it('应该显示缩略图', () => {
-      render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceInlineCard resource={mockResource} {...mockHandlers} />);
 
       const image = screen.getByAltText('Dribbble');
       expect(image).toBeInTheDocument();
@@ -77,10 +67,7 @@ describe('ResourceInlineCard', () => {
 
     it('应该显示箭头图标', () => {
       const { container } = render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
+        <ResourceInlineCard resource={mockResource} {...mockHandlers} />
       );
 
       // ChevronRight 图标应该存在
@@ -90,13 +77,8 @@ describe('ResourceInlineCard', () => {
 
     it('应该在非精选资源时不显示精选标识', () => {
       const nonFeaturedResource = { ...mockResource, isFeatured: false };
-      
-      render(
-        <ResourceInlineCard
-          resource={nonFeaturedResource}
-          {...mockHandlers}
-        />
-      );
+
+      render(<ResourceInlineCard resource={nonFeaturedResource} {...mockHandlers} />);
 
       expect(screen.queryByText('精选')).not.toBeInTheDocument();
     });
@@ -105,10 +87,7 @@ describe('ResourceInlineCard', () => {
   describe('悬停效果', () => {
     it('应该有悬停样式类', () => {
       const { container } = render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
+        <ResourceInlineCard resource={mockResource} {...mockHandlers} />
       );
 
       const card = container.firstChild;
@@ -121,10 +100,7 @@ describe('ResourceInlineCard', () => {
   describe('点击交互', () => {
     it('应该在点击卡片时打开详情', () => {
       const { container } = render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
+        <ResourceInlineCard resource={mockResource} {...mockHandlers} />
       );
 
       const card = container.firstChild as HTMLElement;
@@ -135,10 +111,7 @@ describe('ResourceInlineCard', () => {
 
     it('应该在点击卡片后显示详情内容', () => {
       const { container } = render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
+        <ResourceInlineCard resource={mockResource} {...mockHandlers} />
       );
 
       const card = container.firstChild as HTMLElement;
@@ -153,15 +126,10 @@ describe('ResourceInlineCard', () => {
 
   describe('边界情况', () => {
     it('应该处理图片加载失败', () => {
-      render(
-        <ResourceInlineCard
-          resource={mockResource}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceInlineCard resource={mockResource} {...mockHandlers} />);
 
       const image = screen.getByAltText('Dribbble');
-      
+
       // 触发图片加载失败
       fireEvent.error(image);
 
@@ -171,13 +139,8 @@ describe('ResourceInlineCard', () => {
 
     it('应该处理没有标签的资源', () => {
       const resourceWithoutTags = { ...mockResource, tags: [] };
-      
-      render(
-        <ResourceInlineCard
-          resource={resourceWithoutTags}
-          {...mockHandlers}
-        />
-      );
+
+      render(<ResourceInlineCard resource={resourceWithoutTags} {...mockHandlers} />);
 
       // 应该正常渲染，不报错
       expect(screen.getByText('Dribbble')).toBeInTheDocument();
@@ -185,13 +148,8 @@ describe('ResourceInlineCard', () => {
 
     it('应该处理没有策展人笔记的资源', () => {
       const resourceWithoutNote = { ...mockResource, curatorNote: '' };
-      
-      render(
-        <ResourceInlineCard
-          resource={resourceWithoutNote}
-          {...mockHandlers}
-        />
-      );
+
+      render(<ResourceInlineCard resource={resourceWithoutNote} {...mockHandlers} />);
 
       // 应该正常渲染，不报错
       expect(screen.getByText('Dribbble')).toBeInTheDocument();
@@ -200,26 +158,14 @@ describe('ResourceInlineCard', () => {
 
   describe('收藏状态', () => {
     it('应该显示未收藏状态', () => {
-      render(
-        <ResourceInlineCard
-          resource={mockResource}
-          isFavorited={false}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceInlineCard resource={mockResource} isFavorited={false} {...mockHandlers} />);
 
       // 卡片应该正常显示
       expect(screen.getByText('Dribbble')).toBeInTheDocument();
     });
 
     it('应该显示已收藏状态', () => {
-      render(
-        <ResourceInlineCard
-          resource={mockResource}
-          isFavorited={true}
-          {...mockHandlers}
-        />
-      );
+      render(<ResourceInlineCard resource={mockResource} isFavorited={true} {...mockHandlers} />);
 
       // 卡片应该正常显示
       expect(screen.getByText('Dribbble')).toBeInTheDocument();

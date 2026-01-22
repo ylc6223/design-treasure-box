@@ -1,6 +1,6 @@
 /**
  * 应用错误类型定义
- * 
+ *
  * 提供统一的错误处理机制，包括：
  * - 基础应用错误类
  * - 认证错误
@@ -20,12 +20,12 @@ export class AppError extends Error {
     public message: string,
     public code?: string
   ) {
-    super(message)
-    this.name = 'AppError'
-    
+    super(message);
+    this.name = 'AppError';
+
     // 维护正确的堆栈跟踪（仅在 V8 引擎中可用）
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor)
+      Error.captureStackTrace(this, this.constructor);
     }
   }
 }
@@ -36,8 +36,8 @@ export class AppError extends Error {
  */
 export class AuthenticationError extends AppError {
   constructor(message = 'Authentication required') {
-    super(401, message, 'AUTHENTICATION_ERROR')
-    this.name = 'AuthenticationError'
+    super(401, message, 'AUTHENTICATION_ERROR');
+    this.name = 'AuthenticationError';
   }
 }
 
@@ -47,8 +47,8 @@ export class AuthenticationError extends AppError {
  */
 export class AuthorizationError extends AppError {
   constructor(message = 'Insufficient permissions') {
-    super(403, message, 'AUTHORIZATION_ERROR')
-    this.name = 'AuthorizationError'
+    super(403, message, 'AUTHORIZATION_ERROR');
+    this.name = 'AuthorizationError';
   }
 }
 
@@ -61,8 +61,8 @@ export class ValidationError extends AppError {
     message: string,
     public errors?: Record<string, string[]>
   ) {
-    super(400, message, 'VALIDATION_ERROR')
-    this.name = 'ValidationError'
+    super(400, message, 'VALIDATION_ERROR');
+    this.name = 'ValidationError';
   }
 }
 
@@ -72,8 +72,8 @@ export class ValidationError extends AppError {
  */
 export class NotFoundError extends AppError {
   constructor(resource: string) {
-    super(404, `${resource} not found`, 'NOT_FOUND')
-    this.name = 'NotFoundError'
+    super(404, `${resource} not found`, 'NOT_FOUND');
+    this.name = 'NotFoundError';
   }
 }
 
@@ -83,8 +83,8 @@ export class NotFoundError extends AppError {
  */
 export class ConflictError extends AppError {
   constructor(message: string) {
-    super(409, message, 'CONFLICT')
-    this.name = 'ConflictError'
+    super(409, message, 'CONFLICT');
+    this.name = 'ConflictError';
   }
 }
 
@@ -94,8 +94,8 @@ export class ConflictError extends AppError {
  */
 export class InternalServerError extends AppError {
   constructor(message = 'Internal server error') {
-    super(500, message, 'INTERNAL_ERROR')
-    this.name = 'InternalServerError'
+    super(500, message, 'INTERNAL_ERROR');
+    this.name = 'InternalServerError';
   }
 }
 
@@ -104,16 +104,16 @@ export class InternalServerError extends AppError {
  * API 返回的标准错误格式
  */
 export interface ErrorResponse {
-  error: string
-  code: string
-  details?: unknown
+  error: string;
+  code: string;
+  details?: unknown;
 }
 
 /**
  * 判断是否为应用错误
  */
 export function isAppError(error: unknown): error is AppError {
-  return error instanceof AppError
+  return error instanceof AppError;
 }
 
 /**
@@ -121,9 +121,9 @@ export function isAppError(error: unknown): error is AppError {
  */
 export function getErrorStatusCode(error: unknown): number {
   if (isAppError(error)) {
-    return error.statusCode
+    return error.statusCode;
   }
-  return 500
+  return 500;
 }
 
 /**
@@ -131,12 +131,12 @@ export function getErrorStatusCode(error: unknown): number {
  */
 export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
   if (typeof error === 'string') {
-    return error
+    return error;
   }
-  return 'An unknown error occurred'
+  return 'An unknown error occurred';
 }
 
 /**
@@ -144,7 +144,7 @@ export function getErrorMessage(error: unknown): string {
  */
 export function getErrorCode(error: unknown): string {
   if (isAppError(error) && error.code) {
-    return error.code
+    return error.code;
   }
-  return 'UNKNOWN_ERROR'
+  return 'UNKNOWN_ERROR';
 }

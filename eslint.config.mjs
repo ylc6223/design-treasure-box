@@ -1,24 +1,24 @@
-import nextConfig from "eslint-config-next";
+import nextConfig from 'eslint-config-next';
 
 const eslintConfig = [
   ...nextConfig,
   {
-    ignores: ["references/**"],
+    ignores: ['references/**'],
   },
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
+      '@typescript-eslint/no-unused-vars': [
+        'error',
         {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
         },
       ],
-      "@typescript-eslint/no-explicit-any": "warn",
-      "no-console": [
-        "warn",
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-console': [
+        'warn',
         {
-          allow: ["warn", "error"],
+          allow: ['warn', 'error'],
         },
       ],
     },

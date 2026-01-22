@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
-import { type Resource, ResourceSchema } from '@/types'
-import type { Database } from '@/types/database'
+import { useQuery } from '@tanstack/react-query';
+import { createClient } from '@/lib/supabase/client';
+import { type Resource, ResourceSchema } from '@/types';
+import type { Database } from '@/types/database';
 
-type ResourceRow = Database['public']['Tables']['resources']['Row']
+type ResourceRow = Database['public']['Tables']['resources']['Row'];
 
 // 辅助函数：将数据库行转换为 Resource 对象
 function transformResource(resource: ResourceRow): Resource | null {
@@ -13,7 +13,7 @@ function transformResource(resource: ResourceRow): Resource | null {
   // 列表页使用缓存的 average_rating
   // 如果需要详细维度的评分，需要单独获取详情，或者在数据库也做缓存(过于复杂不推荐)
   // 这里我们使用 average_rating 填充 overall，其他维度暂时给默认值或 curator_rating
-  const curatorRating = resource.curator_rating as any
+  const curatorRating = resource.curator_rating as any;
 
   const rating = {
     overall: resource.average_rating ?? curatorRating?.overall ?? 0,
@@ -23,7 +23,7 @@ function transformResource(resource: ResourceRow): Resource | null {
     aesthetics: curatorRating?.aesthetics ?? 0,
     updateFrequency: curatorRating?.updateFrequency ?? 0,
     freeLevel: curatorRating?.freeLevel ?? 0,
-  }
+  };
 
   const resourceData = {
     id: resource.id,
@@ -40,13 +40,13 @@ function transformResource(resource: ResourceRow): Resource | null {
     createdAt: new Date(resource.created_at).toISOString(),
     viewCount: resource.view_count,
     favoriteCount: resource.favorite_count,
-  }
+  };
 
   try {
-    return ResourceSchema.parse(resourceData)
+    return ResourceSchema.parse(resourceData);
   } catch (error) {
-    console.error(`Invalid resource data for ${resource.id}:`, error)
-    return null
+    console.error(`Invalid resource data for ${resource.id}:`, error);
+    return null;
   }
 }
 
@@ -55,44 +55,38 @@ function transformResource(resource: ResourceRow): Resource | null {
 // ----------------------------------------------------------------------------
 
 export interface FetchResourcePageOptions {
-  page: number
-  pageSize: number
-  categoryId?: string
+  page: number;
+  pageSize: number;
+  categoryId?: string;
 }
 
-export async function fetchResourcePage({
-  page,
-  pageSize,
-  categoryId,
-}: FetchResourcePageOptions) {
-  const supabase = createClient()
+export async function fetchResourcePage({ page, pageSize, categoryId }: FetchResourcePageOptions) {
+  const supabase = createClient();
 
-  const from = page * pageSize
-  const to = from + pageSize - 1
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
 
   let query = supabase
     .from('resources')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .range(from, to)
+    .range(from, to);
 
   if (categoryId) {
-    query = query.eq('category_id', categoryId)
+    query = query.eq('category_id', categoryId);
   }
 
-  const { data: resources, count, error } = await query
+  const { data: resources, count, error } = await query;
 
-  if (error) throw new Error(error.message)
-  if (!resources) return { data: [], total: 0 }
+  if (error) throw new Error(error.message);
+  if (!resources) return { data: [], total: 0 };
 
-  const validatedResources = resources
-    .map(transformResource)
-    .filter(Boolean) as Resource[]
+  const validatedResources = resources.map(transformResource).filter(Boolean) as Resource[];
 
   return {
     data: validatedResources,
-    total: count || 0
-  }
+    total: count || 0,
+  };
 }
 
 // ----------------------------------------------------------------------------
@@ -100,19 +94,19 @@ export async function fetchResourcePage({
 // ----------------------------------------------------------------------------
 
 async function fetchHotResources() {
-  const supabase = createClient()
+  const supabase = createClient();
 
   const { data: resources, error } = await supabase
     .from('resources')
     .select('*')
     .order('favorite_count', { ascending: false })
     .limit(8)
-    .returns<ResourceRow[]>()
+    .returns<ResourceRow[]>();
 
-  if (error) throw new Error(error.message)
-  if (!resources) return []
+  if (error) throw new Error(error.message);
+  if (!resources) return [];
 
-  return resources.map(transformResource).filter(Boolean) as Resource[]
+  return resources.map(transformResource).filter(Boolean) as Resource[];
 }
 
 export function useHotResources() {
@@ -120,7 +114,7 @@ export function useHotResources() {
     queryKey: ['resources', 'hot'],
     queryFn: fetchHotResources,
     staleTime: 1000 * 60 * 10, // 10分钟
-  })
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -128,19 +122,19 @@ export function useHotResources() {
 // ----------------------------------------------------------------------------
 
 async function fetchLatestResources() {
-  const supabase = createClient()
+  const supabase = createClient();
 
   const { data: resources, error } = await supabase
     .from('resources')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(8)
-    .returns<ResourceRow[]>()
+    .returns<ResourceRow[]>();
 
-  if (error) throw new Error(error.message)
-  if (!resources) return []
+  if (error) throw new Error(error.message);
+  if (!resources) return [];
 
-  return resources.map(transformResource).filter(Boolean) as Resource[]
+  return resources.map(transformResource).filter(Boolean) as Resource[];
 }
 
 export function useLatestResources() {
@@ -148,7 +142,7 @@ export function useLatestResources() {
     queryKey: ['resources', 'latest'],
     queryFn: fetchLatestResources,
     staleTime: 1000 * 60 * 5, // 5分钟
-  })
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -162,20 +156,20 @@ export function useResourceById(resourceId: string) {
   return useQuery({
     queryKey: ['resources', resourceId],
     queryFn: async () => {
-      const supabase = createClient()
+      const supabase = createClient();
       const { data, error } = await supabase
         .from('resources')
         .select('*')
         .eq('id', resourceId)
-        .single()
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
       // 对于详情页，如果确实需要详细评分分布，这里其实应该再查一次 ratings 表
       // 但为了保持接口一致性，目前先用 transformResource
-      return transformResource(data)
+      return transformResource(data);
     },
-    enabled: !!resourceId
-  })
+    enabled: !!resourceId,
+  });
 }
 
 /**
@@ -184,9 +178,9 @@ export function useResourceById(resourceId: string) {
 export function useResourcesByCategory(categoryId: string) {
   return useQuery({
     queryKey: ['resources', 'category', categoryId],
-    queryFn: () => fetchResourcePage({ page: 0, pageSize: 24, categoryId }).then(r => r.data),
+    queryFn: () => fetchResourcePage({ page: 0, pageSize: 24, categoryId }).then((r) => r.data),
     staleTime: 1000 * 60 * 5,
-  })
+  });
 }
 
 /**
@@ -196,18 +190,18 @@ export function useResources() {
   return useQuery({
     queryKey: ['resources', 'all'],
     queryFn: async () => {
-      const supabase = createClient()
+      const supabase = createClient();
       const { data: resources, error } = await supabase
         .from('resources')
         .select('*')
         .order('created_at', { ascending: false })
-        .returns<ResourceRow[]>()
+        .returns<ResourceRow[]>();
 
-      if (error) throw error
-      if (!resources) return []
+      if (error) throw error;
+      if (!resources) return [];
 
-      return resources.map(transformResource).filter(Boolean) as Resource[]
+      return resources.map(transformResource).filter(Boolean) as Resource[];
     },
     staleTime: 1000 * 60 * 5,
-  })
+  });
 }

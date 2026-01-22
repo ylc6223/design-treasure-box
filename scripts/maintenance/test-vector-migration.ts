@@ -31,11 +31,11 @@ async function testVectorMigration() {
 
     // 2. 测试向量同步
     console.log('\n2️⃣ Testing vector synchronization...');
-    
+
     // 初始化 AI 服务管理器
     const serviceManager = getAIServiceManager();
     await serviceManager.initialize();
-    
+
     const syncService = new EmbeddingSyncService();
     const syncResult = await syncService.syncAllEmbeddings();
     console.log('Sync result:', syncResult);
@@ -43,18 +43,21 @@ async function testVectorMigration() {
     // 3. 测试向量搜索
     console.log('\n3️⃣ Testing vector search...');
     const provider = serviceManager.getCurrentProvider();
-    
+
     const searchEngine = new SupabaseVectorSearchEngine(provider);
     const searchResults = await searchEngine.search('颜色工具', {
       limit: 3,
       minSimilarity: 0.1,
     });
-    
-    console.log('Search results:', searchResults.map(r => ({
-      id: r.resourceId,
-      name: r.resource.name,
-      similarity: r.similarity,
-    })));
+
+    console.log(
+      'Search results:',
+      searchResults.map((r) => ({
+        id: r.resourceId,
+        name: r.resource.name,
+        similarity: r.similarity,
+      }))
+    );
 
     // 4. 测试统计信息
     console.log('\n4️⃣ Testing statistics...');

@@ -1,10 +1,10 @@
-import { 
-  AIEnvironmentConfig, 
-  AIRuntimeConfig, 
+import {
+  AIEnvironmentConfig,
+  AIRuntimeConfig,
   VercelAIConfig,
   ZhipuAIConfig,
   AIEnvironmentConfigSchema,
-  AIRuntimeConfigSchema 
+  AIRuntimeConfigSchema,
 } from '@/types/ai-chat';
 
 /**
@@ -27,7 +27,19 @@ export class AIConfigManager {
     const rawEnvConfig = {
       ZHIPU_AI_API_KEY: process.env.ZHIPU_AI_API_KEY!,
       ZHIPU_AI_BASE_URL: process.env.ZHIPU_AI_BASE_URL,
-      ZHIPU_AI_MODEL: process.env.ZHIPU_AI_MODEL as 'glm-4-plus' | 'glm-4-air' | 'glm-4-flash' | 'glm-4' | 'glm-4-0520' | 'glm-3-turbo' | 'glm-4.6v' | 'glm-4.6v-flash' | 'glm-4.5v' | 'glm-4v-plus' | 'glm-4.7' || 'glm-4-plus',
+      ZHIPU_AI_MODEL:
+        (process.env.ZHIPU_AI_MODEL as
+          | 'glm-4-plus'
+          | 'glm-4-air'
+          | 'glm-4-flash'
+          | 'glm-4'
+          | 'glm-4-0520'
+          | 'glm-3-turbo'
+          | 'glm-4.6v'
+          | 'glm-4.6v-flash'
+          | 'glm-4.5v'
+          | 'glm-4v-plus'
+          | 'glm-4.7') || 'glm-4-plus',
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
       ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
       ENABLE_STREAMING: process.env.ENABLE_STREAMING === 'true',
@@ -76,7 +88,7 @@ export class AIConfigManager {
           maxTokens: 4000,
           temperature: 0.7,
         } as ZhipuAIConfig;
-      
+
       case 'openai':
         if (!this.envConfig.OPENAI_API_KEY) {
           throw new Error('OpenAI API key not configured');
@@ -89,7 +101,7 @@ export class AIConfigManager {
           maxTokens: 4000,
           temperature: 0.7,
         };
-      
+
       case 'anthropic':
         if (!this.envConfig.ANTHROPIC_API_KEY) {
           throw new Error('Anthropic API key not configured');
@@ -102,7 +114,7 @@ export class AIConfigManager {
           maxTokens: 4000,
           temperature: 0.7,
         };
-      
+
       default:
         throw new Error(`Unknown provider: ${providerName}`);
     }
@@ -146,7 +158,7 @@ export class AIConfigManager {
    */
   getAvailableProviders(): string[] {
     const providers = ['zhipu-ai', 'openai', 'anthropic'];
-    return providers.filter(provider => this.isProviderAvailable(provider));
+    return providers.filter((provider) => this.isProviderAvailable(provider));
   }
 
   /**

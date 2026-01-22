@@ -4,10 +4,12 @@ import { ZhipuAIConfig, ChatMessage } from '@/types/ai-chat';
 
 // Mock the dependencies
 vi.mock('zhipu-ai-provider', () => ({
-  createZhipu: vi.fn(() => vi.fn(() => ({
-    doGenerate: vi.fn(),
-    doStream: vi.fn(),
-  }))),
+  createZhipu: vi.fn(() =>
+    vi.fn(() => ({
+      doGenerate: vi.fn(),
+      doStream: vi.fn(),
+    }))
+  ),
 }));
 
 vi.mock('ai', () => ({
@@ -118,9 +120,9 @@ describe('ZhipuAIProvider', () => {
     });
 
     it('应该拒绝无效的topP', async () => {
-      await expect(
-        provider.generateChatCompletion(validMessages, { topP: 1.5 })
-      ).rejects.toThrow('topP must be between 0 and 1');
+      await expect(provider.generateChatCompletion(validMessages, { topP: 1.5 })).rejects.toThrow(
+        'topP must be between 0 and 1'
+      );
     });
   });
 
@@ -268,7 +270,7 @@ describe('ZhipuAIProvider', () => {
     it('应该正确转换流式响应块', () => {
       const chunk = 'Test chunk';
       const converted = (provider as any).convertStreamChunk(chunk);
-      
+
       expect(converted.content).toBe('Test chunk');
       expect(converted.isComplete).toBe(false);
     });
@@ -276,7 +278,7 @@ describe('ZhipuAIProvider', () => {
     it('应该处理空字符串块', () => {
       const chunk = '';
       const converted = (provider as any).convertStreamChunk(chunk);
-      
+
       expect(converted.content).toBe('');
       expect(converted.isComplete).toBe(false);
     });
@@ -284,21 +286,15 @@ describe('ZhipuAIProvider', () => {
 
   describe('文本嵌入验证', () => {
     it('应该拒绝空文本', async () => {
-      await expect(provider.generateEmbedding('')).rejects.toThrow(
-        'Text input cannot be empty'
-      );
+      await expect(provider.generateEmbedding('')).rejects.toThrow('Text input cannot be empty');
     });
 
     it('应该拒绝只有空格的文本', async () => {
-      await expect(provider.generateEmbedding('   ')).rejects.toThrow(
-        'Text input cannot be empty'
-      );
+      await expect(provider.generateEmbedding('   ')).rejects.toThrow('Text input cannot be empty');
     });
 
     it('应该拒绝空数组', async () => {
-      await expect(provider.generateEmbeddings([])).rejects.toThrow(
-        'Texts array cannot be empty'
-      );
+      await expect(provider.generateEmbeddings([])).rejects.toThrow('Texts array cannot be empty');
     });
   });
 
@@ -316,9 +312,9 @@ describe('ZhipuAIProvider', () => {
 
     it('应该保留未更新的配置', () => {
       const originalApiKey = config.apiKey;
-      
+
       provider.updateConfig({ model: 'glm-4-turbo' });
-      
+
       // API key应该保持不变
       expect((provider as any).config.apiKey).toBe(originalApiKey);
     });
@@ -346,7 +342,7 @@ describe('ZhipuAIProvider', () => {
   describe('提供者信息', () => {
     it('应该返回完整的提供者信息', () => {
       const info = provider.getInfo();
-      
+
       expect(info.name).toBe('zhipu-ai');
       expect(info.version).toBe('0.2.1');
       expect(info.capabilities).toEqual(provider.capabilities);
@@ -355,7 +351,7 @@ describe('ZhipuAIProvider', () => {
     it('应该返回能力的副本而不是引用', () => {
       const info1 = provider.getInfo();
       const info2 = provider.getInfo();
-      
+
       expect(info1.capabilities).toEqual(info2.capabilities);
       expect(info1.capabilities).not.toBe(info2.capabilities);
     });

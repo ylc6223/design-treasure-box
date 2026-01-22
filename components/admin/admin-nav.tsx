@@ -1,31 +1,26 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import {
-  LayoutDashboard,
-  Package,
-  Users,
-  LogOut,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { LayoutDashboard, Package, Users, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface AdminNavProps {
   user: {
-    id: string
-    email?: string
-  }
+    id: string;
+    email?: string;
+  };
   profile: {
-    name: string | null
-    email: string
-    image: string | null
-    role: 'USER' | 'ADMIN'
-  }
+    name: string | null;
+    email: string;
+    image: string | null;
+    role: 'USER' | 'ADMIN';
+  };
 }
 
 const navItems = [
@@ -44,25 +39,25 @@ const navItems = [
     href: '/admin/users',
     icon: Users,
   },
-]
+];
 
 export function AdminNav({ user: _user, profile }: AdminNavProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleSignOut = async () => {
     try {
-      setIsLoggingOut(true)
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      router.push('/')
-      router.refresh()
+      setIsLoggingOut(true);
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/');
+      router.refresh();
     } catch (error) {
-      console.error('Sign out error:', error)
-      setIsLoggingOut(false)
+      console.error('Sign out error:', error);
+      setIsLoggingOut(false);
     }
-  }
+  };
 
   const getInitials = (name: string | null, email: string) => {
     if (name) {
@@ -71,10 +66,10 @@ export function AdminNav({ user: _user, profile }: AdminNavProps) {
         .map((n) => n[0])
         .join('')
         .toUpperCase()
-        .slice(0, 2)
+        .slice(0, 2);
     }
-    return email[0].toUpperCase()
-  }
+    return email[0].toUpperCase();
+  };
 
   return (
     <aside className="w-64 border-r bg-surface">
@@ -82,8 +77,8 @@ export function AdminNav({ user: _user, profile }: AdminNavProps) {
         {/* 导航菜单 */}
         <nav className="flex-1 space-y-1 p-4 pt-6">
           {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+            const Icon = item.icon;
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
 
             return (
               <Link
@@ -99,7 +94,7 @@ export function AdminNav({ user: _user, profile }: AdminNavProps) {
                 <Icon className="h-5 w-5" />
                 {item.title}
               </Link>
-            )
+            );
           })}
         </nav>
 
@@ -111,9 +106,7 @@ export function AdminNav({ user: _user, profile }: AdminNavProps) {
               <AvatarFallback>{getInitials(profile.name, profile.email)}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">
-                {profile.name || profile.email}
-              </p>
+              <p className="text-sm font-medium truncate">{profile.name || profile.email}</p>
               <p className="text-xs text-text-muted truncate">{profile.email}</p>
             </div>
           </div>
@@ -130,5 +123,5 @@ export function AdminNav({ user: _user, profile }: AdminNavProps) {
         </div>
       </div>
     </aside>
-  )
+  );
 }

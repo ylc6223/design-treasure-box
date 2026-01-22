@@ -1,13 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import * as fc from 'fast-check';
 import { BaseAIProvider } from '../base-provider';
-import { 
-  AICapabilities, 
-  ChatMessage, 
-  ChatOptions, 
-  ChatResponse, 
-  ChatChunk 
-} from '@/types/ai-chat';
+import { AICapabilities, ChatMessage, ChatOptions, ChatResponse, ChatChunk } from '@/types/ai-chat';
 
 // 测试用的AI提供者实现
 class TestAIProvider extends BaseAIProvider {
@@ -22,10 +16,13 @@ class TestAIProvider extends BaseAIProvider {
     supportedLanguages: ['en', 'zh'],
   };
 
-  async generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse> {
+  async generateChatCompletion(
+    messages: ChatMessage[],
+    options?: ChatOptions
+  ): Promise<ChatResponse> {
     this.validateMessages(messages);
     this.validateChatOptions(options);
-    
+
     return {
       content: `Test response for ${messages.length} messages`,
       usage: {
@@ -37,10 +34,13 @@ class TestAIProvider extends BaseAIProvider {
     };
   }
 
-  async *streamChatCompletion(messages: ChatMessage[], options?: ChatOptions): AsyncIterable<ChatChunk> {
+  async *streamChatCompletion(
+    messages: ChatMessage[],
+    options?: ChatOptions
+  ): AsyncIterable<ChatChunk> {
     this.validateMessages(messages);
     this.validateChatOptions(options);
-    
+
     const chunks = ['Test ', 'streaming ', 'response'];
     for (let i = 0; i < chunks.length; i++) {
       yield {
@@ -56,11 +56,11 @@ class TestAIProvider extends BaseAIProvider {
   }
 
   async generateEmbeddings(texts: string[]): Promise<number[][]> {
-    return Promise.all(texts.map(text => this.generateEmbedding(text)));
+    return Promise.all(texts.map((text) => this.generateEmbedding(text)));
   }
 
   protected convertMessages(messages: ChatMessage[]): any[] {
-    return messages.map(msg => ({
+    return messages.map((msg) => ({
       role: msg.type === 'assistant' ? 'assistant' : 'user',
       content: msg.content,
     }));
@@ -77,9 +77,9 @@ class TestAIProvider extends BaseAIProvider {
 
 // 简化的生成器函数
 const chatMessageGenerator = fc.record({
-  id: fc.string({ minLength: 1, maxLength: 10 }).filter(s => s.trim().length > 0),
+  id: fc.string({ minLength: 1, maxLength: 10 }).filter((s) => s.trim().length > 0),
   type: fc.constantFrom('user', 'assistant', 'system'),
-  content: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+  content: fc.string({ minLength: 1, maxLength: 50 }).filter((s) => s.trim().length > 0),
   timestamp: fc.date(),
 });
 
@@ -98,7 +98,7 @@ describe('AI Provider Interface Properties', () => {
           async (messages) => {
             // **Feature: ai-chat-assistant, Property 1: AI提供者接口一致性**
             // **Validates: Requirements 2.1, 2.2**
-            
+
             // 验证提供者信息的一致性
             const info = provider.getInfo();
             expect(info.name).toBe(provider.name);
@@ -123,7 +123,7 @@ describe('AI Provider Interface Properties', () => {
           async (messages) => {
             // **Feature: ai-chat-assistant, Property 1: AI提供者接口一致性**
             // **Validates: Requirements 2.1, 2.2**
-            
+
             // 测试有效输入不抛出错误
             await expect(provider.generateChatCompletion(messages)).resolves.toBeDefined();
 
@@ -142,10 +142,10 @@ describe('AI Provider Interface Properties', () => {
     it('should handle invalid inputs consistently', async () => {
       // **Feature: ai-chat-assistant, Property 1: AI提供者接口一致性**
       // **Validates: Requirements 2.1, 2.2**
-      
+
       // 测试空消息数组
       await expect(provider.generateChatCompletion([])).rejects.toThrow();
-      
+
       // 测试无效消息格式
       const invalidMessage = {
         id: 'test',
@@ -159,16 +159,16 @@ describe('AI Provider Interface Properties', () => {
     it('should handle embedding operations consistently', async () => {
       await fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+          fc.string({ minLength: 1, maxLength: 50 }).filter((s) => s.trim().length > 0),
           async (text) => {
             // **Feature: ai-chat-assistant, Property 1: AI提供者接口一致性**
             // **Validates: Requirements 2.1, 2.2**
-            
+
             // 单个文本嵌入
             const embedding = await provider.generateEmbedding(text);
             expect(Array.isArray(embedding)).toBe(true);
             expect(embedding.length).toBeGreaterThan(0);
-            expect(embedding.every(n => typeof n === 'number')).toBe(true);
+            expect(embedding.every((n) => typeof n === 'number')).toBe(true);
 
             // 批量文本嵌入
             const texts = [text, text + ' more'];
@@ -188,12 +188,12 @@ describe('AI Provider Interface Properties', () => {
           async (messages) => {
             // **Feature: ai-chat-assistant, Property 1: AI提供者接口一致性**
             // **Validates: Requirements 2.1, 2.2**
-            
+
             // 聊天完成响应格式
             const response = await provider.generateChatCompletion(messages);
             expect(typeof response.content).toBe('string');
             expect(response.content.length).toBeGreaterThan(0);
-            
+
             if (response.usage) {
               expect(typeof response.usage.promptTokens).toBe('number');
               expect(typeof response.usage.completionTokens).toBe('number');
@@ -207,7 +207,7 @@ describe('AI Provider Interface Properties', () => {
               expect(typeof chunk.isComplete).toBe('boolean');
               chunks.push(chunk);
             }
-            
+
             expect(chunks.length).toBeGreaterThan(0);
             expect(chunks[chunks.length - 1].isComplete).toBe(true);
           }

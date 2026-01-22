@@ -46,7 +46,7 @@ export class EmbeddingSyncService {
         try {
           // 检查是否需要更新（简化版：总是更新）
           const needsUpdate = await this.needsVectorUpdate(resource);
-          
+
           if (!needsUpdate) {
             result.skippedResources++;
             continue;
@@ -107,7 +107,7 @@ export class EmbeddingSyncService {
 
     try {
       // 批量生成向量
-      const texts = (resources as Resource[]).map(r => this.resourceToText(r));
+      const texts = (resources as Resource[]).map((r) => this.resourceToText(r));
       const embeddings = await this.aiProvider.generateEmbeddings(texts);
 
       // 准备批量数据

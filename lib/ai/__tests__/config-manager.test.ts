@@ -7,7 +7,7 @@ describe('AIConfigManager', () => {
   beforeEach(() => {
     // 保存原始环境变量
     originalEnv = { ...process.env };
-    
+
     // 设置测试环境变量
     process.env.ZHIPU_AI_API_KEY = 'test-zhipu-key';
     process.env.ZHIPU_AI_BASE_URL = 'https://test.api.com';
@@ -15,7 +15,7 @@ describe('AIConfigManager', () => {
     process.env.ENABLE_STREAMING = 'true';
     process.env.ENABLE_FUNCTION_CALLING = 'true';
     process.env.MAX_CONVERSATION_LENGTH = '50';
-    
+
     // 重置单例
     resetAIConfigManager();
   });
@@ -34,7 +34,7 @@ describe('AIConfigManager', () => {
 
     it('应该在缺少必需配置时抛出错误', () => {
       delete process.env.ZHIPU_AI_API_KEY;
-      
+
       expect(() => new AIConfigManager()).toThrow('Invalid environment configuration');
     });
 
@@ -42,11 +42,11 @@ describe('AIConfigManager', () => {
       delete process.env.ZHIPU_AI_MODEL;
       delete process.env.ENABLE_STREAMING;
       delete process.env.ENABLE_FUNCTION_CALLING;
-      
+
       const manager = new AIConfigManager();
       const envConfig = manager.getEnvironmentConfig();
       const config = manager.getProviderConfig('zhipu-ai');
-      
+
       expect(config.model).toBe('glm-4');
       // 当ENABLE_STREAMING未设置时，envConfig中为false（因为 === 'true' 返回false）
       expect(envConfig.ENABLE_STREAMING).toBe(false);
@@ -67,7 +67,7 @@ describe('AIConfigManager', () => {
 
     it('应该返回智谱AI配置', () => {
       const config = manager.getProviderConfig('zhipu-ai');
-      
+
       expect(config.provider).toBe('zhipu-ai');
       expect(config.model).toBe('glm-4');
       expect(config.apiKey).toBe('test-zhipu-key');
@@ -76,9 +76,7 @@ describe('AIConfigManager', () => {
     });
 
     it('应该在OpenAI未配置时抛出错误', () => {
-      expect(() => manager.getProviderConfig('openai')).toThrow(
-        'OpenAI API key not configured'
-      );
+      expect(() => manager.getProviderConfig('openai')).toThrow('OpenAI API key not configured');
     });
 
     it('应该在Anthropic未配置时抛出错误', () => {
@@ -88,14 +86,12 @@ describe('AIConfigManager', () => {
     });
 
     it('应该在未知提供者时抛出错误', () => {
-      expect(() => manager.getProviderConfig('unknown')).toThrow(
-        'Unknown provider: unknown'
-      );
+      expect(() => manager.getProviderConfig('unknown')).toThrow('Unknown provider: unknown');
     });
 
     it('应该返回默认提供者配置', () => {
       const config = manager.getDefaultProviderConfig();
-      
+
       expect(config.provider).toBe('zhipu-ai');
       expect(config.apiKey).toBe('test-zhipu-key');
     });
@@ -110,7 +106,7 @@ describe('AIConfigManager', () => {
 
     it('应该返回运行时配置', () => {
       const config = manager.getRuntimeConfig();
-      
+
       expect(config.defaultProvider).toBe('zhipu-ai');
       expect(config.maxRetries).toBe(3);
       expect(config.timeoutMs).toBe(30000);
@@ -121,7 +117,7 @@ describe('AIConfigManager', () => {
     it('应该返回配置的副本', () => {
       const config1 = manager.getRuntimeConfig();
       const config2 = manager.getRuntimeConfig();
-      
+
       expect(config1).toEqual(config2);
       expect(config1).not.toBe(config2);
     });
@@ -136,7 +132,7 @@ describe('AIConfigManager', () => {
 
     it('应该返回环境配置', () => {
       const config = manager.getEnvironmentConfig();
-      
+
       expect(config.ZHIPU_AI_API_KEY).toBe('test-zhipu-key');
       expect(config.ZHIPU_AI_BASE_URL).toBe('https://test.api.com');
       expect(config.ZHIPU_AI_MODEL).toBe('glm-4');
@@ -148,7 +144,7 @@ describe('AIConfigManager', () => {
     it('应该返回配置的副本', () => {
       const config1 = manager.getEnvironmentConfig();
       const config2 = manager.getEnvironmentConfig();
-      
+
       expect(config1).toEqual(config2);
       expect(config1).not.toBe(config2);
     });
@@ -182,7 +178,7 @@ describe('AIConfigManager', () => {
 
     it('应该返回可用提供者列表', () => {
       const providers = manager.getAvailableProviders();
-      
+
       expect(providers).toContain('zhipu-ai');
       expect(providers).not.toContain('openai');
       expect(providers).not.toContain('anthropic');
@@ -191,10 +187,10 @@ describe('AIConfigManager', () => {
     it('应该在配置多个提供者时返回所有可用提供者', () => {
       process.env.OPENAI_API_KEY = 'test-openai-key';
       process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
-      
+
       const newManager = new AIConfigManager();
       const providers = newManager.getAvailableProviders();
-      
+
       expect(providers).toContain('zhipu-ai');
       expect(providers).toContain('openai');
       expect(providers).toContain('anthropic');
@@ -205,14 +201,14 @@ describe('AIConfigManager', () => {
     it('应该验证有效配置', () => {
       const manager = new AIConfigManager();
       const validation = manager.validateConfiguration();
-      
+
       expect(validation.isValid).toBe(true);
       expect(validation.errors).toHaveLength(0);
     });
 
     it('应该检测缺少API密钥', () => {
       delete process.env.ZHIPU_AI_API_KEY;
-      
+
       // 由于构造函数会抛出错误，我们需要在验证之前捕获
       expect(() => new AIConfigManager()).toThrow();
     });
@@ -222,7 +218,7 @@ describe('AIConfigManager', () => {
       // 我们可以测试当API密钥无效时的情况
       const manager = new AIConfigManager();
       const validation = manager.validateConfiguration();
-      
+
       // 在当前配置下应该是有效的
       expect(validation.isValid).toBe(true);
     });
@@ -232,7 +228,7 @@ describe('AIConfigManager', () => {
     it('应该返回相同的实例', () => {
       const instance1 = getAIConfigManager();
       const instance2 = getAIConfigManager();
-      
+
       expect(instance1).toBe(instance2);
     });
 
@@ -240,7 +236,7 @@ describe('AIConfigManager', () => {
       const instance1 = getAIConfigManager();
       resetAIConfigManager();
       const instance2 = getAIConfigManager();
-      
+
       expect(instance1).not.toBe(instance2);
     });
   });
@@ -254,7 +250,7 @@ describe('AIConfigManager', () => {
     it('应该正确配置OpenAI', () => {
       const manager = new AIConfigManager();
       const config = manager.getProviderConfig('openai');
-      
+
       expect(config.provider).toBe('openai');
       expect(config.model).toBe('gpt-4');
       expect(config.apiKey).toBe('test-openai-key');
@@ -263,7 +259,7 @@ describe('AIConfigManager', () => {
     it('应该正确配置Anthropic', () => {
       const manager = new AIConfigManager();
       const config = manager.getProviderConfig('anthropic');
-      
+
       expect(config.provider).toBe('anthropic');
       expect(config.model).toBe('claude-3-sonnet-20240229');
       expect(config.apiKey).toBe('test-anthropic-key');
@@ -274,29 +270,29 @@ describe('AIConfigManager', () => {
     it('应该正确解析布尔值', () => {
       process.env.ENABLE_STREAMING = 'false';
       process.env.ENABLE_FUNCTION_CALLING = 'false';
-      
+
       const manager = new AIConfigManager();
       const envConfig = manager.getEnvironmentConfig();
-      
+
       expect(envConfig.ENABLE_STREAMING).toBe(false);
       expect(envConfig.ENABLE_FUNCTION_CALLING).toBe(false);
     });
 
     it('应该正确解析数字', () => {
       process.env.MAX_CONVERSATION_LENGTH = '100';
-      
+
       const manager = new AIConfigManager();
       const envConfig = manager.getEnvironmentConfig();
-      
+
       expect(envConfig.MAX_CONVERSATION_LENGTH).toBe(100);
     });
 
     it('应该使用默认的对话长度', () => {
       delete process.env.MAX_CONVERSATION_LENGTH;
-      
+
       const manager = new AIConfigManager();
       const envConfig = manager.getEnvironmentConfig();
-      
+
       expect(envConfig.MAX_CONVERSATION_LENGTH).toBe(50);
     });
   });

@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
 /**
  * ResourceCard 使用示例
- * 
+ *
  * 这个文件展示了如何使用 ResourceCard 组件
  */
 
-import { ResourceCard } from './resource-card'
-import { useFavorites } from '@/hooks'
-import type { Resource } from '@/types'
+import { ResourceCard } from './resource-card';
+import { useFavorites } from '@/hooks';
+import type { Resource } from '@/types';
 
 export function ResourceCardExample() {
-  const { isFavorited, addFavorite, removeFavorite } = useFavorites()
+  const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 
   // 示例资源数据
   const exampleResource: Resource = {
@@ -34,15 +34,15 @@ export function ResourceCardExample() {
     createdAt: '2024-01-01T00:00:00.000Z',
     viewCount: 1250,
     favoriteCount: 320,
-  }
+  };
 
   const handleFavorite = () => {
     if (isFavorited(exampleResource.id)) {
-      removeFavorite(exampleResource.id)
+      removeFavorite(exampleResource.id);
     } else {
-      addFavorite(exampleResource.id)
+      addFavorite(exampleResource.id);
     }
-  }
+  };
 
   return (
     <div className="max-w-sm">
@@ -52,24 +52,24 @@ export function ResourceCardExample() {
         onFavorite={handleFavorite}
       />
     </div>
-  )
+  );
 }
 
 /**
  * 瀑布流网格示例
- * 
+ *
  * 展示多个 ResourceCard 在网格布局中的使用
  */
 export function ResourceGridExample({ resources }: { resources: Resource[] }) {
-  const { isFavorited, addFavorite, removeFavorite } = useFavorites()
+  const { isFavorited, addFavorite, removeFavorite } = useFavorites();
 
   const handleFavorite = (id: string) => {
     if (isFavorited(id)) {
-      removeFavorite(id)
+      removeFavorite(id);
     } else {
-      addFavorite(id)
+      addFavorite(id);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -82,5 +82,5 @@ export function ResourceGridExample({ resources }: { resources: Resource[] }) {
         />
       ))}
     </div>
-  )
+  );
 }
