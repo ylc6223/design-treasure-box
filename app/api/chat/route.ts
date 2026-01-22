@@ -25,11 +25,11 @@ async function initializeRAGEngine() {
 
     // 1. 获取 AI 服务管理器并初始化
     const serviceManager = getAIServiceManager();
-    
+
     if (!serviceManager.isServiceAvailable()) {
       await serviceManager.initialize();
     }
-    
+
     const provider = serviceManager.getCurrentProvider();
 
     // 2. 初始化 Supabase 向量搜索引擎
@@ -38,9 +38,9 @@ async function initializeRAGEngine() {
     // 3. 确保向量数据已同步
     const syncService = new EmbeddingSyncService();
     const syncStatus = await syncService.getSyncStatus();
-    
+
     console.log('📊 Current sync status:', syncStatus);
-    
+
     if (syncStatus.totalEmbeddings === 0) {
       console.log('🔄 No embeddings found, starting initial sync...');
       await syncService.syncAllEmbeddings();
@@ -72,7 +72,11 @@ async function initializeRAGEngine() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query, filters, conversationHistory } = body as {
+    const {
+      query,
+      filters,
+      conversationHistory: _conversationHistory,
+    } = body as {
       query: string;
       filters?: SearchFilters;
       conversationHistory?: any[];
@@ -89,12 +93,26 @@ export async function POST(request: NextRequest) {
     // 初始化 RAG 引擎
     const engine = await initializeRAGEngine();
 
-    // 生成响应
-    const response = await engine.generateResponse(query, filters, {
-      conversationHistory,
-      temperature: 0.7,
-      maxTokens: 2000,
-    });
+    // 导入增强搜索
+    const { enhancedSearch } = await import('@/lib/ai/enhanced-search');
+
+    // 执行增强搜索
+    // 注意：我们将 sessionContext 留空或从 body 中获取（如果前端传递了）
+    const response = await enhancedSearch(
+      query,
+      // 这里的 searchFn 必须兼容 enhancedSearch 的要求
+      async (q, f) => {
+        const results = await (engine as any).hybridSearch.search(q, f || filters, {
+          maxResults: filters?.maxResults || 5,
+          minSimilarity: 0.3,
+        });
+        return results;
+      },
+      (body as any).sessionContext || {},
+      {
+        maxResults: filters?.maxResults || 5,
+      }
+    );
 
     // 返回响应
     return NextResponse.json({
@@ -104,7 +122,9 @@ export async function POST(request: NextRequest) {
         searchResults: response.searchResults,
         processingTime: response.processingTime,
         needsClarification: response.needsClarification,
-        clarificationQuestions: response.clarificationQuestions,
+        clarificationStrategy: response.clarificationStrategy,
+        queryAnalysis: response.queryAnalysis,
+        fromCache: response.fromCache,
       },
     });
   } catch (error: any) {

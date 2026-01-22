@@ -10,13 +10,28 @@ import {
   PromptInputTextarea,
   PromptInputActions,
 } from '@/components/prompt-kit/prompt-input';
-import { DotsLoader } from '@/components/prompt-kit/loader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { ExtendedChatMessage, ResourceRecommendation } from '@/types/ai-chat';
+import type { ExtendedChatMessage } from '@/types/ai-chat';
 import type { Resource } from '@/types';
-import { ResourceMessage } from '@/components/ai-chat/resource-message';
-import { ClarificationMessage } from '@/components/ai-chat/clarification-message';
+import {
+  AIResponseSkeleton,
+  BatchClarification,
+  SwimlaneGroup,
+  ZeroResultsMessage,
+} from '@/components/ai-chat';
+import type { ClarificationStrategy } from '@/lib/ai/clarification-generator';
+import type { QueryAnalysis } from '@/lib/ai/query-analyzer';
+import type { SearchResult } from '@/types/ai-chat';
+
+// 扩展消息类型以支持新功能
+interface EnhancedChatMessage extends ExtendedChatMessage {
+  clarificationStrategy?: ClarificationStrategy;
+  queryAnalysis?: QueryAnalysis;
+  searchResults?: SearchResult[];
+  loadingStage?: 1 | 2 | 3;
+  fromCache?: boolean;
+}
 
 interface AIChatInterfaceProps {
   isOpen: boolean;
@@ -25,113 +40,118 @@ interface AIChatInterfaceProps {
 }
 
 export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfaceProps) {
-  const [messages, setMessages] = useState<ExtendedChatMessage[]>([]);
+  const [messages, setMessages] = useState<EnhancedChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<1 | 2 | 3>(1);
+  const [sessionContext, setSessionContext] = useState<Record<string, string>>({});
 
   // Initialize with initial query if provided
   useEffect(() => {
     if (initialQuery && messages.length === 0) {
       handleSendMessage(initialQuery);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery]); // 只依赖 initialQuery，避免无限循环
+  }, [initialQuery]);
 
-  // 处理澄清问题回答（简化版 - 直接发送选中的选项）
-  const handleClarificationAnswer = (answer: string) => {
-    // 将回答作为用户消息添加到对话中，并立即发送查询
-    const userMessage: ExtendedChatMessage = {
+  // 处理澄清问题回答 (批量)
+  const handleBatchClarification = (answers: Record<string, string>) => {
+    // 更新会话上下文
+    setSessionContext((prev) => ({ ...prev, ...answers }));
+
+    // 构建人类可读的回答总结
+    const summary = Object.entries(answers)
+      .filter(([_, v]) => v)
+      .map(([k, v]) => `${k === 'style' ? '风格' : k}: ${v}`)
+      .join(', ');
+
+    const userMessage: EnhancedChatMessage = {
       id: `user-${Date.now()}`,
       sessionId: 'default',
       type: 'user',
-      content: answer,
+      content: summary || '我已选好条件',
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
 
-    // 直接发送选中的选项作为新查询
-    handleSendMessage(answer, true);
+    // 发送带有上下文的请求
+    handleSendMessage(summary, true, answers);
   };
 
-  const handleSendMessage = async (content: string, skipClarification = false) => {
+  const handleSendMessage = async (
+    content: string,
+    skipUserMsg = false,
+    extraContext: Record<string, string> = {}
+  ) => {
     if (!content.trim()) return;
 
-    // 如果不是跳过澄清的情况，添加用户消息
-    if (!skipClarification) {
-      const userMessage: ExtendedChatMessage = {
+    if (!skipUserMsg) {
+      const userMessage: EnhancedChatMessage = {
         id: `user-${Date.now()}`,
         sessionId: 'default',
         type: 'user',
         content: content.trim(),
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, userMessage]);
       setInput('');
     }
 
     setIsLoading(true);
+    setLoadingStage(1);
 
     try {
-      // 调用后端 API
+      // 阶段1: 分析 (模拟延迟以展示骨架)
+      await new Promise((r) => setTimeout(r, 500));
+      setLoadingStage(2);
+
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: content.trim(),
-          filters: {
-            maxResults: 5,
-          },
-          conversationHistory: messages.map((msg) => ({
+          sessionContext: { ...sessionContext, ...extraContext },
+          filters: { maxResults: 10 },
+          conversationHistory: messages.slice(-5).map((msg) => ({
             type: msg.type,
             content: msg.content,
           })),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.statusText}`);
-      }
+      setLoadingStage(3);
+      if (!response.ok) throw new Error(`API request failed: ${response.statusText}`);
 
       const data = await response.json();
+      if (!data.success) throw new Error(data.error || 'Unknown error occurred');
 
-      if (!data.success) {
-        throw new Error(data.error || 'Unknown error occurred');
+      // 更新上下文记录 (从分析结果中提取)
+      if (data.data.queryAnalysis?.dimensions) {
+        setSessionContext((prev) => ({ ...prev, ...data.data.queryAnalysis.dimensions }));
       }
 
-      // 构建助手消息
-      const assistantMessage: ExtendedChatMessage = {
+      const assistantMessage: EnhancedChatMessage = {
         id: `assistant-${Date.now()}`,
         sessionId: 'default',
         type: 'assistant',
         content: data.data.content,
         timestamp: new Date(),
-        resources: data.data.searchResults?.map((result: any) => ({
-          resource: result.resource,
-          relevanceScore: result.similarity,
-          matchReason: result.matchReason,
-          matchedAspects: [],
-          confidence: result.similarity,
-        })),
-        clarificationQuestions: data.data.clarificationQuestions,
+        searchResults: data.data.searchResults,
+        clarificationStrategy: data.data.clarificationStrategy,
+        queryAnalysis: data.data.queryAnalysis,
+        fromCache: data.data.fromCache,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Failed to send message:', error);
-
-      // 显示错误消息
-      const errorMessage: ExtendedChatMessage = {
+      const errorMessage: EnhancedChatMessage = {
         id: `error-${Date.now()}`,
         sessionId: 'default',
         type: 'assistant',
-        content: `抱歉，处理您的请求时出现错误：${error instanceof Error ? error.message : '未知错误'}。请稍后重试。`,
+        content: `抱歉，出现错误：${error instanceof Error ? error.message : '未知错误'}。`,
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -255,22 +275,17 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
                     </motion.div>
                   )}
 
-                  {messages.map((message, index) => {
+                  {messages.map((message, _index) => {
                     const isAssistant = message.type === 'assistant';
-                    const hasResources = message.resources && message.resources.length > 0;
-                    const hasClarificationQuestions =
-                      message.clarificationQuestions && message.clarificationQuestions.length > 0;
+                    const results = message.searchResults || [];
+                    const hasClarification = !!message.clarificationStrategy;
 
                     return (
                       <motion.div
                         key={message.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          delay: index * 0.05,
-                          duration: 0.3,
-                          ease: 'easeOut',
-                        }}
+                        transition={{ delay: 0.1, duration: 0.3 }}
                       >
                         <Message
                           className={cn(
@@ -279,48 +294,56 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
                           )}
                         >
                           {isAssistant ? (
-                            <div className="group flex w-full flex-col gap-3">
-                              {/* 澄清问题 - 快速回复按钮（一次显示所有选项） */}
-                              {hasClarificationQuestions ? (
-                                <ClarificationMessage
-                                  questions={message.clarificationQuestions!}
-                                  onAnswerSelect={handleClarificationAnswer}
+                            <div className="group flex w-full flex-col gap-4">
+                              {/* 1. 澄清 UI */}
+                              {hasClarification && (
+                                <BatchClarification
+                                  strategy={message.clarificationStrategy!}
+                                  onComplete={handleBatchClarification}
                                 />
-                              ) : (
-                                <>
-                                  {/* 文本内容 - 只在没有澄清问题时显示 */}
-                                  {message.content && (
-                                    <MessageContent
-                                      className={cn(
-                                        'text-foreground prose w-full min-w-0 flex-1 rounded-2xl bg-secondary/50 backdrop-blur-sm',
-                                        'p-4 text-sm leading-relaxed border border-border/30'
-                                      )}
-                                      markdown
-                                    >
-                                      {message.content}
-                                    </MessageContent>
-                                  )}
+                              )}
 
-                                  {/* 资源推荐 */}
-                                  {hasResources && (
-                                    <ResourceMessage
-                                      resources={message.resources as ResourceRecommendation[]}
-                                      onResourceClick={handleResourceClick}
-                                      onFavorite={handleFavorite}
-                                      onVisit={handleVisit}
-                                    />
-                                  )}
-                                </>
+                              {/* 2. 文本内容 (如果有) */}
+                              {!hasClarification && message.content && (
+                                <MessageContent
+                                  className="text-foreground prose w-full min-w-0 flex-1 rounded-2xl bg-secondary/50 backdrop-blur-sm p-4 text-sm leading-relaxed border border-border/30"
+                                  markdown
+                                >
+                                  {message.content}
+                                </MessageContent>
+                              )}
+
+                              {/* 3. 泳道分组展示 */}
+                              {results.length > 0 && (
+                                <SwimlaneGroup
+                                  results={results}
+                                  groupBy="relevance"
+                                  onResourceClick={handleResourceClick}
+                                  onFavorite={handleFavorite}
+                                  onVisit={handleVisit}
+                                />
+                              )}
+
+                              {/* 4. 零结果优化建议 */}
+                              {results.length === 0 &&
+                                !hasClarification &&
+                                message.queryAnalysis?.intent === 'search' && (
+                                  <ZeroResultsMessage
+                                    query={message.queryAnalysis.extractedKeywords.join(' ')}
+                                    onSuggestionClick={(s) => handleSendMessage(s)}
+                                  />
+                                )}
+
+                              {/* 缓存指示 */}
+                              {message.fromCache && (
+                                <span className="text-[10px] text-muted-foreground/50 self-end px-2 italic">
+                                  ⚡ 来自语义缓存
+                                </span>
                               )}
                             </div>
                           ) : (
                             <div className="group flex w-full flex-col items-end gap-1">
-                              <MessageContent
-                                className={cn(
-                                  'bg-primary text-primary-foreground rounded-2xl whitespace-pre-wrap font-medium',
-                                  'max-w-[90%] sm:max-w-[85%] px-4 py-2.5 text-sm shadow-sm'
-                                )}
-                              >
+                              <MessageContent className="bg-primary text-primary-foreground rounded-2xl max-w-[90%] px-4 py-2.5 text-sm shadow-sm font-medium">
                                 {message.content}
                               </MessageContent>
                             </div>
@@ -331,17 +354,9 @@ export function AIChatInterface({ isOpen, onClose, initialQuery }: AIChatInterfa
                   })}
 
                   {isLoading && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Message className="flex w-full flex-col items-start gap-2">
-                        <div className="group flex w-full flex-col gap-0">
-                          <div className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0">
-                            <DotsLoader />
-                          </div>
-                        </div>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <Message className="items-start w-full">
+                        <AIResponseSkeleton stage={loadingStage} className="w-full" />
                       </Message>
                     </motion.div>
                   )}
