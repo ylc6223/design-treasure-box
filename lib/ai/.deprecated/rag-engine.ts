@@ -57,7 +57,8 @@ export class VercelAIRAGEngine {
 
     // 2. 如果需要澄清，返回澄清问题
     if (this.guidedQuestioning.shouldAskForClarification(queryAnalysis)) {
-      const clarificationQuestions = this.guidedQuestioning.generateClarificationQuestions(queryAnalysis);
+      const clarificationQuestions =
+        this.guidedQuestioning.generateClarificationQuestions(queryAnalysis);
       const processingTime = Date.now() - startTime;
 
       return {
@@ -115,10 +116,10 @@ export class VercelAIRAGEngine {
     query: string,
     filters?: SearchFilters,
     options: RAGResponseOptions = {}
-  ): AsyncIterable<{ 
-    chunk: string; 
-    searchResults?: SearchResult[]; 
-    needsClarification?: boolean; 
+  ): AsyncIterable<{
+    chunk: string;
+    searchResults?: SearchResult[];
+    needsClarification?: boolean;
     clarificationQuestions?: Array<{
       question: string;
       options: string[];
@@ -130,7 +131,8 @@ export class VercelAIRAGEngine {
 
     // 2. 如果需要澄清，返回澄清问题
     if (this.guidedQuestioning.shouldAskForClarification(queryAnalysis)) {
-      const clarificationQuestions = this.guidedQuestioning.generateClarificationQuestions(queryAnalysis);
+      const clarificationQuestions =
+        this.guidedQuestioning.generateClarificationQuestions(queryAnalysis);
       yield {
         chunk: this.buildClarificationMessage(clarificationQuestions),
         searchResults: [],
@@ -194,10 +196,7 @@ export class VercelAIRAGEngine {
   /**
    * 获取相似资源推荐
    */
-  async getSimilarResources(
-    resourceId: string,
-    limit: number = 5
-  ): Promise<SearchResult[]> {
+  async getSimilarResources(resourceId: string, limit: number = 5): Promise<SearchResult[]> {
     return this.hybridSearch.findSimilarResources(resourceId, limit);
   }
 
@@ -229,7 +228,11 @@ export class VercelAIRAGEngine {
   /**
    * 构建消息列表（支持对话历史）
    */
-  private buildMessages(query: string, context: string, conversationHistory?: ChatMessage[]): any[] {
+  private buildMessages(
+    query: string,
+    context: string,
+    conversationHistory?: ChatMessage[]
+  ): any[] {
     const systemPrompt = this.buildSystemPrompt(context);
     const messages: any[] = [
       {
@@ -243,12 +246,14 @@ export class VercelAIRAGEngine {
     // 添加对话历史（最多保留最近5轮对话）
     if (conversationHistory && conversationHistory.length > 0) {
       const recentHistory = conversationHistory.slice(-10); // 最多10条消息（5轮对话）
-      messages.push(...recentHistory.map(msg => ({
-        id: msg.id,
-        type: msg.type,
-        content: msg.content,
-        timestamp: msg.timestamp,
-      })));
+      messages.push(
+        ...recentHistory.map((msg) => ({
+          id: msg.id,
+          type: msg.type,
+          content: msg.content,
+          timestamp: msg.timestamp,
+        }))
+      );
     }
 
     // 添加当前查询
@@ -296,11 +301,13 @@ ${context}
   /**
    * 构建澄清消息（不再需要，因为前端会处理步骤式显示）
    */
-  private buildClarificationMessage(_questions: Array<{
-    question: string;
-    options: string[];
-    aspect: 'category' | 'style' | 'audience' | 'purpose';
-  }>): string {
+  private buildClarificationMessage(
+    _questions: Array<{
+      question: string;
+      options: string[];
+      aspect: 'category' | 'style' | 'audience' | 'purpose';
+    }>
+  ): string {
     // 返回一个简单的提示，实际问题由前端步骤式展示
     return '为了更好地帮助您找到合适的资源，我需要了解更多信息。';
   }
@@ -355,11 +362,7 @@ ${suggestedQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}
     }
 
     // 推荐意图
-    if (
-      queryLower.includes('推荐') ||
-      queryLower.includes('建议') ||
-      queryLower.includes('适合')
-    ) {
+    if (queryLower.includes('推荐') || queryLower.includes('建议') || queryLower.includes('适合')) {
       return {
         intent: 'recommendation',
         confidence: 0.8,

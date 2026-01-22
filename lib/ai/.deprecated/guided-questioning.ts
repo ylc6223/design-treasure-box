@@ -100,7 +100,11 @@ export class GuidedQuestioningEngine {
    */
   shouldAskForClarification(analysis: QueryAnalysis): boolean {
     // 只有在查询非常模糊（缺少所有方面或几乎所有方面）且置信度高时才需要澄清
-    if (analysis.clarity === 'vague' && analysis.missingAspects.length >= 4 && analysis.confidence > 0.8) {
+    if (
+      analysis.clarity === 'vague' &&
+      analysis.missingAspects.length >= 4 &&
+      analysis.confidence > 0.8
+    ) {
       return true;
     }
 
@@ -117,17 +121,31 @@ export class GuidedQuestioningEngine {
    */
   private hasCategory(query: string): boolean {
     const categoryKeywords = [
-      '配色', '颜色', 'color',
-      'css', '样式', '框架',
-      '字体', 'font', '文字',
-      '图标', 'icon',
-      '灵感', '设计', 'inspiration',
-      '网站', 'website', '网页',
-      'ui', '组件', 'component',
-      '样机', 'mockup',
+      '配色',
+      '颜色',
+      'color',
+      'css',
+      '样式',
+      '框架',
+      '字体',
+      'font',
+      '文字',
+      '图标',
+      'icon',
+      '灵感',
+      '设计',
+      'inspiration',
+      '网站',
+      'website',
+      '网页',
+      'ui',
+      '组件',
+      'component',
+      '样机',
+      'mockup',
     ];
 
-    return categoryKeywords.some(keyword => query.includes(keyword));
+    return categoryKeywords.some((keyword) => query.includes(keyword));
   }
 
   /**
@@ -135,19 +153,32 @@ export class GuidedQuestioningEngine {
    */
   private hasStyle(query: string): boolean {
     const styleKeywords = [
-      '简洁', '简约', '极简', 'minimal',
-      '现代', 'modern',
-      '复古', 'vintage', 'retro',
-      '扁平', 'flat',
-      '立体', '3d',
-      '手绘', 'hand-drawn',
-      '专业', 'professional',
-      '可爱', 'cute',
-      '优雅', 'elegant',
-      '炫酷', 'cool',
+      '简洁',
+      '简约',
+      '极简',
+      'minimal',
+      '现代',
+      'modern',
+      '复古',
+      'vintage',
+      'retro',
+      '扁平',
+      'flat',
+      '立体',
+      '3d',
+      '手绘',
+      'hand-drawn',
+      '专业',
+      'professional',
+      '可爱',
+      'cute',
+      '优雅',
+      'elegant',
+      '炫酷',
+      'cool',
     ];
 
-    return styleKeywords.some(keyword => query.includes(keyword));
+    return styleKeywords.some((keyword) => query.includes(keyword));
   }
 
   /**
@@ -155,16 +186,27 @@ export class GuidedQuestioningEngine {
    */
   private hasAudience(query: string): boolean {
     const audienceKeywords = [
-      '新手', '初学者', 'beginner',
-      '专业', 'professional', '高级',
-      '学生', 'student',
-      '开发者', 'developer', '程序员',
-      '设计师', 'designer',
-      '年轻', 'young',
-      '企业', 'enterprise', '商业',
+      '新手',
+      '初学者',
+      'beginner',
+      '专业',
+      'professional',
+      '高级',
+      '学生',
+      'student',
+      '开发者',
+      'developer',
+      '程序员',
+      '设计师',
+      'designer',
+      '年轻',
+      'young',
+      '企业',
+      'enterprise',
+      '商业',
     ];
 
-    return audienceKeywords.some(keyword => query.includes(keyword));
+    return audienceKeywords.some((keyword) => query.includes(keyword));
   }
 
   /**
@@ -172,18 +214,29 @@ export class GuidedQuestioningEngine {
    */
   private hasPurpose(query: string): boolean {
     const purposeKeywords = [
-      '学习', 'learn', '教程',
-      '项目', 'project',
-      '工作', 'work',
-      '练习', 'practice',
-      '参考', 'reference',
-      '快速', 'quick', '快捷',
-      '详细', 'detailed',
-      '免费', 'free',
-      '商用', 'commercial',
+      '学习',
+      'learn',
+      '教程',
+      '项目',
+      'project',
+      '工作',
+      'work',
+      '练习',
+      'practice',
+      '参考',
+      'reference',
+      '快速',
+      'quick',
+      '快捷',
+      '详细',
+      'detailed',
+      '免费',
+      'free',
+      '商用',
+      'commercial',
     ];
 
-    return purposeKeywords.some(keyword => query.includes(keyword));
+    return purposeKeywords.some((keyword) => query.includes(keyword));
   }
 
   /**

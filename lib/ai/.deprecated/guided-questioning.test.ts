@@ -31,12 +31,7 @@ describe('GuidedQuestioningEngine', () => {
     });
 
     it('应该识别模糊的查询', () => {
-      const queries = [
-        '工具',
-        '推荐',
-        '找资源',
-        '有什么',
-      ];
+      const queries = ['工具', '推荐', '找资源', '有什么'];
 
       for (const query of queries) {
         const analysis = engine.analyzeQueryClarity(query);
@@ -46,11 +41,7 @@ describe('GuidedQuestioningEngine', () => {
     });
 
     it('应该识别模棱两可的查询', () => {
-      const queries = [
-        '推荐配色工具',
-        '找CSS框架',
-        '需要图标库',
-      ];
+      const queries = ['推荐配色工具', '找CSS框架', '需要图标库'];
 
       for (const query of queries) {
         const analysis = engine.analyzeQueryClarity(query);
@@ -103,7 +94,7 @@ describe('GuidedQuestioningEngine', () => {
 
       expect(questions.length).toBeGreaterThan(0);
       expect(questions.length).toBeLessThanOrEqual(3);
-      questions.forEach(q => {
+      questions.forEach((q) => {
         expect(q).toBeTruthy();
         expect(typeof q).toBe('string');
       });
@@ -160,7 +151,12 @@ describe('GuidedQuestioningEngine', () => {
     it('应该限制问题数量不超过3个', () => {
       const analysis = {
         clarity: 'vague' as const,
-        missingAspects: ['category' as const, 'style' as const, 'audience' as const, 'purpose' as const],
+        missingAspects: [
+          'category' as const,
+          'style' as const,
+          'audience' as const,
+          'purpose' as const,
+        ],
         confidence: 0.9,
       };
       const questions = engine.generateClarificationQuestions(analysis);
@@ -173,7 +169,12 @@ describe('GuidedQuestioningEngine', () => {
     it('应该对非常模糊的查询要求澄清', () => {
       const analysis = {
         clarity: 'vague' as const,
-        missingAspects: ['category' as const, 'style' as const, 'audience' as const, 'purpose' as const],
+        missingAspects: [
+          'category' as const,
+          'style' as const,
+          'audience' as const,
+          'purpose' as const,
+        ],
         confidence: 0.9,
       };
 
@@ -240,81 +241,69 @@ describe('GuidedQuestioningEngine', () => {
   describe('属性测试：模糊查询检测', () => {
     it('Property: 任何查询都应该返回有效的分析结果', () => {
       fc.assert(
-        fc.property(
-          fc.string({ minLength: 1, maxLength: 100 }),
-          (query) => {
-            const analysis = engine.analyzeQueryClarity(query);
+        fc.property(fc.string({ minLength: 1, maxLength: 100 }), (query) => {
+          const analysis = engine.analyzeQueryClarity(query);
 
-            expect(analysis).toHaveProperty('clarity');
-            expect(analysis).toHaveProperty('missingAspects');
-            expect(analysis).toHaveProperty('confidence');
-            expect(['clear', 'vague', 'ambiguous']).toContain(analysis.clarity);
-            expect(Array.isArray(analysis.missingAspects)).toBe(true);
-            expect(analysis.confidence).toBeGreaterThanOrEqual(0);
-            expect(analysis.confidence).toBeLessThanOrEqual(1);
-          }
-        ),
+          expect(analysis).toHaveProperty('clarity');
+          expect(analysis).toHaveProperty('missingAspects');
+          expect(analysis).toHaveProperty('confidence');
+          expect(['clear', 'vague', 'ambiguous']).toContain(analysis.clarity);
+          expect(Array.isArray(analysis.missingAspects)).toBe(true);
+          expect(analysis.confidence).toBeGreaterThanOrEqual(0);
+          expect(analysis.confidence).toBeLessThanOrEqual(1);
+        }),
         { numRuns: 100 }
       );
     });
 
     it('Property: 生成的澄清问题数量应该合理', () => {
       fc.assert(
-        fc.property(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          (query) => {
-            const analysis = engine.analyzeQueryClarity(query);
-            const questions = engine.generateClarificationQuestions(analysis);
+        fc.property(fc.string({ minLength: 1, maxLength: 50 }), (query) => {
+          const analysis = engine.analyzeQueryClarity(query);
+          const questions = engine.generateClarificationQuestions(analysis);
 
-            expect(questions.length).toBeGreaterThanOrEqual(0);
-            expect(questions.length).toBeLessThanOrEqual(3);
-            questions.forEach(q => {
-              expect(typeof q).toBe('string');
-              expect(q.length).toBeGreaterThan(0);
-            });
-          }
-        ),
+          expect(questions.length).toBeGreaterThanOrEqual(0);
+          expect(questions.length).toBeLessThanOrEqual(3);
+          questions.forEach((q) => {
+            expect(typeof q).toBe('string');
+            expect(q.length).toBeGreaterThan(0);
+          });
+        }),
         { numRuns: 100 }
       );
     });
 
     it('Property: 澄清判断应该一致', () => {
       fc.assert(
-        fc.property(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          (query) => {
-            const analysis = engine.analyzeQueryClarity(query);
-            const shouldAsk = engine.shouldAskForClarification(analysis);
+        fc.property(fc.string({ minLength: 1, maxLength: 50 }), (query) => {
+          const analysis = engine.analyzeQueryClarity(query);
+          const shouldAsk = engine.shouldAskForClarification(analysis);
 
-            expect(typeof shouldAsk).toBe('boolean');
+          expect(typeof shouldAsk).toBe('boolean');
 
-            // 如果需要澄清，应该有澄清问题
-            if (shouldAsk) {
-              const questions = engine.generateClarificationQuestions(analysis);
-              expect(questions.length).toBeGreaterThan(0);
-            }
+          // 如果需要澄清，应该有澄清问题
+          if (shouldAsk) {
+            const questions = engine.generateClarificationQuestions(analysis);
+            expect(questions.length).toBeGreaterThan(0);
           }
-        ),
+        }),
         { numRuns: 100 }
       );
     });
 
     it('Property: 建议查询应该总是返回有效结果', () => {
       fc.assert(
-        fc.property(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          (query) => {
-            const suggestions = engine.generateSuggestedQueries(query);
+        fc.property(fc.string({ minLength: 1, maxLength: 50 }), (query) => {
+          const suggestions = engine.generateSuggestedQueries(query);
 
-            expect(Array.isArray(suggestions)).toBe(true);
-            expect(suggestions.length).toBeGreaterThan(0);
-            expect(suggestions.length).toBeLessThanOrEqual(3);
-            suggestions.forEach(s => {
-              expect(typeof s).toBe('string');
-              expect(s.length).toBeGreaterThan(0);
-            });
-          }
-        ),
+          expect(Array.isArray(suggestions)).toBe(true);
+          expect(suggestions.length).toBeGreaterThan(0);
+          expect(suggestions.length).toBeLessThanOrEqual(3);
+          suggestions.forEach((s) => {
+            expect(typeof s).toBe('string');
+            expect(s.length).toBeGreaterThan(0);
+          });
+        }),
         { numRuns: 100 }
       );
     });

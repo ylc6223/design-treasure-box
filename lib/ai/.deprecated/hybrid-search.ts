@@ -69,19 +69,14 @@ export class HybridSearchEngine {
     // 5. 应用excludeIds过滤
     let finalResults = combinedResults;
     if (filters?.excludeIds && filters.excludeIds.length > 0) {
-      finalResults = combinedResults.filter(
-        r => !filters.excludeIds!.includes(r.resource.id)
-      );
+      finalResults = combinedResults.filter((r) => !filters.excludeIds!.includes(r.resource.id));
     }
 
     // 6. 限制结果数量
-    const limitedResults = finalResults.slice(
-      0,
-      filters?.maxResults || maxResults
-    );
+    const limitedResults = finalResults.slice(0, filters?.maxResults || maxResults);
 
     // 7. 生成匹配理由
-    return limitedResults.map(result => ({
+    return limitedResults.map((result) => ({
       ...result,
       matchReason: this.generateMatchReason(result, query, filters),
     }));
@@ -90,27 +85,22 @@ export class HybridSearchEngine {
   /**
    * 结构化过滤
    */
-  private structuredFilter(
-    resources: Resource[],
-    filters?: SearchFilters
-  ): Resource[] {
+  private structuredFilter(resources: Resource[], filters?: SearchFilters): Resource[] {
     let filtered = [...resources];
 
     // 类别过滤
     if (filters?.categories && filters.categories.length > 0) {
-      filtered = filtered.filter(r =>
-        filters.categories!.includes(r.categoryId)
-      );
+      filtered = filtered.filter((r) => filters.categories!.includes(r.categoryId));
     }
 
     // 评分过滤
     if (filters?.minRating !== undefined) {
-      filtered = filtered.filter(r => r.rating.overall >= filters.minRating!);
+      filtered = filtered.filter((r) => r.rating.overall >= filters.minRating!);
     }
 
     // 排除ID过滤
     if (filters?.excludeIds && filters.excludeIds.length > 0) {
-      filtered = filtered.filter(r => !filters.excludeIds!.includes(r.id));
+      filtered = filtered.filter((r) => !filters.excludeIds!.includes(r.id));
     }
 
     return filtered;
@@ -137,7 +127,7 @@ export class HybridSearchEngine {
     }
 
     // 增强结构化过滤匹配的资源得分
-    const filteredIds = new Set(filteredResources.map(r => r.id));
+    const filteredIds = new Set(filteredResources.map((r) => r.id));
     for (const [id, result] of resultMap.entries()) {
       if (filteredIds.has(id)) {
         result.similarity += structuredWeight;
@@ -188,9 +178,9 @@ export class HybridSearchEngine {
 
     // 标签匹配
     const queryLower = query.toLowerCase();
-    const matchedTags = resource.tags.filter((tag: string) =>
-      queryLower.includes(tag.toLowerCase()) ||
-      tag.toLowerCase().includes(queryLower)
+    const matchedTags = resource.tags.filter(
+      (tag: string) =>
+        queryLower.includes(tag.toLowerCase()) || tag.toLowerCase().includes(queryLower)
     );
     if (matchedTags.length > 0) {
       reasons.push(`匹配标签: ${matchedTags.join(', ')}`);
@@ -212,16 +202,13 @@ export class HybridSearchEngine {
   /**
    * 获取相似资源推荐
    */
-  async findSimilarResources(
-    resourceId: string,
-    limit: number = 5
-  ): Promise<SearchResult[]> {
+  async findSimilarResources(resourceId: string, limit: number = 5): Promise<SearchResult[]> {
     const matches = await this.vectorSearch.findSimilar(resourceId, {
       limit,
       minSimilarity: 0.3,
     });
 
-    return matches.map(match => ({
+    return matches.map((match) => ({
       resource: match.resource,
       similarity: match.similarity,
       matchReason: `与当前资源相似度: ${(match.similarity * 100).toFixed(1)}%`,

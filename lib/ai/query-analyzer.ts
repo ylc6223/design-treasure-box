@@ -33,6 +33,44 @@ export type ClarityLevel = 'clear' | 'ambiguous' | 'vague';
 export type IntentType = 'search' | 'inspiration' | 'correction' | 'blocked';
 
 /**
+ * 允许的意图白名单
+ * 用于安全防护，阻止异常意图
+ */
+const ALLOWED_INTENTS: IntentType[] = ['search', 'inspiration', 'correction'];
+
+/**
+ * 验证意图是否在白名单中
+ */
+function validateIntent(intent: IntentType): boolean {
+  return ALLOWED_INTENTS.includes(intent);
+}
+
+/**
+ * 清理用户输入（防止注入攻击）
+ * - 移除潜在的恶意字符
+ * - 限制长度
+ * - 转义特殊字符
+ */
+function sanitizeInput(input: string): string {
+  // 1. 限制长度（最多500字符）
+  let sanitized = input.slice(0, 500);
+
+  // 2. 移除控制字符
+  sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
+
+  // 3. 移除潜在的注入标记
+  sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+  sanitized = sanitized.replace(/<iframe[^>]*>.*?<\/iframe>/gi, '');
+
+  // 4. 转义 XML 特殊字符（如果需要）
+  // sanitized = sanitized.replace(/[<>&'"]/g, (c) => {
+  //   return { '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c] || c;
+  // });
+
+  return sanitized.trim();
+}
+
+/**
  * 查询分析结果
  */
 export interface QueryAnalysis {
@@ -214,8 +252,25 @@ export async function analyzeQuery(
   query: string,
   sessionContext: SearchDimensions = {}
 ): Promise<QueryAnalysis> {
+  // 0. 输入清理（安全防护）
+  const sanitizedQuery = sanitizeInput(query);
+
+  // 验证清理后的查询是否为空
+  if (!sanitizedQuery || sanitizedQuery.length === 0) {
+    console.warn('⚠️ Empty query after sanitization');
+    return {
+      intent: 'blocked',
+      confidence: 0,
+      dimensions: {},
+      clarity: 'vague',
+      requiresClarification: true,
+      keywordDensity: 'low',
+      extractedKeywords: [],
+    };
+  }
+
   // 标准化查询
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = sanitizedQuery.trim().toLowerCase();
 
   // 1. 提取有效关键词
   const extractedKeywords = extractKeywords(normalizedQuery);
@@ -236,7 +291,21 @@ export async function analyzeQuery(
   // 6. 意图分类
   const intent = classifyIntent(query, sessionContext);
 
-  // 7. 清晰度判定
+  // 7. 意图白名单验证（安全防护）
+  if (!validateIntent(intent)) {
+    console.warn(`⚠️ Blocked intent detected: ${intent}`);
+    return {
+      intent: 'blocked',
+      confidence: 0,
+      dimensions: {},
+      clarity: 'vague',
+      requiresClarification: true,
+      keywordDensity: 'low',
+      extractedKeywords: [],
+    };
+  }
+
+  // 8. 清晰度判定
   const clarity: ClarityLevel =
     confidence > 0.8 ? 'clear' : confidence > 0.5 ? 'ambiguous' : 'vague';
 

@@ -27,6 +27,13 @@
       },
       "disabled": false,
       "autoApprove": []
+    },
+    "augment-context-engine": {
+      "command": "auggie",
+      "type": "stdio",
+      "args": ["--mcp", "--mcp-auto-workspace"],
+      "disabled": false,
+      "alwaysAllow": ["codebase-retrieval"]
     }
   }
 }
