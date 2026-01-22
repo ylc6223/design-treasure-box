@@ -14,13 +14,7 @@ import type { Resource } from '@/types';
 vi.mock('next/image', () => ({
   default: ({ src, alt, onError, onLoad }: any) => {
     return (
-      <img
-        src={src}
-        alt={alt}
-        onError={onError}
-        onLoad={onLoad}
-        data-testid="preview-image"
-      />
+      <img src={src} alt={alt} onError={onError} onLoad={onLoad} data-testid="preview-image" />
     );
   },
 }));
@@ -44,13 +38,27 @@ describe('ResourcePreviewCard - Property Tests', () => {
       await fc.assert(
         fc.asyncProperty(
           fc.record({
-            id: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1, maxLength: 500 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1, maxLength: 50 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1, maxLength: 100 }).filter((s) => s.trim().length > 0),
+            description: fc
+              .string({ minLength: 1, maxLength: 500 })
+              .filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string({ minLength: 1, maxLength: 20 }).filter(s => s.trim().length > 0), { minLength: 1, maxLength: 10 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string({ minLength: 1, maxLength: 20 }).filter((s) => s.trim().length > 0),
+              { minLength: 1, maxLength: 10 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -63,15 +71,12 @@ describe('ResourcePreviewCard - Property Tests', () => {
           }),
           async (resource: Resource) => {
             const { unmount } = render(
-              <ResourcePreviewCard
-                resource={resource}
-                onFavorite={mockOnFavorite}
-              />
+              <ResourcePreviewCard resource={resource} onFavorite={mockOnFavorite} />
             );
 
             // 验证必需元素存在
             expect(screen.getByText(resource.name.trim())).toBeInTheDocument();
-            
+
             // 验证评分显示
             const ratingText = resource.rating.overall.toFixed(1);
             expect(screen.getByText(ratingText)).toBeInTheDocument();
@@ -96,13 +101,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -115,10 +132,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
           }),
           (resource: Resource) => {
             const { container, unmount } = render(
-              <ResourcePreviewCard
-                resource={resource}
-                onFavorite={mockOnFavorite}
-              />
+              <ResourcePreviewCard resource={resource} onFavorite={mockOnFavorite} />
             );
 
             // 验证加载状态指示器存在（在图片加载完成前）
@@ -140,13 +154,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       await fc.assert(
         fc.asyncProperty(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1, maxLength: 100 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -159,10 +185,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
           }),
           async (resource: Resource) => {
             const { unmount } = render(
-              <ResourcePreviewCard
-                resource={resource}
-                onFavorite={mockOnFavorite}
-              />
+              <ResourcePreviewCard resource={resource} onFavorite={mockOnFavorite} />
             );
 
             // 触发图片加载失败
@@ -170,9 +193,12 @@ describe('ResourcePreviewCard - Property Tests', () => {
             image.dispatchEvent(new Event('error'));
 
             // 验证占位符显示
-            await waitFor(() => {
-              expect(screen.getByText('无图片')).toBeInTheDocument();
-            }, { timeout: 1000 });
+            await waitFor(
+              () => {
+                expect(screen.getByText('无图片')).toBeInTheDocument();
+              },
+              { timeout: 1000 }
+            );
 
             // 验证基本信息仍然显示
             expect(screen.getByText(resource.name.trim())).toBeInTheDocument();
@@ -194,13 +220,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -213,10 +251,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
           }),
           (resource: Resource) => {
             const { unmount } = render(
-              <ResourcePreviewCard
-                resource={resource}
-                onFavorite={mockOnFavorite}
-              />
+              <ResourcePreviewCard resource={resource} onFavorite={mockOnFavorite} />
             );
 
             // 验证精选标识显示
@@ -237,13 +272,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -256,10 +303,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
           }),
           (resource: Resource) => {
             const { unmount } = render(
-              <ResourcePreviewCard
-                resource={resource}
-                onFavorite={mockOnFavorite}
-              />
+              <ResourcePreviewCard resource={resource} onFavorite={mockOnFavorite} />
             );
 
             // 验证精选标识不显示
@@ -280,13 +324,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -297,7 +353,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
             isFeatured: fc.boolean(),
             curatorNote: fc.string(),
           }),
-          fc.string({ minLength: 1, maxLength: 200 }).filter(s => s.trim().length > 0),
+          fc.string({ minLength: 1, maxLength: 200 }).filter((s) => s.trim().length > 0),
           (resource: Resource, matchReason: string) => {
             const { unmount } = render(
               <ResourcePreviewCard
@@ -325,13 +381,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -342,7 +410,10 @@ describe('ResourcePreviewCard - Property Tests', () => {
             isFeatured: fc.boolean(),
             curatorNote: fc.string(),
           }),
-          fc.array(fc.string({ minLength: 1, maxLength: 20 }).filter(s => s.trim().length > 0), { minLength: 1, maxLength: 10 }),
+          fc.array(
+            fc.string({ minLength: 1, maxLength: 20 }).filter((s) => s.trim().length > 0),
+            { minLength: 1, maxLength: 10 }
+          ),
           (resource: Resource, matchedAspects: string[]) => {
             const { unmount } = render(
               <ResourcePreviewCard
@@ -378,13 +449,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -423,13 +506,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -468,13 +563,25 @@ describe('ResourcePreviewCard - Property Tests', () => {
       fc.assert(
         fc.property(
           fc.record({
-            id: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
-            name: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
-            description: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            id: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+            name: fc.string({ minLength: 1, maxLength: 100 }).filter((s) => s.trim().length > 0),
+            description: fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
             url: fc.webUrl(),
             screenshot: fc.webUrl(),
-            category: fc.constantFrom('colors', 'fonts', 'icons', 'templates', 'inspiration', 'examples', 'ui-kits', 'mockups'),
-            tags: fc.array(fc.string().filter(s => s.trim().length > 0), { minLength: 1 }),
+            category: fc.constantFrom(
+              'colors',
+              'fonts',
+              'icons',
+              'templates',
+              'inspiration',
+              'examples',
+              'ui-kits',
+              'mockups'
+            ),
+            tags: fc.array(
+              fc.string().filter((s) => s.trim().length > 0),
+              { minLength: 1 }
+            ),
             rating: fc.record({
               overall: fc.float({ min: 0, max: 5 }),
               usability: fc.float({ min: 0, max: 5 }),
@@ -499,7 +606,7 @@ describe('ResourcePreviewCard - Property Tests', () => {
             expect(screen.getByText(resource.name.trim())).toBeInTheDocument();
             const ratingText = resource.rating.overall.toFixed(1);
             expect(screen.getByText(ratingText)).toBeInTheDocument();
-            
+
             const image = screen.getByTestId('preview-image');
             expect(image).toBeInTheDocument();
 

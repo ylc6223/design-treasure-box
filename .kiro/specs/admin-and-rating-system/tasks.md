@@ -5,6 +5,7 @@
 本实现计划将"设计百宝箱"应用扩展为全栈应用，添加用户认证、评分系统和后台管理功能。实现将基于 **Next.js 16 + Supabase** 技术栈，采用增量开发方式，确保每个步骤都可以独立测试和验证。
 
 **核心技术栈：**
+
 - **Supabase Auth** - OAuth 认证（Google + GitHub）
 - **Supabase PostgreSQL** - 托管数据库
 - **Supabase RLS** - 行级安全策略
@@ -23,7 +24,7 @@
   - 在 Supabase Auth 设置中配置 GitHub OAuth
   - _Requirements: 1.1, 1.2, 7.1_
 
-- [ ]* 1.1 编写 Supabase 连接测试
+- [ ]\* 1.1 编写 Supabase 连接测试
   - 测试 Supabase 客户端连接
   - 测试基本查询操作
   - _Requirements: 7.1_
@@ -54,7 +55,7 @@
     - 创建 `types/database.ts` 文件保存生成的类型
     - _Requirements: 7.1_
 
-  - [ ]* 2.5 编写数据库 Schema 测试
+  - [ ]\* 2.5 编写数据库 Schema 测试
     - 测试表创建和约束
     - 测试 RLS 策略
     - _Requirements: 7.1, 2.3, 2.4_
@@ -84,7 +85,7 @@
     - 实现 `requireAdmin()` 函数（验证管理员权限）
     - _Requirements: 2.3, 2.4_
 
-  - [ ]* 3.5 编写认证系统属性测试
+  - [ ]\* 3.5 编写认证系统属性测试
     - **Property 2: OAuth User Creation or Retrieval**
     - **Property 1: Session Token Validation**
     - **Property 3: Logout Invalidates Session**
@@ -99,7 +100,7 @@
     - 从 auth.users 复制 email, name, image 等信息
     - _Requirements: 1.8, 2.1_
 
-  - [ ]* 4.2 编写角色管理属性测试
+  - [ ]\* 4.2 编写角色管理属性测试
     - **Property 4: Default User Role Assignment**
     - **Validates: Requirements 2.1**
     - _Requirements: 2.1_
@@ -134,7 +135,7 @@
     - 从 profiles 表获取用户角色
     - _Requirements: 10.1, 10.2_
 
-  - [ ]* 5.5 编写认证 UI 组件单元测试
+  - [ ]\* 5.5 编写认证 UI 组件单元测试
     - 测试登录对话框渲染和交互
     - 测试用户菜单显示和功能
     - 测试 Header 根据认证状态的条件渲染
@@ -153,7 +154,7 @@
     - 定义 SubmitRatingSchema
     - _Requirements: 4.2, 4.5_
 
-  - [ ]* 6.3 编写评分验证属性测试
+  - [ ]\* 6.3 编写评分验证属性测试
     - **Property 10: Rating Submission and Validation**
     - **Validates: Requirements 4.1, 4.2, 4.5**
     - _Requirements: 4.2, 4.5_
@@ -174,7 +175,7 @@
     - 返回当前用户评分（如果已登录）
     - _Requirements: 5.1, 5.2, 5.3, 5.5_
 
-  - [ ]* 7.3 编写评分 API 属性测试
+  - [ ]\* 7.3 编写评分 API 属性测试
     - **Property 11: Rating Update Idempotency**
     - **Property 12: Authentication Required for Rating**
     - **Property 13: Aggregated Rating Calculation**
@@ -211,7 +212,7 @@
     - 添加评分按钮点击处理（打开评分对话框）
     - _Requirements: 10.3_
 
-  - [ ]* 8.5 编写评分 UI 组件单元测试
+  - [ ]\* 8.5 编写评分 UI 组件单元测试
     - 测试评分输入交互
     - 测试评分对话框表单验证
     - 测试评分显示逻辑
@@ -244,7 +245,7 @@
     - 使用 `requireAdmin()` 验证管理员权限
     - _Requirements: 3.2, 3.3_
 
-  - [ ]* 10.4 编写资源管理 API 属性测试
+  - [ ]\* 10.4 编写资源管理 API 属性测试
     - **Property 7: Resource Data Validation and Persistence**
     - **Property 8: Cascade Deletion of Ratings**
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.5, 3.6**
@@ -264,7 +265,7 @@
     - 使用 `requireAdmin()` 验证管理员权限
     - _Requirements: 2.2, 2.5_
 
-  - [ ]* 11.3 编写用户管理 API 属性测试
+  - [ ]\* 11.3 编写用户管理 API 属性测试
     - **Property 5: Role Update Operations**
     - **Property 6: Admin Authorization Check**
     - **Validates: Requirements 2.2, 2.3, 2.4, 2.5**
@@ -294,7 +295,7 @@
     - 集成当前用户信息显示
     - _Requirements: 11.3_
 
-  - [ ]* 12.4 编写管理员权限验证测试
+  - [ ]\* 12.4 编写管理员权限验证测试
     - 测试管理员访问
     - 测试非管理员重定向
     - _Requirements: 11.1, 11.2_
@@ -310,7 +311,7 @@
     - 集成图表组件（如果需要）
     - _Requirements: 6.1, 11.4_
 
-  - [ ]* 13.2 编写仪表板数据查询单元测试
+  - [ ]\* 13.2 编写仪表板数据查询单元测试
     - 测试统计数据计算
     - 测试最近活动查询
     - _Requirements: 6.1_
@@ -352,7 +353,7 @@
     - 实现资源更新逻辑
     - _Requirements: 3.2, 6.3, 6.4_
 
-  - [ ]* 14.6 编写资源管理页面单元测试
+  - [ ]\* 14.6 编写资源管理页面单元测试
     - 测试资源列表渲染
     - 测试表单验证
     - 测试创建和更新操作
@@ -373,7 +374,7 @@
     - 集成 Supabase 数据查询
     - _Requirements: 2.2, 2.5, 6.5_
 
-  - [ ]* 15.3 编写用户管理页面单元测试
+  - [ ]\* 15.3 编写用户管理页面单元测试
     - 测试用户列表渲染
     - 测试角色切换操作
     - _Requirements: 2.2, 2.5_
@@ -392,7 +393,7 @@
     - 添加 lazy loading
     - _Requirements: 3.4_
 
-  - [ ]* 16.3 编写缩略图组件单元测试
+  - [ ]\* 16.3 编写缩略图组件单元测试
     - 测试图片加载
     - 测试错误回退
     - 测试占位图显示
@@ -417,7 +418,7 @@
     - 确保返回一致的错误响应格式
     - _Requirements: 8.6_
 
-  - [ ]* 17.4 编写错误处理属性测试
+  - [ ]\* 17.4 编写错误处理属性测试
     - **Property 15: Database Error Handling**
     - **Property 16: API Request Validation**
     - **Property 17: API Error Response Format**
@@ -438,7 +439,7 @@
     - 添加示例评分数据
     - _Requirements: 7.1_
 
-  - [ ]* 18.3 编写数据迁移测试
+  - [ ]\* 18.3 编写数据迁移测试
     - 测试 JSON 数据读取
     - 测试数据插入
     - 验证数据完整性
@@ -459,7 +460,7 @@
     - 使用 TanStack Query 进行缓存
     - _Requirements: 4.1, 5.1_
 
-  - [ ]* 19.3 编写数据获取 Hook 单元测试
+  - [ ]\* 19.3 编写数据获取 Hook 单元测试
     - 测试资源查询
     - 测试评分提交
     - 测试缓存行为
@@ -473,7 +474,7 @@
     - 验证 RLS 策略正确执行
     - _Requirements: 所有_
 
-  - [ ]* 20.2 运行完整测试套件
+  - [ ]\* 20.2 运行完整测试套件
     - 运行所有单元测试
     - 运行所有属性测试
     - 生成测试覆盖率报告
@@ -515,6 +516,7 @@
 ## 管理后台模板集成
 
 **使用 Vercel 官方模板**：
+
 - **仓库**: https://github.com/vercel/nextjs-postgres-nextauth-tailwindcss-template
 - **技术栈**: Next.js 15 + Postgres + NextAuth + Tailwind CSS + shadcn/ui
 - **集成策略**:
@@ -524,10 +526,12 @@
   4. 保持 shadcn/ui 组件体系一致
 
 **参考 shadcn 官方示例**：
+
 - **地址**: https://ui.shadcn.com/examples/dashboard
 - **用途**: 仪表板、图表、数据展示组件
 
 **优势**：
+
 - ✅ 节省大量开发时间
 - ✅ UI/UX 已经过验证
 - ✅ 响应式设计已完成
@@ -545,7 +549,8 @@
 5. **优雅降级** - OG 图片 → 截图 → 占位图
 
 **实现示例：**
+
 ```typescript
 // 前端直接构造图片 URL
-const imageUrl = `https://api.microlink.io/?url=${encodeURIComponent(resource.url)}&meta=false&embed=image.url`
+const imageUrl = `https://api.microlink.io/?url=${encodeURIComponent(resource.url)}&meta=false&embed=image.url`;
 ```

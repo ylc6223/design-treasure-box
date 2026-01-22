@@ -30,21 +30,20 @@ describe('AIChatInterface - Property Tests', () => {
     it('Property: 任何初始查询都应该触发界面打开并显示为第一条消息', async () => {
       await fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 1, maxLength: 200 }).filter(s => s.trim().length > 0),
+          fc.string({ minLength: 1, maxLength: 200 }).filter((s) => s.trim().length > 0),
           async (initialQuery) => {
             const { unmount } = render(
-              <AIChatInterface
-                isOpen={true}
-                onClose={mockOnClose}
-                initialQuery={initialQuery}
-              />
+              <AIChatInterface isOpen={true} onClose={mockOnClose} initialQuery={initialQuery} />
             );
 
             // 等待消息渲染
-            await waitFor(() => {
-              const messageElement = screen.queryByText(initialQuery.trim());
-              expect(messageElement).toBeInTheDocument();
-            }, { timeout: 2000 });
+            await waitFor(
+              () => {
+                const messageElement = screen.queryByText(initialQuery.trim());
+                expect(messageElement).toBeInTheDocument();
+              },
+              { timeout: 2000 }
+            );
 
             unmount();
           }
@@ -58,10 +57,7 @@ describe('AIChatInterface - Property Tests', () => {
      */
     it('Property: 界面打开状态应该正确反映在DOM中', () => {
       const { rerender, container } = render(
-        <AIChatInterface
-          isOpen={false}
-          onClose={mockOnClose}
-        />
+        <AIChatInterface isOpen={false} onClose={mockOnClose} />
       );
 
       // 关闭状态：面板应该有 translate-x-full 类
@@ -69,12 +65,7 @@ describe('AIChatInterface - Property Tests', () => {
       expect(chatPanel).toHaveClass('translate-x-full');
 
       // 打开状态：面板应该有 translate-x-0 类
-      rerender(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      rerender(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       chatPanel = container.querySelector('.fixed.top-0.right-0');
       expect(chatPanel).toHaveClass('translate-x-0');
@@ -87,26 +78,28 @@ describe('AIChatInterface - Property Tests', () => {
       await fc.assert(
         fc.asyncProperty(
           // 过滤掉 userEvent 的特殊字符
-          fc.string({ minLength: 1, maxLength: 100 })
-            .filter(s => s.trim().length > 0)
-            .filter(s => !s.includes('[') && !s.includes('{') && !s.includes('}')),
+          fc
+            .string({ minLength: 1, maxLength: 100 })
+            .filter((s) => s.trim().length > 0)
+            .filter((s) => !s.includes('[') && !s.includes('{') && !s.includes('}')),
           async (userInput) => {
             const user = userEvent.setup();
             const { unmount, container } = render(
-              <AIChatInterface
-                isOpen={true}
-                onClose={mockOnClose}
-              />
+              <AIChatInterface isOpen={true} onClose={mockOnClose} />
             );
 
             // 输入消息 - 使用 container 查询以避免多个实例问题
-            const textarea = container.querySelector('textarea[placeholder="描述您需要的设计资源..."]') as HTMLTextAreaElement;
+            const textarea = container.querySelector(
+              'textarea[placeholder="描述您需要的设计资源..."]'
+            ) as HTMLTextAreaElement;
             expect(textarea).toBeTruthy();
-            
+
             await user.type(textarea, userInput);
 
             // 点击发送按钮
-            const sendButton = container.querySelector('button[aria-label="发送消息"]') as HTMLButtonElement;
+            const sendButton = container.querySelector(
+              'button[aria-label="发送消息"]'
+            ) as HTMLButtonElement;
             expect(sendButton).toBeTruthy();
             await user.click(sendButton);
 
@@ -128,15 +121,10 @@ describe('AIChatInterface - Property Tests', () => {
     it('Property: 空白或纯空格的输入不应该创建消息', async () => {
       await fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 0, maxLength: 20 }).filter(s => s.trim().length === 0),
+          fc.string({ minLength: 0, maxLength: 20 }).filter((s) => s.trim().length === 0),
           async (emptyInput) => {
             const user = userEvent.setup();
-            const { unmount } = render(
-              <AIChatInterface
-                isOpen={true}
-                onClose={mockOnClose}
-              />
-            );
+            const { unmount } = render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
             // 获取初始消息数量（应该是0，因为有欢迎消息）
             const initialMessages = screen.queryAllByRole('article');
@@ -150,7 +138,7 @@ describe('AIChatInterface - Property Tests', () => {
 
             // 尝试点击发送按钮（应该被禁用）
             const sendButton = screen.getByLabelText('发送消息');
-            
+
             // 验证按钮被禁用
             expect(sendButton).toBeDisabled();
 
@@ -172,20 +160,20 @@ describe('AIChatInterface - Property Tests', () => {
       await fc.assert(
         fc.asyncProperty(
           // 过滤掉 userEvent 的特殊字符
-          fc.string({ minLength: 1, maxLength: 50 })
-            .filter(s => s.trim().length > 0)
-            .filter(s => !s.includes('[') && !s.includes('{') && !s.includes('}')),
+          fc
+            .string({ minLength: 1, maxLength: 50 })
+            .filter((s) => s.trim().length > 0)
+            .filter((s) => !s.includes('[') && !s.includes('{') && !s.includes('}')),
           async (userInput) => {
             const user = userEvent.setup();
             const { unmount, container } = render(
-              <AIChatInterface
-                isOpen={true}
-                onClose={mockOnClose}
-              />
+              <AIChatInterface isOpen={true} onClose={mockOnClose} />
             );
 
             // 输入消息 - 使用 container 查询
-            const textarea = container.querySelector('textarea[placeholder="描述您需要的设计资源..."]') as HTMLTextAreaElement;
+            const textarea = container.querySelector(
+              'textarea[placeholder="描述您需要的设计资源..."]'
+            ) as HTMLTextAreaElement;
             expect(textarea).toBeTruthy();
             await user.type(textarea, userInput);
 
@@ -193,7 +181,9 @@ describe('AIChatInterface - Property Tests', () => {
             expect(textarea.value).toBe(userInput);
 
             // 点击发送按钮
-            const sendButton = container.querySelector('button[aria-label="发送消息"]') as HTMLButtonElement;
+            const sendButton = container.querySelector(
+              'button[aria-label="发送消息"]'
+            ) as HTMLButtonElement;
             expect(sendButton).toBeTruthy();
             await user.click(sendButton);
 
@@ -214,12 +204,7 @@ describe('AIChatInterface - Property Tests', () => {
      */
     it('Property: 多条消息应该按发送顺序显示', async () => {
       const user = userEvent.setup();
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       const messages = ['第一条消息', '第二条消息'];
       const textarea = screen.getByPlaceholderText('描述您需要的设计资源...');
@@ -230,15 +215,21 @@ describe('AIChatInterface - Property Tests', () => {
       await user.click(sendButton);
 
       // 等待第一条消息显示
-      await waitFor(() => {
-        expect(screen.getByText(messages[0])).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText(messages[0])).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // 等待第一条消息的响应完成（等待加载状态消失）
-      await waitFor(() => {
-        const loadingIndicator = screen.queryByText('Loading');
-        expect(loadingIndicator).not.toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          const loadingIndicator = screen.queryByText('Loading');
+          expect(loadingIndicator).not.toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
 
       // 发送第二条消息
       await user.clear(textarea);
@@ -246,9 +237,12 @@ describe('AIChatInterface - Property Tests', () => {
       await user.click(sendButton);
 
       // 等待第二条消息显示
-      await waitFor(() => {
-        expect(screen.getByText(messages[1])).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText(messages[1])).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // 验证两条消息都存在
       expect(screen.getByText(messages[0])).toBeInTheDocument();
@@ -260,12 +254,7 @@ describe('AIChatInterface - Property Tests', () => {
      */
     it('Property: 点击关闭按钮应该调用 onClose', async () => {
       const user = userEvent.setup();
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       const closeButton = screen.getByLabelText('关闭聊天');
       await user.click(closeButton);
@@ -278,12 +267,7 @@ describe('AIChatInterface - Property Tests', () => {
      */
     it('Property: 点击遮罩层应该调用 onClose', async () => {
       const user = userEvent.setup();
-      const { container } = render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      const { container } = render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       // 找到遮罩层（第一个 fixed 元素）
       const overlay = container.querySelector('.fixed.inset-0');
@@ -299,12 +283,7 @@ describe('AIChatInterface - Property Tests', () => {
      * Property: 界面应该显示正确的标题和描述
      */
     it('Property: 界面应该始终显示标题和描述', () => {
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       expect(screen.getByText('AI 设计助手')).toBeInTheDocument();
       expect(screen.getByText('为您推荐最合适的设计资源')).toBeInTheDocument();
@@ -314,12 +293,7 @@ describe('AIChatInterface - Property Tests', () => {
      * Property: 空消息列表应该显示欢迎提示
      */
     it('Property: 没有消息时应该显示欢迎提示', () => {
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       expect(screen.getByText('开始对话，我会帮您找到最合适的设计资源')).toBeInTheDocument();
     });
@@ -329,12 +303,7 @@ describe('AIChatInterface - Property Tests', () => {
      */
     it('Property: 发送消息时应该显示加载指示器', async () => {
       const user = userEvent.setup();
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       const textarea = screen.getByPlaceholderText('描述您需要的设计资源...');
       await user.type(textarea, '测试消息');
@@ -356,13 +325,8 @@ describe('AIChatInterface - Property Tests', () => {
     it('Property: 应该能处理长消息', async () => {
       const longMessage = 'a'.repeat(500);
       const user = userEvent.setup();
-      
-      render(
-        <AIChatInterface
-          isOpen={true}
-          onClose={mockOnClose}
-        />
-      );
+
+      render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
       const textarea = screen.getByPlaceholderText('描述您需要的设计资源...');
       await user.type(textarea, longMessage);
@@ -383,12 +347,7 @@ describe('AIChatInterface - Property Tests', () => {
       const user = userEvent.setup();
 
       for (const chars of specialChars) {
-        const { unmount } = render(
-          <AIChatInterface
-            isOpen={true}
-            onClose={mockOnClose}
-          />
-        );
+        const { unmount } = render(<AIChatInterface isOpen={true} onClose={mockOnClose} />);
 
         const textarea = screen.getByPlaceholderText('描述您需要的设计资源...');
         await user.type(textarea, chars);

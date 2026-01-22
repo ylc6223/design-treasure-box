@@ -15,7 +15,7 @@ export interface ResourceMessageProps {
 
 /**
  * ResourceMessage 组件
- * 
+ *
  * 在聊天界面中显示AI推荐的资源列表
  * 使用 ResourceInlineCard 组件渲染每个资源（简化版）
  */

@@ -3,6 +3,7 @@
 ## 当前状态分析
 
 ### 已实现的功能 ✅
+
 1. **基础聊天界面** (`ai-chat-interface.tsx`)
    - 右侧滑出面板（响应式宽度）
    - 消息显示和滚动
@@ -23,18 +24,21 @@
 ### 需要改进的部分 ⚠️
 
 #### 1. 底部输入框交互逻辑
+
 **当前问题**:
+
 - 底部输入框在聊天面板打开时仍然可见
 - 没有实现"自动隐藏并清空"的逻辑
 - 关闭面板后没有复原到空白状态
 
 **需要改进**:
+
 ```typescript
 // ❌ 当前实现
 <AIPromptInput onSubmit={handleAIPromptSubmit} />
 
 // ✅ 应该改为
-<AIPromptInput 
+<AIPromptInput
   onSubmit={handleAIPromptSubmit}
   isHidden={isChatOpen}  // 面板打开时隐藏
   className={cn(
@@ -45,29 +49,35 @@
 ```
 
 #### 2. 澄清问题交互方式
+
 **当前实现**: 步骤式提问（一次显示一个问题）
 **需求要求**: 快速回复按钮（一次显示所有选项）
 
 **需要改进**:
+
 - 修改 `ClarificationMessage` 组件
 - 移除 `currentQuestionIndex` 状态管理
 - 一次性显示所有澄清选项
 - 用户可以点击任意选项或直接输入
 
 #### 3. 资源卡片展示
+
 **当前实现**: 完整资源卡片（显示所有信息）
 **需求要求**: 简化版 + 渐进式披露
 
 **需要改进**:
+
 - 创建 `ResourceInlineCard` 组件（简化版）
 - 默认显示：缩略图(48x48) + 名称 + 评分
 - 悬停/点击：展开详细信息（使用Sheet/Popover）
 
 #### 4. 移动端性能优化
+
 **当前实现**: 使用 AnimatePresence 和条件渲染
 **需求要求**: 主页面保留在DOM中
 
 **当前代码已经正确**:
+
 ```typescript
 // ✅ 正确：主页面始终在DOM中
 <main className="flex-1 md:mx-20">{children}</main>
@@ -83,9 +93,11 @@
 ### P0 - 核心交互改进（必须完成）
 
 #### Task 1: 修复底部输入框交互逻辑
+
 **文件**: `components/ai-prompt-input.tsx`, `components/layout-wrapper.tsx`
 
 **改动**:
+
 1. 在 `AIPromptInput` 组件添加 `isHidden` prop
 2. 在 `LayoutWrapper` 中传递 `isChatOpen` 状态
 3. 实现淡入/淡出动画
@@ -106,7 +118,7 @@ export function AIPromptInput({ isHidden, ...props }: AIPromptInputProps) {
       className={cn(
         'fixed bottom-6 left-1/2 z-50 w-full max-w-2xl -translate-x-1/2 px-4',
         'transition-all duration-200 ease-out',
-        isHidden 
+        isHidden
           ? 'pointer-events-none translate-y-5 opacity-0'  // 面板打开时隐藏
           : isVisible
             ? 'pointer-events-auto translate-y-0 opacity-100'
@@ -120,13 +132,14 @@ export function AIPromptInput({ isHidden, ...props }: AIPromptInputProps) {
 }
 
 // layout-wrapper.tsx
-<AIPromptInput 
+<AIPromptInput
   onSubmit={handleAIPromptSubmit}
   isHidden={isChatOpen}  // 传递状态
 />
 ```
 
 **验证**:
+
 - [ ] 面板打开时，底部输入框完全隐藏
 - [ ] 面板关闭时，底部输入框淡入显示
 - [ ] 动画流畅，无闪烁
@@ -134,9 +147,11 @@ export function AIPromptInput({ isHidden, ...props }: AIPromptInputProps) {
 ---
 
 #### Task 2: 重构澄清问题为快速回复按钮
+
 **文件**: `components/ai-chat/clarification-message.tsx`
 
 **改动**:
+
 1. 移除步骤式逻辑（currentQuestionIndex）
 2. 一次性显示所有选项
 3. 改为陈述句格式（可选）
@@ -178,6 +193,7 @@ export function ClarificationMessage({ questions, onAnswerSelect }: Clarificatio
 ```
 
 **验证**:
+
 - [ ] 所有澄清选项一次性显示
 - [ ] 按钮样式符合设计（圆角胶囊）
 - [ ] 点击后作为用户消息发送
@@ -186,9 +202,11 @@ export function ClarificationMessage({ questions, onAnswerSelect }: Clarificatio
 ---
 
 #### Task 3: 创建简化资源卡片组件
+
 **文件**: `components/ai-chat/resource-inline-card.tsx` (新建)
 
 **实现**:
+
 ```typescript
 import { useState } from 'react';
 import { ChevronRight, Heart, ExternalLink } from 'lucide-react';
@@ -207,31 +225,31 @@ interface ResourceInlineCardProps {
   onVisit?: (resourceId: string) => void;
 }
 
-export function ResourceInlineCard({ 
-  resource, 
+export function ResourceInlineCard({
+  resource,
   onViewDetails,
   onFavorite,
-  onVisit 
+  onVisit
 }: ResourceInlineCardProps) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   return (
     <>
       {/* 简化版卡片 */}
-      <Card 
+      <Card
         className="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors cursor-pointer rounded-lg border"
         onClick={() => setIsDetailOpen(true)}
       >
         {/* 缩略图 */}
         <div className="relative w-12 h-12 rounded-md overflow-hidden shrink-0">
-          <Image 
-            src={resource.screenshot} 
-            alt={resource.name} 
-            fill 
+          <Image
+            src={resource.screenshot}
+            alt={resource.name}
+            fill
             className="object-cover"
           />
         </div>
-        
+
         {/* 信息 */}
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-sm truncate">{resource.name}</h4>
@@ -242,7 +260,7 @@ export function ResourceInlineCard({
             </Badge>
           </div>
         </div>
-        
+
         {/* 箭头 */}
         <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
       </Card>
@@ -252,25 +270,25 @@ export function ResourceInlineCard({
         <SheetContent side="bottom" className="h-[80vh]">
           {/* 大图预览 */}
           <div className="relative w-full h-48 rounded-lg overflow-hidden mb-4">
-            <Image 
-              src={resource.screenshot} 
-              alt={resource.name} 
-              fill 
+            <Image
+              src={resource.screenshot}
+              alt={resource.name}
+              fill
               className="object-cover"
             />
           </div>
-          
+
           {/* 详细信息 */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">{resource.name}</h2>
-            
+
             <div className="flex items-center gap-4">
               <RatingStars rating={resource.rating.overall} size="lg" showValue />
               <Badge>{resource.category}</Badge>
             </div>
-            
+
             <p className="text-muted-foreground">{resource.description}</p>
-            
+
             {/* 详细评分 */}
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -283,7 +301,7 @@ export function ResourceInlineCard({
               </div>
               {/* ... 其他评分维度 */}
             </div>
-            
+
             {/* 操作按钮 */}
             <div className="flex gap-2">
               <Button onClick={() => onFavorite?.(resource.id)}>
@@ -304,6 +322,7 @@ export function ResourceInlineCard({
 ```
 
 **验证**:
+
 - [ ] 默认显示简化版（缩略图+名称+评分）
 - [ ] 悬停显示阴影效果
 - [ ] 点击展开详细信息（Sheet）
@@ -313,9 +332,11 @@ export function ResourceInlineCard({
 ---
 
 #### Task 4: 更新 ResourceMessage 使用新卡片
+
 **文件**: `components/ai-chat/resource-message.tsx`
 
 **改动**:
+
 ```typescript
 import { ResourceInlineCard } from './resource-inline-card';
 
@@ -341,6 +362,7 @@ export function ResourceMessage({ resources, ...handlers }: ResourceMessageProps
 ### P1 - 增强功能（可选）
 
 #### Task 5: 添加快速回复按钮动画
+
 **文件**: `components/ai-chat/clarification-message.tsx`
 
 ```typescript
@@ -361,9 +383,11 @@ import { motion } from 'motion/react';
 ---
 
 #### Task 6: 优化移动端体验
+
 **文件**: `components/ai-chat-interface.tsx`
 
 **改动**:
+
 - 添加手势滑动返回（可选）
 - 优化触摸区域大小
 - 调整移动端间距和字体大小
@@ -373,6 +397,7 @@ import { motion } from 'motion/react';
 ### P2 - 性能优化（后续）
 
 #### Task 7: 实现虚拟滚动
+
 **文件**: `components/ai-chat-interface.tsx`
 
 ```typescript
@@ -382,13 +407,14 @@ const virtualizer = useVirtualizer({
   count: messages.length,
   getScrollElement: () => scrollRef.current,
   estimateSize: () => 100,
-  overscan: 5
+  overscan: 5,
 });
 ```
 
 ---
 
 #### Task 8: 图片懒加载优化
+
 **文件**: `components/ai-chat/resource-inline-card.tsx`
 
 ```typescript
@@ -427,17 +453,20 @@ const virtualizer = useVirtualizer({
 ## 测试计划
 
 ### 单元测试
+
 - [ ] 底部输入框显示/隐藏逻辑
 - [ ] 快速回复按钮点击事件
 - [ ] 资源卡片展开/收起
 - [ ] Sheet组件交互
 
 ### 集成测试
+
 - [ ] 完整对话流程（输入 → 澄清 → 推荐）
 - [ ] 面板打开/关闭动画
 - [ ] 资源操作（收藏、访问、详情）
 
 ### 视觉回归测试
+
 - [ ] 桌面端布局（≥1200px）
 - [ ] 平板端布局（768-1199px）
 - [ ] 移动端布局（<768px）
@@ -448,11 +477,13 @@ const virtualizer = useVirtualizer({
 ## 风险与注意事项
 
 ### 风险
+
 1. **澄清问题数据结构变化**: 需要同步更新后端API和类型定义
 2. **Sheet组件兼容性**: 确保在所有设备上正常工作
 3. **动画性能**: 在低端设备上可能需要降级
 
 ### 注意事项
+
 1. **保持向后兼容**: 确保现有功能不受影响
 2. **渐进式改进**: 每个任务独立完成并测试
 3. **用户反馈**: 实施后收集用户反馈进行调优
@@ -462,6 +493,7 @@ const virtualizer = useVirtualizer({
 ## 完成标准
 
 ### P0 任务完成标准
+
 - [x] 底部输入框在面板打开时完全隐藏
 - [x] 澄清问题一次性显示所有选项
 - [x] 资源卡片默认显示简化版
@@ -470,6 +502,7 @@ const virtualizer = useVirtualizer({
 - [x] 响应式布局在所有设备上正常工作
 
 ### 验收测试
+
 1. **桌面端流程**:
    - 用户在底部输入框输入内容
    - 按回车，右侧面板滑入
@@ -495,6 +528,7 @@ const virtualizer = useVirtualizer({
 准备好开始实施了吗？建议从 **Task 1** 开始，逐步完成P0任务。
 
 每完成一个任务，我们可以：
+
 1. 运行测试验证功能
 2. 使用Chrome DevTools检查视觉效果
 3. 在不同设备尺寸下测试响应式布局

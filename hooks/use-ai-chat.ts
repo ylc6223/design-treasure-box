@@ -19,7 +19,7 @@ export function useAIChat() {
         const session: ChatSession = JSON.parse(stored);
         // 将ChatMessage转换为ExtendedChatMessage，添加sessionId
         // Note: clarificationQuestions types differ, so we omit it from the spread
-        const extendedMessages: ExtendedChatMessage[] = session.messages.map(msg => {
+        const extendedMessages: ExtendedChatMessage[] = session.messages.map((msg) => {
           const { clarificationQuestions: _, ...msgWithoutQuestions } = msg as any;
           return {
             ...msgWithoutQuestions,
@@ -41,7 +41,7 @@ export function useAIChat() {
       try {
         // 将ExtendedChatMessage转换为ChatMessage以符合ChatSession类型
         // Note: clarificationQuestions type differs, so we omit it
-        const chatMessages: ChatMessage[] = messages.map(msg => ({
+        const chatMessages: ChatMessage[] = messages.map((msg) => ({
           id: msg.id,
           type: msg.type,
           content: msg.content,
@@ -51,7 +51,7 @@ export function useAIChat() {
           searchMetadata: msg.searchMetadata,
           isLoading: msg.isLoading,
         }));
-        
+
         const session: ChatSession = {
           id: sessionId,
           messages: chatMessages.slice(-MAX_MESSAGES),
@@ -66,20 +66,23 @@ export function useAIChat() {
     }
   }, [messages, sessionId]);
 
-  const openChat = useCallback((initialQuery?: string) => {
-    setIsOpen(true);
-    
-    if (initialQuery && messages.length === 0) {
-      const userMessage: ExtendedChatMessage = {
-        id: `user-${Date.now()}`,
-        sessionId,
-        type: 'user',
-        content: initialQuery,
-        timestamp: new Date(),
-      };
-      setMessages([userMessage]);
-    }
-  }, [messages.length, sessionId]);
+  const openChat = useCallback(
+    (initialQuery?: string) => {
+      setIsOpen(true);
+
+      if (initialQuery && messages.length === 0) {
+        const userMessage: ExtendedChatMessage = {
+          id: `user-${Date.now()}`,
+          sessionId,
+          type: 'user',
+          content: initialQuery,
+          timestamp: new Date(),
+        };
+        setMessages([userMessage]);
+      }
+    },
+    [messages.length, sessionId]
+  );
 
   const closeChat = useCallback(() => {
     setIsOpen(false);

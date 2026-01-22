@@ -24,6 +24,7 @@ hooks/
 管理用户收藏的资源，支持添加、移除、查询和持久化到 localStorage。
 
 **功能：**
+
 - ✅ 添加/移除收藏
 - ✅ 检查收藏状态
 - ✅ 清空所有收藏
@@ -54,6 +55,7 @@ function MyComponent() {
 ```
 
 **特性：**
+
 - 自动从 localStorage 加载收藏数据
 - 自动保存到 localStorage
 - 防止重复收藏
@@ -66,6 +68,7 @@ function MyComponent() {
 使用 TanStack Query 获取和缓存资源数据。
 
 **功能：**
+
 - ✅ 获取所有资源
 - ✅ 按 ID 获取单个资源
 - ✅ 按分类获取资源
@@ -86,10 +89,10 @@ import {
 // 获取所有资源
 function AllResources() {
   const { data: resources, isLoading, isError } = useResources()
-  
+
   if (isLoading) return <div>加载中...</div>
   if (isError) return <div>加载失败</div>
-  
+
   return <div>{resources?.length} 个资源</div>
 }
 
@@ -113,6 +116,7 @@ function FeaturedResources() {
 ```
 
 **配置：**
+
 - `staleTime`: 5 分钟（数据保持新鲜）
 - `gcTime`: 30 分钟（缓存清除时间）
 
@@ -123,6 +127,7 @@ function FeaturedResources() {
 搜索和筛选资源的 Hook。
 
 **功能：**
+
 - ✅ 关键词搜索（名称、描述、标签、推荐语）
 - ✅ 分类筛选
 - ✅ 标签筛选（多标签 AND 逻辑）
@@ -139,7 +144,7 @@ import { useResources } from '@/hooks'
 
 function SearchPage() {
   const { data: resources } = useResources()
-  
+
   // 搜索和筛选
   const { results, total, hasResults } = useSearch(resources, {
     query: '配色',
@@ -149,13 +154,13 @@ function SearchPage() {
     sortBy: 'rating',
     sortDirection: 'desc',
   })
-  
+
   // 获取所有标签
   const allTags = useAllTags(resources)
-  
+
   // 获取热门标签（前10个）
   const popularTags = usePopularTags(resources, 10)
-  
+
   return (
     <div>
       <p>找到 {total} 个结果</p>
@@ -171,16 +176,16 @@ function SearchPage() {
 
 ```typescript
 interface SearchFilters {
-  query?: string              // 关键词搜索
-  categoryId?: string         // 分类筛选
-  tags?: string[]             // 标签筛选（AND 逻辑）
-  isFeatured?: boolean        // 精选筛选
-  sortBy?: SortField          // 排序字段
-  sortDirection?: SortDirection // 排序方向
+  query?: string; // 关键词搜索
+  categoryId?: string; // 分类筛选
+  tags?: string[]; // 标签筛选（AND 逻辑）
+  isFeatured?: boolean; // 精选筛选
+  sortBy?: SortField; // 排序字段
+  sortDirection?: SortDirection; // 排序方向
 }
 
-type SortField = 'viewCount' | 'favoriteCount' | 'createdAt' | 'rating'
-type SortDirection = 'asc' | 'desc'
+type SortField = 'viewCount' | 'favoriteCount' | 'createdAt' | 'rating';
+type SortDirection = 'asc' | 'desc';
 ```
 
 ---
@@ -190,6 +195,7 @@ type SortDirection = 'asc' | 'desc'
 监听页面滚动，在滚动时隐藏元素，停止滚动后延迟显示。
 
 **功能：**
+
 - ✅ 滚动时隐藏
 - ✅ 停止滚动后延迟显示
 - ✅ 可配置延迟时间
@@ -202,13 +208,13 @@ import { useScrollVisibility } from '@/hooks'
 
 function AIPromptInput() {
   const isVisible = useScrollVisibility(300) // 300ms 延迟
-  
+
   return (
     <div
       className={cn(
         "fixed bottom-6 transition-all duration-200",
-        isVisible 
-          ? "opacity-100 translate-y-0" 
+        isVisible
+          ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-5 pointer-events-none"
       )}
     >
@@ -219,9 +225,11 @@ function AIPromptInput() {
 ```
 
 **参数：**
+
 - `hideDelay`: 滚动停止后延迟显示的时间（毫秒），默认 300ms
 
 **返回值：**
+
 - `isVisible`: boolean - 元素是否可见
 
 ---
@@ -236,21 +244,21 @@ import { useResources, useSearch, useFavorites } from '@/hooks'
 function ResourceList() {
   const { data: resources } = useResources()
   const { favorites, addFavorite, removeFavorite, isFavorited } = useFavorites()
-  
+
   const { results } = useSearch(resources, {
     query: '配色',
     sortBy: 'rating',
     sortDirection: 'desc',
   })
-  
+
   return (
     <div>
       {results.map(resource => (
         <div key={resource.id}>
           <h3>{resource.name}</h3>
           <button
-            onClick={() => 
-              isFavorited(resource.id) 
+            onClick={() =>
+              isFavorited(resource.id)
                 ? removeFavorite(resource.id)
                 : addFavorite(resource.id)
             }
@@ -272,9 +280,9 @@ import { useResources, useFavorites } from '@/hooks'
 function FavoritesPage() {
   const { data: resources } = useResources()
   const { favorites } = useFavorites()
-  
+
   const favoriteResources = resources?.filter(r => favorites.includes(r.id))
-  
+
   return (
     <div>
       <h1>我的收藏 ({favorites.length})</h1>
@@ -302,6 +310,7 @@ pnpm test hooks/__tests__/use-search.test.ts
 ```
 
 **测试覆盖：**
+
 - ✅ useFavorites: 8 个测试
 - ✅ useSearch: 16 个测试
 - ✅ 总计: 24 个测试全部通过
@@ -316,14 +325,15 @@ pnpm test hooks/__tests__/use-search.test.ts
 
 ```typescript
 const results = useMemo(() => {
-  if (!resources) return []
-  return filterResources(resources, filters)
-}, [resources, filters])
+  if (!resources) return [];
+  return filterResources(resources, filters);
+}, [resources, filters]);
 ```
 
 ### TanStack Query 缓存
 
 `useResources` 使用 TanStack Query 自动缓存数据：
+
 - 5 分钟内数据保持新鲜，不会重新请求
 - 30 分钟后自动清除缓存
 - 支持手动 refetch
@@ -346,6 +356,7 @@ const results = useMemo(() => {
 ## 最佳实践
 
 1. **始终处理加载和错误状态**
+
    ```typescript
    const { data, isLoading, isError } = useResources()
    if (isLoading) return <Loading />
@@ -353,25 +364,28 @@ const results = useMemo(() => {
    ```
 
 2. **使用 TypeScript 类型**
+
    ```typescript
-   const { data: resources } = useResources()
+   const { data: resources } = useResources();
    // resources 的类型是 Resource[] | undefined
    ```
 
 3. **组合多个 hooks**
+
    ```typescript
    // 可以在同一个组件中使用多个 hooks
-   const { data: resources } = useResources()
-   const { favorites } = useFavorites()
-   const { results } = useSearch(resources, filters)
+   const { data: resources } = useResources();
+   const { favorites } = useFavorites();
+   const { results } = useSearch(resources, filters);
    ```
 
 4. **避免过度筛选**
+
    ```typescript
    // 不好：多次筛选
    const filtered1 = resources?.filter(...)
    const filtered2 = filtered1?.filter(...)
-   
+
    // 好：使用 useSearch 一次性筛选
    const { results } = useSearch(resources, { ...allFilters })
    ```

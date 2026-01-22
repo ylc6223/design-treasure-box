@@ -1,25 +1,21 @@
 /**
  * Custom Hooks
- * 
+ *
  * 设计百宝箱应用的自定义 React Hooks
  */
 
-export { useFavorites } from './use-favorites'
+export { useFavorites } from './use-favorites';
 export {
   useResources,
   useResourceById,
   useResourcesByCategory,
   useHotResources,
   useLatestResources,
-} from './use-resources'
-export {
-  useSearch,
-  useAllTags,
-  usePopularTags,
-} from './use-search'
-export { useScrollVisibility } from './use-scroll-visibility'
-export { useInfiniteResources } from './use-infinite-resources'
-export { useIntersectionObserver } from './use-intersection-observer'
+} from './use-resources';
+export { useSearch, useAllTags, usePopularTags } from './use-search';
+export { useScrollVisibility } from './use-scroll-visibility';
+export { useInfiniteResources } from './use-infinite-resources';
+export { useIntersectionObserver } from './use-intersection-observer';
 export {
   useCategories,
   useCategory,
@@ -28,4 +24,4 @@ export {
   useDeleteCategory,
   useCategoryName,
   useCategoryMap,
-} from './use-categories'
+} from './use-categories';

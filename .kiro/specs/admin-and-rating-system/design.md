@@ -15,24 +15,29 @@
 ### 技术栈选择
 
 **认证层：**
+
 - Supabase Auth - OAuth 认证和会话管理
 - Google OAuth Provider
 - GitHub OAuth Provider
 
 **数据层：**
+
 - Supabase PostgreSQL - 托管数据库
 - Supabase Client - 数据库查询和实时订阅
 
 **API 层：**
+
 - Next.js API Routes - RESTful API 端点
 - Supabase Row Level Security (RLS) - 数据库级别的权限控制
 
 **前端层：**
+
 - 现有技术栈：React 19 + TypeScript + Tailwind CSS + shadcn/ui
 - 新增组件：登录对话框、评分对话框、管理员面板
 - Supabase Client - 前端数据访问
 
 **管理后台模板：**
+
 - Vercel 官方模板 - `vercel/nextjs-postgres-nextauth-tailwindcss-template`
 - 复用布局、导航、表格等通用组件
 - 适配 Supabase Auth 和 Supabase PostgreSQL
@@ -48,41 +53,41 @@ graph TB
         D[后台管理面板] --> E[资源管理]
         D --> F[用户管理]
     end
-    
+
     subgraph "API Layer"
         G[NextAuth.js API]
         H[Resources API]
         I[Ratings API]
         J[Admin API]
     end
-    
+
     subgraph "Service Layer"
         K[Auth Service]
         L[Resource Service]
         M[Rating Service]
         N[User Service]
     end
-    
+
     subgraph "Data Layer"
         O[(Prisma ORM)]
         P[(PostgreSQL)]
     end
-    
+
     B --> G
     C --> I
     E --> H
     F --> J
-    
+
     G --> K
     H --> L
     I --> M
     J --> N
-    
+
     K --> O
     L --> O
     M --> O
     N --> O
-    
+
     O --> P
 ```
 
@@ -324,136 +329,130 @@ CREATE POLICY "Users can delete own ratings"
 // types/database.ts
 // 由 Supabase CLI 自动生成：supabase gen types typescript
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
     Tables: {
       profiles: {
         Row: {
-          id: string
-          name: string | null
-          email: string
-          image: string | null
-          role: 'USER' | 'ADMIN'
-          created_at: string
-          updated_at: string
-        }
+          id: string;
+          name: string | null;
+          email: string;
+          image: string | null;
+          role: 'USER' | 'ADMIN';
+          created_at: string;
+          updated_at: string;
+        };
         Insert: {
-          id: string
-          name?: string | null
-          email: string
-          image?: string | null
-          role?: 'USER' | 'ADMIN'
-          created_at?: string
-          updated_at?: string
-        }
+          id: string;
+          name?: string | null;
+          email: string;
+          image?: string | null;
+          role?: 'USER' | 'ADMIN';
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: {
-          id?: string
-          name?: string | null
-          email?: string
-          image?: string | null
-          role?: 'USER' | 'ADMIN'
-          created_at?: string
-          updated_at?: string
-        }
-      }
+          id?: string;
+          name?: string | null;
+          email?: string;
+          image?: string | null;
+          role?: 'USER' | 'ADMIN';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       resources: {
         Row: {
-          id: string
-          name: string
-          url: string
-          description: string
-          category_id: string
-          tags: string[]
-          curator_note: string
-          is_featured: boolean
-          curator_rating: Json
-          view_count: number
-          favorite_count: number
-          created_at: string
-          updated_at: string
-        }
+          id: string;
+          name: string;
+          url: string;
+          description: string;
+          category_id: string;
+          tags: string[];
+          curator_note: string;
+          is_featured: boolean;
+          curator_rating: Json;
+          view_count: number;
+          favorite_count: number;
+          created_at: string;
+          updated_at: string;
+        };
         Insert: {
-          id?: string
-          name: string
-          url: string
-          description: string
-          category_id: string
-          tags: string[]
-          curator_note: string
-          is_featured?: boolean
-          curator_rating: Json
-          view_count?: number
-          favorite_count?: number
-          created_at?: string
-          updated_at?: string
-        }
+          id?: string;
+          name: string;
+          url: string;
+          description: string;
+          category_id: string;
+          tags: string[];
+          curator_note: string;
+          is_featured?: boolean;
+          curator_rating: Json;
+          view_count?: number;
+          favorite_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: {
-          id?: string
-          name?: string
-          url?: string
-          description?: string
-          category_id?: string
-          tags?: string[]
-          curator_note?: string
-          is_featured?: boolean
-          curator_rating?: Json
-          view_count?: number
-          favorite_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
+          id?: string;
+          name?: string;
+          url?: string;
+          description?: string;
+          category_id?: string;
+          tags?: string[];
+          curator_note?: string;
+          is_featured?: boolean;
+          curator_rating?: Json;
+          view_count?: number;
+          favorite_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       ratings: {
         Row: {
-          id: string
-          user_id: string
-          resource_id: string
-          overall: number
-          usability: number
-          aesthetics: number
-          update_frequency: number
-          free_level: number
-          comment: string | null
-          created_at: string
-          updated_at: string
-        }
+          id: string;
+          user_id: string;
+          resource_id: string;
+          overall: number;
+          usability: number;
+          aesthetics: number;
+          update_frequency: number;
+          free_level: number;
+          comment: string | null;
+          created_at: string;
+          updated_at: string;
+        };
         Insert: {
-          id?: string
-          user_id: string
-          resource_id: string
-          overall: number
-          usability: number
-          aesthetics: number
-          update_frequency: number
-          free_level: number
-          comment?: string | null
-          created_at?: string
-          updated_at?: string
-        }
+          id?: string;
+          user_id: string;
+          resource_id: string;
+          overall: number;
+          usability: number;
+          aesthetics: number;
+          update_frequency: number;
+          free_level: number;
+          comment?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: {
-          id?: string
-          user_id?: string
-          resource_id?: string
-          overall?: number
-          usability?: number
-          aesthetics?: number
-          update_frequency?: number
-          free_level?: number
-          comment?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-    }
-  }
+          id?: string;
+          user_id?: string;
+          resource_id?: string;
+          overall?: number;
+          usability?: number;
+          aesthetics?: number;
+          update_frequency?: number;
+          free_level?: number;
+          comment?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+    };
+  };
 }
 ```
 
@@ -469,21 +468,23 @@ export interface Database {
 // - 密码重置（如果需要）
 
 // 使用 Supabase Client
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 // 登录示例
 const { data, error } = await supabase.auth.signInWithOAuth({
   provider: 'google',
   options: {
-    redirectTo: `${window.location.origin}/auth/callback`
-  }
-})
+    redirectTo: `${window.location.origin}/auth/callback`,
+  },
+});
 
 // 获取当前会话
-const { data: { session } } = await supabase.auth.getSession()
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 
 // 登出
-await supabase.auth.signOut()
+await supabase.auth.signOut();
 ```
 
 #### 资源 API
@@ -501,21 +502,21 @@ await supabase.auth.signOut()
 // 响应：ResourceWithRating
 
 interface ResourceWithRating {
-  id: string
-  name: string
-  url: string
-  description: string
-  categoryId: string
-  tags: string[]
-  curatorNote: string
-  isFeatured: boolean
-  curatorRating: Rating
-  aggregatedRating: Rating | null  // 用户评分平均值
-  ratingCount: number              // 评分人数
-  viewCount: number
-  favoriteCount: number
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  url: string;
+  description: string;
+  categoryId: string;
+  tags: string[];
+  curatorNote: string;
+  isFeatured: boolean;
+  curatorRating: Rating;
+  aggregatedRating: Rating | null; // 用户评分平均值
+  ratingCount: number; // 评分人数
+  viewCount: number;
+  favoriteCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 ```
 
@@ -525,22 +526,22 @@ interface ResourceWithRating {
 // POST /api/ratings
 // 请求体：
 interface SubmitRatingRequest {
-  resourceId: string
-  overall: number          // 0-5, step 0.5
-  usability: number
-  aesthetics: number
-  updateFrequency: number
-  freeLevel: number
-  comment?: string
+  resourceId: string;
+  overall: number; // 0-5, step 0.5
+  usability: number;
+  aesthetics: number;
+  updateFrequency: number;
+  freeLevel: number;
+  comment?: string;
 }
 // 响应：Rating
 
 // GET /api/ratings/[resourceId]
 // 响应：
 interface ResourceRatings {
-  aggregatedRating: Rating | null
-  ratingCount: number
-  userRating: Rating | null  // 当前用户的评分（如果已登录）
+  aggregatedRating: Rating | null;
+  ratingCount: number;
+  userRating: Rating | null; // 当前用户的评分（如果已登录）
 }
 
 // PUT /api/ratings/[id]
@@ -585,9 +586,9 @@ interface ResourceRatings {
 // components/auth/login-dialog.tsx
 
 interface LoginDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  callbackUrl?: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  callbackUrl?: string;
 }
 
 export function LoginDialog({ open, onOpenChange, callbackUrl }: LoginDialogProps) {
@@ -604,12 +605,12 @@ export function LoginDialog({ open, onOpenChange, callbackUrl }: LoginDialogProp
 
 interface UserMenuProps {
   user: {
-    id: string
-    name: string | null
-    email: string | null
-    image: string | null
-    role: 'USER' | 'ADMIN'
-  }
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: 'USER' | 'ADMIN';
+  };
 }
 
 export function UserMenu({ user }: UserMenuProps) {
@@ -626,11 +627,11 @@ export function UserMenu({ user }: UserMenuProps) {
 // components/rating/rating-dialog.tsx
 
 interface RatingDialogProps {
-  resource: Resource
-  existingRating?: Rating
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (rating: SubmitRatingRequest) => Promise<void>
+  resource: Resource;
+  existingRating?: Rating;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (rating: SubmitRatingRequest) => Promise<void>;
 }
 
 export function RatingDialog({
@@ -638,7 +639,7 @@ export function RatingDialog({
   existingRating,
   open,
   onOpenChange,
-  onSubmit
+  onSubmit,
 }: RatingDialogProps) {
   // 使用 React Hook Form + Zod 验证
   // 显示 5 个评分维度的星级输入
@@ -653,11 +654,11 @@ export function RatingDialog({
 // components/rating/rating-display.tsx
 
 interface RatingDisplayProps {
-  curatorRating: Rating
-  aggregatedRating: Rating | null
-  ratingCount: number
-  userRating?: Rating | null
-  onRate?: () => void  // 打开评分对话框
+  curatorRating: Rating;
+  aggregatedRating: Rating | null;
+  ratingCount: number;
+  userRating?: Rating | null;
+  onRate?: () => void; // 打开评分对话框
 }
 
 export function RatingDisplay({
@@ -665,7 +666,7 @@ export function RatingDisplay({
   aggregatedRating,
   ratingCount,
   userRating,
-  onRate
+  onRate,
 }: RatingDisplayProps) {
   // 显示策展人评分（默认）
   // 如果有用户评分，显示聚合评分和评分人数
@@ -680,9 +681,9 @@ export function RatingDisplay({
 // components/admin/resource-form.tsx
 
 interface ResourceFormProps {
-  resource?: Resource  // 编辑时传入
-  onSubmit: (data: CreateResourceRequest | UpdateResourceRequest) => Promise<void>
-  onCancel: () => void
+  resource?: Resource; // 编辑时传入
+  onSubmit: (data: CreateResourceRequest | UpdateResourceRequest) => Promise<void>;
+  onCancel: () => void;
 }
 
 export function ResourceForm({ resource, onSubmit, onCancel }: ResourceFormProps) {
@@ -708,9 +709,9 @@ export function ResourceThumbnail({ url, name }: ResourceThumbnailProps) {
   // 使用 Microlink API 自动获取网站图片
   // 优先使用 Open Graph 图片，回退到截图
   const imageUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}&meta=false&embed=image.url`
-  
+
   return (
-    <img 
+    <img
       src={imageUrl}
       alt={name}
       loading="lazy"
@@ -724,17 +725,18 @@ export function ResourceThumbnail({ url, name }: ResourceThumbnailProps) {
 ```
 
 **图片获取策略：**
+
 1. **优先级 1**：使用网站的 Open Graph 图片（官方图片，质量好）
 2. **优先级 2**：使用 Microlink 截图 API（实时截图）
 3. **优先级 3**：使用占位图（如果都失败）
 
 **优点：**
+
 - ✅ 零存储成本 - 不保存任何图片文件
 - ✅ 零后端压力 - 前端直接调用 API
 - ✅ 完全免费 - Microlink 免费额度足够使用
 - ✅ 自动缓存 - Microlink 自动缓存结果
 - ✅ 实时更新 - 网站更新后自动获取新图片
-
 
 ## Data Models
 
@@ -744,75 +746,75 @@ export function ResourceThumbnail({ url, name }: ResourceThumbnailProps) {
 // types/auth.ts
 
 export interface User {
-  id: string
-  name: string | null
-  email: string
-  image: string | null
-  role: 'USER' | 'ADMIN'
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string | null;
+  email: string;
+  image: string | null;
+  role: 'USER' | 'ADMIN';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Session {
-  user: User
-  expires: string
+  user: User;
+  expires: string;
 }
 
 // types/rating.ts
 
 export interface Rating {
-  overall: number
-  usability: number
-  aesthetics: number
-  updateFrequency: number
-  freeLevel: number
+  overall: number;
+  usability: number;
+  aesthetics: number;
+  updateFrequency: number;
+  freeLevel: number;
 }
 
 export interface UserRating extends Rating {
-  id: string
-  userId: string
-  resourceId: string
-  comment: string | null
-  createdAt: string
-  updatedAt: string
+  id: string;
+  userId: string;
+  resourceId: string;
+  comment: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface SubmitRatingRequest {
-  resourceId: string
-  overall: number
-  usability: number
-  aesthetics: number
-  updateFrequency: number
-  freeLevel: number
-  comment?: string
+  resourceId: string;
+  overall: number;
+  usability: number;
+  aesthetics: number;
+  updateFrequency: number;
+  freeLevel: number;
+  comment?: string;
 }
 
 export interface ResourceRatings {
-  aggregatedRating: Rating | null
-  ratingCount: number
-  userRating: UserRating | null
+  aggregatedRating: Rating | null;
+  ratingCount: number;
+  userRating: UserRating | null;
 }
 
 // types/resource.ts (扩展现有类型)
 
 export interface ResourceWithRating extends Resource {
-  aggregatedRating: Rating | null
-  ratingCount: number
+  aggregatedRating: Rating | null;
+  ratingCount: number;
 }
 
 export interface CreateResourceRequest {
-  name: string
-  url: string
-  description: string
-  categoryId: string
-  tags: string[]
-  curatorNote: string
-  isFeatured: boolean
-  curatorRating: Rating
+  name: string;
+  url: string;
+  description: string;
+  categoryId: string;
+  tags: string[];
+  curatorNote: string;
+  isFeatured: boolean;
+  curatorRating: Rating;
 }
 
 export interface UpdateResourceRequest extends Partial<CreateResourceRequest> {
-  id: string
+  id: string;
 }
 ```
 
@@ -821,13 +823,9 @@ export interface UpdateResourceRequest extends Partial<CreateResourceRequest> {
 ```typescript
 // types/rating.ts
 
-import { z } from 'zod'
+import { z } from 'zod';
 
-export const RatingValueSchema = z
-  .number()
-  .min(0)
-  .max(5)
-  .multipleOf(0.5)
+export const RatingValueSchema = z.number().min(0).max(5).multipleOf(0.5);
 
 export const RatingSchema = z.object({
   overall: RatingValueSchema,
@@ -835,12 +833,12 @@ export const RatingSchema = z.object({
   aesthetics: RatingValueSchema,
   updateFrequency: RatingValueSchema,
   freeLevel: RatingValueSchema,
-})
+});
 
 export const SubmitRatingSchema = RatingSchema.extend({
   resourceId: z.string().min(1),
   comment: z.string().optional(),
-})
+});
 
 // types/resource.ts
 
@@ -853,11 +851,11 @@ export const CreateResourceSchema = z.object({
   curatorNote: z.string().min(1),
   isFeatured: z.boolean(),
   curatorRating: RatingSchema,
-})
+});
 
 export const UpdateResourceSchema = CreateResourceSchema.partial().extend({
   id: z.string().min(1),
-})
+});
 ```
 
 ## Error Handling
@@ -873,38 +871,41 @@ export class AppError extends Error {
     public message: string,
     public code?: string
   ) {
-    super(message)
-    this.name = 'AppError'
+    super(message);
+    this.name = 'AppError';
   }
 }
 
 export class AuthenticationError extends AppError {
   constructor(message = 'Authentication required') {
-    super(401, message, 'AUTHENTICATION_ERROR')
+    super(401, message, 'AUTHENTICATION_ERROR');
   }
 }
 
 export class AuthorizationError extends AppError {
   constructor(message = 'Insufficient permissions') {
-    super(403, message, 'AUTHORIZATION_ERROR')
+    super(403, message, 'AUTHORIZATION_ERROR');
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, public errors?: Record<string, string[]>) {
-    super(400, message, 'VALIDATION_ERROR')
+  constructor(
+    message: string,
+    public errors?: Record<string, string[]>
+  ) {
+    super(400, message, 'VALIDATION_ERROR');
   }
 }
 
 export class NotFoundError extends AppError {
   constructor(resource: string) {
-    super(404, `${resource} not found`, 'NOT_FOUND')
+    super(404, `${resource} not found`, 'NOT_FOUND');
   }
 }
 
 export class ConflictError extends AppError {
   constructor(message: string) {
-    super(409, message, 'CONFLICT')
+    super(409, message, 'CONFLICT');
   }
 }
 ```
@@ -914,13 +915,13 @@ export class ConflictError extends AppError {
 ```typescript
 // lib/api/error-handler.ts
 
-import { NextResponse } from 'next/server'
-import { AppError } from '@/lib/errors'
-import { ZodError } from 'zod'
+import { NextResponse } from 'next/server';
+import { AppError } from '@/lib/errors';
+import { ZodError } from 'zod';
 
 export function handleApiError(error: unknown): NextResponse {
-  console.error('API Error:', error)
-  
+  console.error('API Error:', error);
+
   // Zod 验证错误
   if (error instanceof ZodError) {
     return NextResponse.json(
@@ -930,9 +931,9 @@ export function handleApiError(error: unknown): NextResponse {
         details: error.errors,
       },
       { status: 400 }
-    )
+    );
   }
-  
+
   // 应用错误
   if (error instanceof AppError) {
     return NextResponse.json(
@@ -941,13 +942,13 @@ export function handleApiError(error: unknown): NextResponse {
         code: error.code,
       },
       { status: error.statusCode }
-    )
+    );
   }
-  
+
   // Prisma 错误
   if (error && typeof error === 'object' && 'code' in error) {
-    const prismaError = error as { code: string; meta?: any }
-    
+    const prismaError = error as { code: string; meta?: any };
+
     if (prismaError.code === 'P2002') {
       return NextResponse.json(
         {
@@ -955,9 +956,9 @@ export function handleApiError(error: unknown): NextResponse {
           code: 'CONFLICT',
         },
         { status: 409 }
-      )
+      );
     }
-    
+
     if (prismaError.code === 'P2025') {
       return NextResponse.json(
         {
@@ -965,10 +966,10 @@ export function handleApiError(error: unknown): NextResponse {
           code: 'NOT_FOUND',
         },
         { status: 404 }
-      )
+      );
     }
   }
-  
+
   // 未知错误
   return NextResponse.json(
     {
@@ -976,7 +977,7 @@ export function handleApiError(error: unknown): NextResponse {
       code: 'INTERNAL_ERROR',
     },
     { status: 500 }
-  )
+  );
 }
 ```
 
@@ -985,57 +986,56 @@ export function handleApiError(error: unknown): NextResponse {
 ```typescript
 // lib/supabase/auth.ts
 
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import { AuthenticationError, AuthorizationError } from '@/lib/errors'
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { AuthenticationError, AuthorizationError } from '@/lib/errors';
 
 export async function getServerSupabase() {
-  const cookieStore = cookies()
-  
+  const cookieStore = cookies();
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          return cookieStore.get(name)?.value;
         },
       },
     }
-  )
+  );
 }
 
 export async function requireAuth() {
-  const supabase = await getServerSupabase()
-  
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
+  const supabase = await getServerSupabase();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
   if (error || !user) {
-    throw new AuthenticationError()
+    throw new AuthenticationError();
   }
-  
+
   // 获取用户 profile（包含 role）
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-  
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
   if (!profile) {
-    throw new AuthenticationError()
+    throw new AuthenticationError();
   }
-  
-  return { user, profile }
+
+  return { user, profile };
 }
 
 export async function requireAdmin() {
-  const { user, profile } = await requireAuth()
-  
+  const { user, profile } = await requireAuth();
+
   if (profile.role !== 'ADMIN') {
-    throw new AuthorizationError()
+    throw new AuthorizationError();
   }
-  
-  return { user, profile }
+
+  return { user, profile };
 }
 ```
 
@@ -1049,6 +1049,7 @@ export async function requireAdmin() {
 2. **属性测试（Property-Based Tests）**：验证通用属性在所有输入下都成立
 
 两种测试方法互补，共同确保代码的正确性：
+
 - 单元测试捕获具体的 bug
 - 属性测试验证通用的正确性
 
@@ -1062,6 +1063,7 @@ export async function requireAdmin() {
 ### 测试配置
 
 每个属性测试必须：
+
 - 运行至少 100 次迭代（由于随机化）
 - 使用注释标记引用设计文档中的属性
 - 标记格式：`Feature: admin-and-rating-system, Property {number}: {property_text}`
@@ -1069,18 +1071,22 @@ export async function requireAdmin() {
 ### 测试覆盖范围
 
 **认证模块：**
+
 - 单元测试：OAuth 回调处理、会话创建、登出流程
 - 属性测试：会话令牌验证、权限检查
 
 **评分模块：**
+
 - 单元测试：评分提交、评分更新、边界值验证
 - 属性测试：评分聚合计算、评分范围验证
 
 **资源管理模块：**
+
 - 单元测试：CRUD 操作、数据验证、权限检查
 - 属性测试：数据完整性、关联删除
 
 **API 端点：**
+
 - 单元测试：请求/响应格式、错误处理、状态码
 - 属性测试：输入验证、权限验证
 
@@ -1089,8 +1095,8 @@ export async function requireAdmin() {
 ```typescript
 // __tests__/rating.properties.test.ts
 
-import { describe, it, expect } from 'vitest'
-import * as fc from 'fast-check'
+import { describe, it, expect } from 'vitest';
+import * as fc from 'fast-check';
 
 describe('Rating Properties', () => {
   // Feature: admin-and-rating-system, Property 1: Rating values are always within 0-5 range
@@ -1105,21 +1111,26 @@ describe('Rating Properties', () => {
           freeLevel: fc.float({ min: 0, max: 5 }),
         }),
         (rating) => {
-          const rounded = roundRatingTo05(rating)
-          
+          const rounded = roundRatingTo05(rating);
+
           return (
-            rounded.overall >= 0 && rounded.overall <= 5 &&
-            rounded.usability >= 0 && rounded.usability <= 5 &&
-            rounded.aesthetics >= 0 && rounded.aesthetics <= 5 &&
-            rounded.updateFrequency >= 0 && rounded.updateFrequency <= 5 &&
-            rounded.freeLevel >= 0 && rounded.freeLevel <= 5
-          )
+            rounded.overall >= 0 &&
+            rounded.overall <= 5 &&
+            rounded.usability >= 0 &&
+            rounded.usability <= 5 &&
+            rounded.aesthetics >= 0 &&
+            rounded.aesthetics <= 5 &&
+            rounded.updateFrequency >= 0 &&
+            rounded.updateFrequency <= 5 &&
+            rounded.freeLevel >= 0 &&
+            rounded.freeLevel <= 5
+          );
         }
       ),
       { numRuns: 100 }
-    )
-  })
-  
+    );
+  });
+
   // Feature: admin-and-rating-system, Property 2: Aggregated rating is average of user ratings
   it('should calculate correct average rating', () => {
     fc.assert(
@@ -1135,124 +1146,122 @@ describe('Rating Properties', () => {
           { minLength: 1, maxLength: 100 }
         ),
         (ratings) => {
-          const aggregated = calculateAggregatedRating(ratings)
-          
+          const aggregated = calculateAggregatedRating(ratings);
+
           // 验证聚合评分是所有评分的平均值
-          const expectedOverall = ratings.reduce((sum, r) => sum + r.overall, 0) / ratings.length
-          
-          return Math.abs(aggregated.overall - expectedOverall) < 0.01
+          const expectedOverall = ratings.reduce((sum, r) => sum + r.overall, 0) / ratings.length;
+
+          return Math.abs(aggregated.overall - expectedOverall) < 0.01;
         }
       ),
       { numRuns: 100 }
-    )
-  })
-})
+    );
+  });
+});
 ```
-
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: Session Token Validation
 
-*For any* API request with a session token, the system should grant access if and only if the token is valid and not expired.
+_For any_ API request with a session token, the system should grant access if and only if the token is valid and not expired.
 
 **Validates: Requirements 1.5, 1.6, 9.3**
 
 ### Property 2: OAuth User Creation or Retrieval
 
-*For any* successful OAuth callback (Google or GitHub), the system should either create a new user account (if email doesn't exist) or retrieve the existing user account, and establish a valid session.
+_For any_ successful OAuth callback (Google or GitHub), the system should either create a new user account (if email doesn't exist) or retrieve the existing user account, and establish a valid session.
 
 **Validates: Requirements 1.3, 1.8**
 
 ### Property 3: Logout Invalidates Session
 
-*For any* user session, after logout, the session token should be invalid and subsequent requests with that token should be rejected.
+_For any_ user session, after logout, the session token should be invalid and subsequent requests with that token should be rejected.
 
 **Validates: Requirements 1.7**
 
 ### Property 4: Default User Role Assignment
 
-*For any* newly created user account, the default role should be "USER" unless explicitly set otherwise.
+_For any_ newly created user account, the default role should be "USER" unless explicitly set otherwise.
 
 **Validates: Requirements 2.1**
 
 ### Property 5: Role Update Operations
 
-*For any* valid role update operation (promote or demote), the user's role should be updated to the specified role and persisted to the database.
+_For any_ valid role update operation (promote or demote), the user's role should be updated to the specified role and persisted to the database.
 
 **Validates: Requirements 2.2, 2.5**
 
 ### Property 6: Admin Authorization Check
 
-*For any* request to admin-only endpoints, the system should verify that the authenticated user has the "ADMIN" role, and reject requests from users with "USER" role.
+_For any_ request to admin-only endpoints, the system should verify that the authenticated user has the "ADMIN" role, and reject requests from users with "USER" role.
 
 **Validates: Requirements 2.3, 2.4, 11.1, 11.2**
 
 ### Property 7: Resource Data Validation and Persistence
 
-*For any* resource creation or update operation with valid data, the system should validate all required fields (name, url, description, categoryId, etc.) and persist the resource to the database.
+_For any_ resource creation or update operation with valid data, the system should validate all required fields (name, url, description, categoryId, etc.) and persist the resource to the database.
 
 **Validates: Requirements 3.1, 3.2, 3.5, 3.6**
 
 ### Property 8: Cascade Deletion of Ratings
 
-*For any* resource deletion, all associated user ratings should also be deleted from the database (cascade delete).
+_For any_ resource deletion, all associated user ratings should also be deleted from the database (cascade delete).
 
 **Validates: Requirements 3.3**
 
 ### Property 9: Rating Submission and Validation
 
-*For any* rating submission by an authenticated user, the system should validate that all rating dimensions (overall, usability, aesthetics, updateFrequency, freeLevel) are within the 0-5 range with 0.5 precision, and persist the rating to the database.
+_For any_ rating submission by an authenticated user, the system should validate that all rating dimensions (overall, usability, aesthetics, updateFrequency, freeLevel) are within the 0-5 range with 0.5 precision, and persist the rating to the database.
 
 **Validates: Requirements 4.1, 4.2, 4.5**
 
 ### Property 10: Rating Update Idempotency
 
-*For any* user submitting a rating for a resource they have already rated, the system should update the existing rating instead of creating a duplicate, maintaining the unique constraint (userId, resourceId).
+_For any_ user submitting a rating for a resource they have already rated, the system should update the existing rating instead of creating a duplicate, maintaining the unique constraint (userId, resourceId).
 
 **Validates: Requirements 4.3**
 
 ### Property 11: Authentication Required for Rating
 
-*For any* rating submission attempt without a valid session, the system should reject the request and return an authentication error.
+_For any_ rating submission attempt without a valid session, the system should reject the request and return an authentication error.
 
 **Validates: Requirements 4.4**
 
 ### Property 12: Aggregated Rating Calculation
 
-*For any* resource with one or more user ratings, the aggregated rating for each dimension should be the arithmetic mean of all user ratings for that dimension, rounded to the nearest 0.5.
+_For any_ resource with one or more user ratings, the aggregated rating for each dimension should be the arithmetic mean of all user ratings for that dimension, rounded to the nearest 0.5.
 
 **Validates: Requirements 5.1, 5.5**
 
 ### Property 13: Rating Display Completeness
 
-*For any* resource display, the system should show the aggregated rating (if user ratings exist) or curator rating (if no user ratings), along with the count of user ratings, and if the current user has rated the resource, their personal rating should also be displayed.
+_For any_ resource display, the system should show the aggregated rating (if user ratings exist) or curator rating (if no user ratings), along with the count of user ratings, and if the current user has rated the resource, their personal rating should also be displayed.
 
 **Validates: Requirements 5.2, 5.3, 10.4**
 
 ### Property 14: Data Persistence Guarantee
 
-*For any* successful database write operation (user creation, rating submission, resource modification), the data should be persisted to the database and retrievable in subsequent queries.
+_For any_ successful database write operation (user creation, rating submission, resource modification), the data should be persisted to the database and retrievable in subsequent queries.
 
 **Validates: Requirements 7.1, 7.2, 7.3**
 
 ### Property 15: Database Error Handling
 
-*For any* database operation failure (connection error, constraint violation, etc.), the system should return an appropriate error response and not leave the database in an inconsistent state.
+_For any_ database operation failure (connection error, constraint violation, etc.), the system should return an appropriate error response and not leave the database in an inconsistent state.
 
 **Validates: Requirements 7.5**
 
 ### Property 16: API Request Validation
 
-*For any* API request, the system should validate the request body against the defined Zod schema, and reject requests with invalid data, returning validation errors.
+_For any_ API request, the system should validate the request body against the defined Zod schema, and reject requests with invalid data, returning validation errors.
 
 **Validates: Requirements 8.5, 9.1**
 
 ### Property 17: API Error Response Format
 
-*For any* API operation that fails, the system should return an appropriate HTTP status code (400, 401, 403, 404, 409, 500) and a JSON error response with error message and code.
+_For any_ API operation that fails, the system should return an appropriate HTTP status code (400, 401, 403, 404, 409, 500) and a JSON error response with error message and code.
 
 **Validates: Requirements 8.6**
-

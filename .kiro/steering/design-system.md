@@ -9,21 +9,22 @@
 ```css
 /* 浅色模式 */
 :root {
-  --background: #fafafa;      /* 页面背景 */
-  --surface: #ffffff;         /* 卡片/组件背景 */
-  --border: #e5e5e5;         /* 边框颜色 */
-  --text-primary: #171717;    /* 主要文本 */
-  --text-secondary: #737373;  /* 次要文本 */
-  --text-muted: #a3a3a3;     /* 弱化文本 */
-  --accent: #000000;          /* 强调色 */
+  --background: #fafafa; /* 页面背景 */
+  --surface: #ffffff; /* 卡片/组件背景 */
+  --border: #e5e5e5; /* 边框颜色 */
+  --text-primary: #171717; /* 主要文本 */
+  --text-secondary: #737373; /* 次要文本 */
+  --text-muted: #a3a3a3; /* 弱化文本 */
+  --accent: #000000; /* 强调色 */
   --accent-foreground: #ffffff;
-  --highlight: #f59e0b;       /* 高亮色（精选标识） */
-  --glass: rgba(255, 255, 255, 0.8);  /* 毛玻璃效果 */
-  --shadow: rgba(0, 0, 0, 0.1);       /* 阴影 */
+  --highlight: #f59e0b; /* 高亮色（精选标识） */
+  --glass: rgba(255, 255, 255, 0.8); /* 毛玻璃效果 */
+  --shadow: rgba(0, 0, 0, 0.1); /* 阴影 */
 }
 ```
 
 **Tailwind 配置映射：**
+
 ```typescript
 colors: {
   background: 'var(--background)',
@@ -81,25 +82,26 @@ xl: '≥1440px'          // 超大屏
 ```
 
 **组件变体管理：**
+
 ```typescript
 // 使用 class-variance-authority (cva)
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors",
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors',
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
         // ...
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        icon: "h-9 w-9",
-      }
-    }
+        default: 'h-9 px-4 py-2',
+        sm: 'h-8 rounded-md px-3 text-xs',
+        icon: 'h-9 w-9',
+      },
+    },
   }
-)
+);
 ```
 
 ### 业务组件 (components/)
@@ -107,6 +109,7 @@ const buttonVariants = cva(
 **命名约定：** kebab-case (例如：`resource-card.tsx`)
 
 **组件结构模式：**
+
 ```typescript
 'use client'  // 仅在需要客户端交互时使用
 
@@ -132,11 +135,11 @@ export function ComponentName({ ...props }: ComponentNameProps) {
 
 ```typescript
 // lib/utils.ts
-import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))  // 智能合并 Tailwind 类名
+  return twMerge(clsx(inputs)); // 智能合并 Tailwind 类名
 }
 ```
 
@@ -153,6 +156,7 @@ import { Heart, ExternalLink, Sparkles } from 'lucide-react'
 ```
 
 **图标尺寸约定：**
+
 - `h-3 w-3` (12px) - 小图标
 - `h-4 w-4` (16px) - 默认图标
 - `h-5 w-5` (20px) - 中等图标
@@ -165,22 +169,23 @@ import { Heart, ExternalLink, Sparkles } from 'lucide-react'
 **Masonry 网格：** 使用 `masonic` 库实现瀑布流布局
 
 ```typescript
-import { Masonry } from 'masonic'
+import { Masonry } from 'masonic';
 
 // 响应式列数配置
 const columnCount = {
   mobile: 1,
   tablet: 2,
   desktop: 3,
-  xl: 4
-}
+  xl: 4,
+};
 ```
 
 ### 间距系统
 
 遵循 Tailwind 默认间距比例 (4px 基数)：
+
 - `gap-1.5` (6px) - 小间距
-- `gap-3` (12px) - 默认间距  
+- `gap-3` (12px) - 默认间距
 - `gap-4` (16px) - 中等间距
 - `gap-6` (24px) - 大间距
 
@@ -195,8 +200,14 @@ const columnCount = {
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 ```
 
@@ -223,31 +234,34 @@ export const ResourceSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   rating: z.object({
-    overall: z.number().min(0).max(5).multipleOf(0.5)
+    overall: z.number().min(0).max(5).multipleOf(0.5),
   }),
   // ...
-})
+});
 
-export type Resource = z.infer<typeof ResourceSchema>
+export type Resource = z.infer<typeof ResourceSchema>;
 ```
 
 ### 运行时验证
 
 ```typescript
 // 数据加载时验证
-const validatedData = ResourceSchema.parse(rawData)
+const validatedData = ResourceSchema.parse(rawData);
 ```
 
 ## 状态管理
 
 ### 客户端状态
+
 - **React hooks:** useState, useReducer
 - **持久化:** localStorage + Zod 验证
 
 ### 服务端状态
+
 - **TanStack Query:** 数据获取、缓存、同步
 
 ### 全局状态
+
 - **React Context:** 主题、收藏等跨组件状态
 
 ## 文件组织
@@ -309,7 +323,7 @@ import { cn } from '@/lib/utils'
 
 ```typescript
 // 客户端组件按需加载
-'use client'  // 仅在需要时使用
+'use client'; // 仅在需要时使用
 ```
 
 ## 可访问性 (A11y)
@@ -347,8 +361,12 @@ import { ThemeProvider } from 'next-themes'
 ### CSS 变量切换
 
 ```css
-:root { /* 浅色模式变量 */ }
-.dark { /* 深色模式变量 */ }
+:root {
+  /* 浅色模式变量 */
+}
+.dark {
+  /* 深色模式变量 */
+}
 ```
 
 ## 构建配置
@@ -360,8 +378,12 @@ import { ThemeProvider } from 'next-themes'
 export default {
   darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
-  theme: { extend: { /* 自定义配置 */ } }
-}
+  theme: {
+    extend: {
+      /* 自定义配置 */
+    },
+  },
+};
 ```
 
 ### Next.js 16 + React 19

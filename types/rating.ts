@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 // ============================================================================
 // Zod Schemas (用于运行时验证)
@@ -12,7 +12,7 @@ export const RatingValueSchema = z
   .number()
   .min(0, '评分不能小于 0')
   .max(5, '评分不能大于 5')
-  .multipleOf(0.5, '评分必须是 0.5 的倍数')
+  .multipleOf(0.5, '评分必须是 0.5 的倍数');
 
 /**
  * 评分 Schema
@@ -24,7 +24,7 @@ export const RatingSchema = z.object({
   aesthetics: RatingValueSchema,
   updateFrequency: RatingValueSchema,
   freeLevel: RatingValueSchema,
-})
+});
 
 /**
  * 用户评分提交 Schema
@@ -33,7 +33,7 @@ export const RatingSchema = z.object({
 export const SubmitRatingSchema = RatingSchema.extend({
   resourceId: z.string().uuid('资源 ID 必须是有效的 UUID'),
   comment: z.string().max(500, '评论不能超过 500 字符').optional(),
-})
+});
 
 /**
  * 用户评分完整 Schema
@@ -46,7 +46,7 @@ export const UserRatingSchema = RatingSchema.extend({
   comment: z.string().nullable(),
   createdAt: z.string(), // ISO 8601 字符串，与数据库返回类型一致
   updatedAt: z.string(), // ISO 8601 字符串，与数据库返回类型一致
-})
+});
 
 /**
  * 资源评分信息 Schema
@@ -56,7 +56,7 @@ export const ResourceRatingsSchema = z.object({
   aggregatedRating: RatingSchema.nullable(),
   ratingCount: z.number().int().min(0),
   userRating: UserRatingSchema.nullable(),
-})
+});
 
 // ============================================================================
 // TypeScript Types (从 Zod Schema 推导)
@@ -66,25 +66,25 @@ export const ResourceRatingsSchema = z.object({
  * 评分接口
  * 包含资源的各个维度评分
  */
-export type Rating = z.infer<typeof RatingSchema>
+export type Rating = z.infer<typeof RatingSchema>;
 
 /**
  * 用户评分提交接口
  * 用于提交新评分或更新现有评分
  */
-export type SubmitRatingRequest = z.infer<typeof SubmitRatingSchema>
+export type SubmitRatingRequest = z.infer<typeof SubmitRatingSchema>;
 
 /**
  * 用户评分完整接口
  * 数据库中存储的完整评分记录
  */
-export type UserRating = z.infer<typeof UserRatingSchema>
+export type UserRating = z.infer<typeof UserRatingSchema>;
 
 /**
  * 资源评分信息接口
  * 包含聚合评分、评分人数和当前用户评分
  */
-export type ResourceRatings = z.infer<typeof ResourceRatingsSchema>
+export type ResourceRatings = z.infer<typeof ResourceRatingsSchema>;
 
 // ============================================================================
 // 辅助类型
@@ -93,7 +93,7 @@ export type ResourceRatings = z.infer<typeof ResourceRatingsSchema>
 /**
  * 评分维度类型
  */
-export type RatingDimension = keyof Rating
+export type RatingDimension = keyof Rating;
 
 /**
  * 评分维度标签映射
@@ -104,7 +104,7 @@ export const RATING_DIMENSION_LABELS: Record<RatingDimension, string> = {
   aesthetics: '美观度',
   updateFrequency: '更新频率',
   freeLevel: '免费程度',
-} as const
+} as const;
 
 /**
  * 评分维度描述映射
@@ -115,7 +115,7 @@ export const RATING_DIMENSION_DESCRIPTIONS: Record<RatingDimension, string> = {
   aesthetics: '资源的视觉设计和美观程度',
   updateFrequency: '资源的更新频率和维护情况',
   freeLevel: '资源的免费程度和性价比',
-} as const
+} as const;
 
 // ============================================================================
 // 工具函数类型
@@ -125,7 +125,7 @@ export const RATING_DIMENSION_DESCRIPTIONS: Record<RatingDimension, string> = {
  * 评分四舍五入到 0.5 精度
  */
 export function roundRatingTo05(value: number): number {
-  return Math.round(value * 2) / 2
+  return Math.round(value * 2) / 2;
 }
 
 /**
@@ -134,7 +134,7 @@ export function roundRatingTo05(value: number): number {
  */
 export function calculateAggregatedRating(ratings: Rating[]): Rating {
   if (ratings.length === 0) {
-    throw new Error('无法计算空数组的聚合评分')
+    throw new Error('无法计算空数组的聚合评分');
   }
 
   const sum = ratings.reduce(
@@ -152,9 +152,9 @@ export function calculateAggregatedRating(ratings: Rating[]): Rating {
       updateFrequency: 0,
       freeLevel: 0,
     }
-  )
+  );
 
-  const count = ratings.length
+  const count = ratings.length;
 
   return {
     overall: roundRatingTo05(sum.overall / count),
@@ -162,14 +162,14 @@ export function calculateAggregatedRating(ratings: Rating[]): Rating {
     aesthetics: roundRatingTo05(sum.aesthetics / count),
     updateFrequency: roundRatingTo05(sum.updateFrequency / count),
     freeLevel: roundRatingTo05(sum.freeLevel / count),
-  }
+  };
 }
 
 /**
  * 验证评分值是否有效
  */
 export function isValidRatingValue(value: number): boolean {
-  return value >= 0 && value <= 5 && value % 0.5 === 0
+  return value >= 0 && value <= 5 && value % 0.5 === 0;
 }
 
 /**
@@ -182,5 +182,5 @@ export function isValidRating(rating: Rating): boolean {
     isValidRatingValue(rating.aesthetics) &&
     isValidRatingValue(rating.updateFrequency) &&
     isValidRatingValue(rating.freeLevel)
-  )
+  );
 }

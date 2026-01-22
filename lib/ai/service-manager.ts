@@ -37,7 +37,7 @@ export class AIServiceManager {
 
       // 获取默认提供者配置
       const defaultConfig = this.configManager.getDefaultProviderConfig();
-      
+
       // 切换到默认提供者
       await this.switchProvider(defaultConfig);
 
@@ -56,10 +56,10 @@ export class AIServiceManager {
       // 这里暂时创建一个占位符提供者
       // 在后续任务中会实现具体的ZhipuAIProvider
       const provider = await this.createProvider(config);
-      
+
       // 注册到工厂
       this.providerFactory.register(provider);
-      
+
       // 设置为当前提供者
       this.currentProvider = provider;
 
@@ -77,7 +77,7 @@ export class AIServiceManager {
     switch (config.provider) {
       case 'zhipu-ai':
         return new ZhipuAIProvider(config as ZhipuAIConfig);
-      
+
       default:
         throw new Error(`Unsupported provider: ${config.provider}`);
     }
@@ -115,9 +115,7 @@ export class AIServiceManager {
     const currentProviderName = this.currentProvider?.name;
 
     // 找到除当前提供者外的其他可用提供者
-    const fallbackProviders = availableProviders.filter(
-      name => name !== currentProviderName
-    );
+    const fallbackProviders = availableProviders.filter((name) => name !== currentProviderName);
 
     if (fallbackProviders.length === 0) {
       console.error('No fallback providers available');
@@ -142,7 +140,7 @@ export class AIServiceManager {
   setCache(key: string, data: any, ttlMs?: number): void {
     const runtimeConfig = this.configManager.getRuntimeConfig();
     const expiryTime = ttlMs || runtimeConfig.cacheExpiryMs;
-    
+
     this.cache.set(key, {
       data,
       timestamp: Date.now() + expiryTime,

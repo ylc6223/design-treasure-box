@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { renderHook } from '@testing-library/react'
-import { useSearch, useAllTags, usePopularTags } from '../use-search'
-import { type Resource } from '@/types'
+import { describe, it, expect } from 'vitest';
+import { renderHook } from '@testing-library/react';
+import { useSearch, useAllTags, usePopularTags } from '../use-search';
+import { type Resource } from '@/types';
 
 const mockResources: Resource[] = [
   {
@@ -49,138 +49,138 @@ const mockResources: Resource[] = [
     viewCount: 1500,
     favoriteCount: 300,
   },
-]
+];
 
 describe('useSearch', () => {
   it('should return all resources when no filters applied', () => {
-    const { result } = renderHook(() => useSearch(mockResources, {}))
-    
-    expect(result.current.results).toHaveLength(3)
-    expect(result.current.total).toBe(3)
-    expect(result.current.hasResults).toBe(true)
-  })
+    const { result } = renderHook(() => useSearch(mockResources, {}));
+
+    expect(result.current.results).toHaveLength(3);
+    expect(result.current.total).toBe(3);
+    expect(result.current.hasResults).toBe(true);
+  });
 
   it('should filter by query (name)', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { query: 'Coolors' }))
-    
-    expect(result.current.results).toHaveLength(1)
-    expect(result.current.results[0].id).toBe('resource-1')
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { query: 'Coolors' }));
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.results[0].id).toBe('resource-1');
+  });
 
   it('should filter by query (description)', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { query: '框架' }))
-    
-    expect(result.current.results).toHaveLength(1)
-    expect(result.current.results[0].id).toBe('resource-2')
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { query: '框架' }));
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.results[0].id).toBe('resource-2');
+  });
 
   it('should filter by query (tags)', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { query: '字体' }))
-    
-    expect(result.current.results).toHaveLength(1)
-    expect(result.current.results[0].id).toBe('resource-3')
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { query: '字体' }));
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.results[0].id).toBe('resource-3');
+  });
 
   it('should filter by category', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { categoryId: 'color' }))
-    
-    expect(result.current.results).toHaveLength(1)
-    expect(result.current.results[0].categoryId).toBe('color')
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { categoryId: 'color' }));
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.results[0].categoryId).toBe('color');
+  });
 
   it('should filter by tags (single tag)', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { tags: ['免费'] }))
-    
-    expect(result.current.results).toHaveLength(3)
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { tags: ['免费'] }));
+
+    expect(result.current.results).toHaveLength(3);
+  });
 
   it('should filter by tags (multiple tags - AND logic)', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { tags: ['配色', '工具'] }))
-    
-    expect(result.current.results).toHaveLength(1)
-    expect(result.current.results[0].id).toBe('resource-1')
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { tags: ['配色', '工具'] }));
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.results[0].id).toBe('resource-1');
+  });
 
   it('should filter by featured status', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { isFeatured: true }))
-    
-    expect(result.current.results).toHaveLength(2)
-    expect(result.current.results.every(r => r.isFeatured)).toBe(true)
-  })
+    const { result } = renderHook(() => useSearch(mockResources, { isFeatured: true }));
+
+    expect(result.current.results).toHaveLength(2);
+    expect(result.current.results.every((r) => r.isFeatured)).toBe(true);
+  });
 
   it('should sort by rating (descending)', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSearch(mockResources, { sortBy: 'rating', sortDirection: 'desc' })
-    )
-    
-    expect(result.current.results[0].id).toBe('resource-2') // rating 5.0
-    expect(result.current.results[1].id).toBe('resource-1') // rating 4.5
-    expect(result.current.results[2].id).toBe('resource-3') // rating 4.0
-  })
+    );
+
+    expect(result.current.results[0].id).toBe('resource-2'); // rating 5.0
+    expect(result.current.results[1].id).toBe('resource-1'); // rating 4.5
+    expect(result.current.results[2].id).toBe('resource-3'); // rating 4.0
+  });
 
   it('should sort by viewCount (ascending)', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSearch(mockResources, { sortBy: 'viewCount', sortDirection: 'asc' })
-    )
-    
-    expect(result.current.results[0].viewCount).toBe(1000)
-    expect(result.current.results[1].viewCount).toBe(1500)
-    expect(result.current.results[2].viewCount).toBe(2000)
-  })
+    );
+
+    expect(result.current.results[0].viewCount).toBe(1000);
+    expect(result.current.results[1].viewCount).toBe(1500);
+    expect(result.current.results[2].viewCount).toBe(2000);
+  });
 
   it('should combine multiple filters', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSearch(mockResources, {
         query: '免费',
         isFeatured: true,
         sortBy: 'rating',
         sortDirection: 'desc',
       })
-    )
-    
-    expect(result.current.results).toHaveLength(2)
-    expect(result.current.results[0].id).toBe('resource-2')
-  })
+    );
+
+    expect(result.current.results).toHaveLength(2);
+    expect(result.current.results[0].id).toBe('resource-2');
+  });
 
   it('should return empty results when no matches', () => {
-    const { result } = renderHook(() => useSearch(mockResources, { query: 'nonexistent' }))
-    
-    expect(result.current.results).toHaveLength(0)
-    expect(result.current.hasResults).toBe(false)
-  })
-})
+    const { result } = renderHook(() => useSearch(mockResources, { query: 'nonexistent' }));
+
+    expect(result.current.results).toHaveLength(0);
+    expect(result.current.hasResults).toBe(false);
+  });
+});
 
 describe('useAllTags', () => {
   it('should return all unique tags', () => {
-    const { result } = renderHook(() => useAllTags(mockResources))
-    
-    expect(result.current).toContain('配色')
-    expect(result.current).toContain('工具')
-    expect(result.current).toContain('免费')
-    expect(result.current).toContain('CSS')
-    expect(result.current).toContain('框架')
-    expect(result.current).toContain('字体')
-    expect(result.current).toContain('Google')
-  })
+    const { result } = renderHook(() => useAllTags(mockResources));
+
+    expect(result.current).toContain('配色');
+    expect(result.current).toContain('工具');
+    expect(result.current).toContain('免费');
+    expect(result.current).toContain('CSS');
+    expect(result.current).toContain('框架');
+    expect(result.current).toContain('字体');
+    expect(result.current).toContain('Google');
+  });
 
   it('should sort tags by frequency (descending)', () => {
-    const { result } = renderHook(() => useAllTags(mockResources))
-    
+    const { result } = renderHook(() => useAllTags(mockResources));
+
     // '免费' appears 3 times, should be first
-    expect(result.current[0]).toBe('免费')
-  })
-})
+    expect(result.current[0]).toBe('免费');
+  });
+});
 
 describe('usePopularTags', () => {
   it('should return top N tags', () => {
-    const { result } = renderHook(() => usePopularTags(mockResources, 3))
-    
-    expect(result.current).toHaveLength(3)
-  })
+    const { result } = renderHook(() => usePopularTags(mockResources, 3));
+
+    expect(result.current).toHaveLength(3);
+  });
 
   it('should return most popular tags first', () => {
-    const { result } = renderHook(() => usePopularTags(mockResources, 5))
-    
-    expect(result.current[0]).toBe('免费') // appears 3 times
-  })
-})
+    const { result } = renderHook(() => usePopularTags(mockResources, 5));
+
+    expect(result.current[0]).toBe('免费'); // appears 3 times
+  });
+});

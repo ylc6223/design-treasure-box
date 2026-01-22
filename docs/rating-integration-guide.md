@@ -9,10 +9,10 @@
 ```tsx
 // app/resource/[id]/page.tsx
 
-import { RatingSection } from './rating-section'
+import { RatingSection } from './rating-section';
 
 export default function ResourceDetailPage({ params }) {
-  const resource = await getResource(params.id)
+  const resource = await getResource(params.id);
 
   return (
     <div className="container mx-auto py-8">
@@ -22,7 +22,7 @@ export default function ResourceDetailPage({ params }) {
       {/* 添加评分区域 */}
       <RatingSection resource={resource} />
     </div>
-  )
+  );
 }
 ```
 
@@ -33,16 +33,16 @@ export default function ResourceDetailPage({ params }) {
 ```tsx
 // components/resource-card.tsx
 
-import { RatingStars } from '@/components/rating-stars'
+import { RatingStars } from '@/components/rating-stars';
 
 export function ResourceCard({ resource }) {
   return (
     <Card>
       <h3>{resource.name}</h3>
-      
+
       {/* 显示策展人评分 */}
       <RatingStars rating={resource.rating.overall} showValue />
-      
+
       {/* 或者显示用户聚合评分（需要从 API 获取） */}
       {aggregatedRating && (
         <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export function ResourceCard({ resource }) {
         </div>
       )}
     </Card>
-  )
+  );
 }
 ```
 
@@ -60,24 +60,24 @@ export function ResourceCard({ resource }) {
 如果你想自定义评分按钮的位置和样式：
 
 ```tsx
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { RatingDialog } from '@/components/rating/rating-dialog'
-import { Button } from '@/components/ui/button'
-import { Star } from 'lucide-react'
+import { useState } from 'react';
+import { RatingDialog } from '@/components/rating/rating-dialog';
+import { Button } from '@/components/ui/button';
+import { Star } from 'lucide-react';
 
 export function CustomRatingButton({ resource }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (data) => {
     const response = await fetch('/api/ratings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
-    })
+    });
     // 处理响应...
-  }
+  };
 
   return (
     <>
@@ -93,7 +93,7 @@ export function CustomRatingButton({ resource }) {
         onSubmit={handleSubmit}
       />
     </>
-  )
+  );
 }
 ```
 
@@ -106,8 +106,8 @@ export function CustomRatingButton({ resource }) {
 ```tsx
 // hooks/use-ratings.ts
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { ResourceRatings, SubmitRatingRequest } from '@/types/rating'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ResourceRatings, SubmitRatingRequest } from '@/types/rating';
 
 /**
  * 获取资源评分数据
@@ -116,24 +116,24 @@ export function useResourceRatings(resourceId: string) {
   return useQuery<ResourceRatings>({
     queryKey: ['ratings', resourceId],
     queryFn: async () => {
-      const response = await fetch(`/api/ratings/${resourceId}`)
-      const result = await response.json()
-      
+      const response = await fetch(`/api/ratings/${resourceId}`);
+      const result = await response.json();
+
       if (!result.success) {
-        throw new Error(result.error || '获取评分失败')
+        throw new Error(result.error || '获取评分失败');
       }
-      
-      return result.data
+
+      return result.data;
     },
     staleTime: 1000 * 60 * 5, // 5分钟内不重新获取
-  })
+  });
 }
 
 /**
  * 提交评分
  */
 export function useSubmitRating() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: SubmitRatingRequest) => {
@@ -141,57 +141,57 @@ export function useSubmitRating() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || '评分提交失败')
+        throw new Error(result.error || '评分提交失败');
       }
 
-      return result.data
+      return result.data;
     },
     onSuccess: (_, variables) => {
       // 刷新评分数据
       queryClient.invalidateQueries({
         queryKey: ['ratings', variables.resourceId],
-      })
+      });
     },
-  })
+  });
 }
 ```
 
 ### 使用 Hooks
 
 ```tsx
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useResourceRatings, useSubmitRating } from '@/hooks/use-ratings'
-import { RatingDialog } from '@/components/rating/rating-dialog'
-import { RatingDisplay } from '@/components/rating/rating-display'
+import { useState } from 'react';
+import { useResourceRatings, useSubmitRating } from '@/hooks/use-ratings';
+import { RatingDialog } from '@/components/rating/rating-dialog';
+import { RatingDisplay } from '@/components/rating/rating-display';
 
 export function RatingSectionWithQuery({ resource, user }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   // 获取评分数据
-  const { data: ratings, isLoading, error } = useResourceRatings(resource.id)
-  
+  const { data: ratings, isLoading, error } = useResourceRatings(resource.id);
+
   // 提交评分
-  const submitRating = useSubmitRating()
+  const submitRating = useSubmitRating();
 
   const handleSubmit = async (data) => {
     try {
-      await submitRating.mutateAsync(data)
-      setIsDialogOpen(false)
+      await submitRating.mutateAsync(data);
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error('Rating submission failed:', error)
+      console.error('Rating submission failed:', error);
       // 错误处理...
     }
-  }
+  };
 
-  if (isLoading) return <div>加载中...</div>
-  if (error) return <div>加载失败</div>
+  if (isLoading) return <div>加载中...</div>;
+  if (error) return <div>加载失败</div>;
 
   return (
     <>
@@ -212,7 +212,7 @@ export function RatingSectionWithQuery({ resource, user }) {
         onSubmit={handleSubmit}
       />
     </>
-  )
+  );
 }
 ```
 
@@ -221,17 +221,13 @@ export function RatingSectionWithQuery({ resource, user }) {
 ```tsx
 // app/resource/[id]/page.tsx
 
-import { Suspense } from 'react'
-import { RatingSection } from './rating-section'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Suspense } from 'react';
+import { RatingSection } from './rating-section';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function ResourceDetailPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
-}) {
-  const { id } = await params
-  const resource = await getResource(id)
+export default async function ResourceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const resource = await getResource(id);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -243,11 +239,7 @@ export default async function ResourceDetailPage({
 
       {/* 资源截图 */}
       <div className="aspect-video relative rounded-lg overflow-hidden">
-        <img 
-          src={resource.screenshot} 
-          alt={resource.name}
-          className="object-cover w-full h-full"
-        />
+        <img src={resource.screenshot} alt={resource.name} className="object-cover w-full h-full" />
       </div>
 
       {/* 评分区域 */}
@@ -264,7 +256,7 @@ export default async function ResourceDetailPage({
         <p className="text-muted-foreground">{resource.curatorNote}</p>
       </div>
     </div>
-  )
+  );
 }
 
 function RatingSkeleton() {
@@ -273,7 +265,7 @@ function RatingSkeleton() {
       <div className="h-6 bg-muted rounded w-1/3" />
       <div className="h-4 bg-muted rounded w-1/2" />
     </div>
-  )
+  );
 }
 ```
 
@@ -300,17 +292,17 @@ function RatingSkeleton() {
 
 ```tsx
 try {
-  await submitRating.mutateAsync(data)
+  await submitRating.mutateAsync(data);
   // 成功提示
-  toast.success('评分提交成功！')
+  toast.success('评分提交成功！');
 } catch (error) {
   // 错误提示
   if (error.message.includes('AUTHENTICATION_ERROR')) {
-    toast.error('请先登录')
+    toast.error('请先登录');
   } else if (error.message.includes('VALIDATION_ERROR')) {
-    toast.error('评分数据无效，请检查输入')
+    toast.error('评分数据无效，请检查输入');
   } else {
-    toast.error('评分提交失败，请稍后重试')
+    toast.error('评分提交失败，请稍后重试');
   }
 }
 ```
@@ -327,25 +319,22 @@ const submitRating = useMutation({
   mutationFn: submitRatingFn,
   onMutate: async (newRating) => {
     // 取消正在进行的查询
-    await queryClient.cancelQueries({ queryKey: ['ratings', resourceId] })
+    await queryClient.cancelQueries({ queryKey: ['ratings', resourceId] });
 
     // 保存之前的数据
-    const previousRatings = queryClient.getQueryData(['ratings', resourceId])
+    const previousRatings = queryClient.getQueryData(['ratings', resourceId]);
 
     // 乐观更新
     queryClient.setQueryData(['ratings', resourceId], (old) => ({
       ...old,
       userRating: newRating,
-    }))
+    }));
 
-    return { previousRatings }
+    return { previousRatings };
   },
   onError: (err, newRating, context) => {
     // 回滚
-    queryClient.setQueryData(
-      ['ratings', resourceId],
-      context.previousRatings
-    )
+    queryClient.setQueryData(['ratings', resourceId], context.previousRatings);
   },
-})
+});
 ```

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import SearchResultsPage from '../page'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import SearchResultsPage from '../page';
 
 // Mock next/navigation
-const mockSearchParams = new Map<string, string>()
+const mockSearchParams = new Map<string, string>();
 
 vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
@@ -15,7 +15,7 @@ vi.mock('next/navigation', () => ({
     replace: vi.fn(),
     back: vi.fn(),
   }),
-}))
+}));
 
 // Mock data
 vi.mock('@/data/categories.json', () => ({
@@ -23,7 +23,7 @@ vi.mock('@/data/categories.json', () => ({
     { id: 'color', name: '配色工具', icon: 'Palette', description: '调色板', color: '#E94560' },
     { id: 'css', name: 'CSS模板', icon: 'Code', description: 'CSS框架', color: '#00D9FF' },
   ],
-}))
+}));
 
 vi.mock('@/data/resources.json', () => ({
   default: [
@@ -58,31 +58,31 @@ vi.mock('@/data/resources.json', () => ({
       favoriteCount: 1000,
     },
   ],
-}))
+}));
 
 // Mock localStorage
 const localStorageMock = (() => {
-  let store: Record<string, string> = {}
+  let store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
-      store[key] = value
+      store[key] = value;
     },
     removeItem: (key: string) => {
-      delete store[key]
+      delete store[key];
     },
     clear: () => {
-      store = {}
+      store = {};
     },
-  }
-})()
+  };
+})();
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
-})
+});
 
 describe('SearchResultsPage', () => {
-  let queryClient: QueryClient
+  let queryClient: QueryClient;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -91,75 +91,71 @@ describe('SearchResultsPage', () => {
           retry: false,
         },
       },
-    })
-    mockSearchParams.clear()
-    localStorageMock.clear()
-  })
+    });
+    mockSearchParams.clear();
+    localStorageMock.clear();
+  });
 
   const renderWithProviders = (component: React.ReactElement) => {
-    return render(
-      <QueryClientProvider client={queryClient}>
-        {component}
-      </QueryClientProvider>
-    )
-  }
+    return render(<QueryClientProvider client={queryClient}>{component}</QueryClientProvider>);
+  };
 
   it('displays search results when query matches resources', async () => {
-    mockSearchParams.set('q', '配色')
-    
-    renderWithProviders(<SearchResultsPage />)
+    mockSearchParams.set('q', '配色');
+
+    renderWithProviders(<SearchResultsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('搜索结果')).toBeInTheDocument()
-    })
+      expect(screen.getByText('搜索结果')).toBeInTheDocument();
+    });
 
     await waitFor(() => {
-      expect(screen.getByText(/找到.*1.*个相关资源/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/找到.*1.*个相关资源/)).toBeInTheDocument();
+    });
 
     await waitFor(() => {
-      expect(screen.getByText('Coolors')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Coolors')).toBeInTheDocument();
+    });
+  });
 
   it('displays no results message when query does not match', async () => {
-    mockSearchParams.set('q', '不存在的资源')
-    
-    renderWithProviders(<SearchResultsPage />)
+    mockSearchParams.set('q', '不存在的资源');
+
+    renderWithProviders(<SearchResultsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('未找到相关资源')).toBeInTheDocument()
-    })
+      expect(screen.getByText('未找到相关资源')).toBeInTheDocument();
+    });
 
     await waitFor(() => {
-      expect(screen.getByText('热门推荐')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('热门推荐')).toBeInTheDocument();
+    });
+  });
 
   it('displays search query in the search info section', async () => {
-    mockSearchParams.set('q', '测试查询')
-    
-    renderWithProviders(<SearchResultsPage />)
+    mockSearchParams.set('q', '测试查询');
+
+    renderWithProviders(<SearchResultsPage />);
 
     await waitFor(() => {
       // 查找搜索信息区域中的查询文本
-      const searchInfo = screen.getByText('测试查询')
-      expect(searchInfo).toBeInTheDocument()
-    })
-  })
+      const searchInfo = screen.getByText('测试查询');
+      expect(searchInfo).toBeInTheDocument();
+    });
+  });
 
   it('shows popular resources when no results found', async () => {
-    mockSearchParams.set('q', '不存在')
-    
-    renderWithProviders(<SearchResultsPage />)
+    mockSearchParams.set('q', '不存在');
+
+    renderWithProviders(<SearchResultsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('热门推荐')).toBeInTheDocument()
-    })
+      expect(screen.getByText('热门推荐')).toBeInTheDocument();
+    });
 
     // Should show resources sorted by favoriteCount
     await waitFor(() => {
-      expect(screen.getByText('Tailwind CSS')).toBeInTheDocument()
-    })
-  })
-})
+      expect(screen.getByText('Tailwind CSS')).toBeInTheDocument();
+    });
+  });
+});

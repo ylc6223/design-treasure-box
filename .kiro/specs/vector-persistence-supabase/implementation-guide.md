@@ -59,7 +59,7 @@ BEGIN
     1 - (re.embedding <=> query_embedding) as similarity,
     re.metadata
   FROM resource_embeddings re
-  WHERE 
+  WHERE
     1 - (re.embedding <=> query_embedding) > match_threshold
     AND (category_filter IS NULL OR re.metadata->>'category' = ANY(category_filter))
     AND (min_rating IS NULL OR (re.metadata->>'rating')::numeric >= min_rating)
@@ -84,12 +84,14 @@ SELECT 'Function created successfully' as status;
 ## 前置条件
 
 ### 环境要求
+
 - Node.js >= 18
 - pnpm 包管理器
 - Supabase 项目（已配置）
 - 智谱 AI API 密钥
 
 ### 当前项目状态检查
+
 ```bash
 # 确认当前 AI 聊天助手功能正常
 pnpm dev
@@ -101,16 +103,18 @@ pnpm dev
 ### 步骤 1.1：启用 pgvector 扩展
 
 1. **登录 Supabase Dashboard**
+
    ```
    访问：https://supabase.com/dashboard
    选择你的项目：qtymidkusovwjamlntsk
    ```
 
 2. **在 SQL Editor 中执行**
+
    ```sql
    -- 启用 pgvector 扩展
    CREATE EXTENSION IF NOT EXISTS vector;
-   
+
    -- 验证扩展已启用
    SELECT * FROM pg_extension WHERE extname = 'vector';
    ```
@@ -137,8 +141,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_resource_embeddings_updated_at 
-    BEFORE UPDATE ON resource_embeddings 
+CREATE TRIGGER update_resource_embeddings_updated_at
+    BEFORE UPDATE ON resource_embeddings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
 
@@ -147,35 +151,37 @@ CREATE TRIGGER update_resource_embeddings_updated_at
 ```sql
 -- 创建向量索引（余弦相似度）
 -- 注意：对于小数据集（<1000条），可以先跳过此步骤
-CREATE INDEX resource_embeddings_embedding_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_embedding_idx
+ON resource_embeddings
 USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 100);
 
 -- 创建资源ID索引
-CREATE INDEX resource_embeddings_resource_id_idx 
+CREATE INDEX resource_embeddings_resource_id_idx
 ON resource_embeddings (resource_id);
 
 -- 创建更新时间索引
-CREATE INDEX resource_embeddings_updated_at_idx 
+CREATE INDEX resource_embeddings_updated_at_idx
 ON resource_embeddings (updated_at);
 
 -- 创建元数据索引（类别）- 使用 BTREE 进行精确匹配
-CREATE INDEX resource_embeddings_category_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_category_idx
+ON resource_embeddings
 USING BTREE ((metadata->>'category'));
 
 -- 创建元数据索引（评分）
-CREATE INDEX resource_embeddings_rating_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_rating_idx
+ON resource_embeddings
 USING BTREE (((metadata->>'rating')::numeric));
 ```
 
 **索引选择说明：**
+
 - **BTREE vs GIN：** 对于精确匹配查询（如类别过滤），BTREE 索引性能更优
 - **存储效率：** BTREE 索引占用空间更小，维护成本更低
 - **查询模式：** 项目主要进行等值查询，不需要 GIN 的全文搜索能力
-```
+
+````
 
 ### 步骤 1.4：创建相似度搜索函数
 
@@ -202,7 +208,7 @@ BEGIN
     1 - (re.embedding <=> query_embedding) as similarity,
     re.metadata
   FROM resource_embeddings re
-  WHERE 
+  WHERE
     1 - (re.embedding <=> query_embedding) > match_threshold
     AND (category_filter IS NULL OR re.metadata->>'category' = ANY(category_filter))
     AND (min_rating IS NULL OR (re.metadata->>'rating')::numeric >= min_rating)
@@ -210,11 +216,12 @@ BEGIN
   LIMIT match_count;
 END;
 $$;
-```
+````
 
 **⚠️ 重要：数据类型一致性**
 
 PostgreSQL 严格检查函数返回类型与表字段类型的匹配：
+
 - **表字段：** `resource_id VARCHAR(255)`
 - **函数返回：** 必须是 `varchar(255)`，不能是 `text`
 - **错误原因：** `text` 和 `varchar(255)` 被视为不同类型
@@ -226,32 +233,32 @@ PostgreSQL 严格检查函数返回类型与表字段类型的匹配：
 
 ```sql
 -- 验证表结构
-SELECT 
-  column_name, 
-  data_type, 
+SELECT
+  column_name,
+  data_type,
   is_nullable,
   column_default
-FROM information_schema.columns 
+FROM information_schema.columns
 WHERE table_name = 'resource_embeddings'
 ORDER BY ordinal_position;
 
 -- 验证索引
-SELECT 
-  indexname, 
-  indexdef 
-FROM pg_indexes 
+SELECT
+  indexname,
+  indexdef
+FROM pg_indexes
 WHERE tablename = 'resource_embeddings';
 
 -- 验证函数
-SELECT 
-  routine_name, 
+SELECT
+  routine_name,
   routine_type,
   data_type as return_type
-FROM information_schema.routines 
+FROM information_schema.routines
 WHERE routine_name = 'match_resources';
 
 -- 测试插入（使用随机向量）
-INSERT INTO resource_embeddings (resource_id, embedding, metadata) 
+INSERT INTO resource_embeddings (resource_id, embedding, metadata)
 VALUES (
   'test-resource-1',
   array_fill(0.1, ARRAY[1536])::vector,
@@ -301,6 +308,7 @@ SUPABASE_SECRET_KEY=your_secret_key_here
 ```
 
 **获取 Secret Key：**
+
 1. 访问 Supabase Dashboard > Settings > API
 2. 在 **Project API keys** 部分找到 `secret` 密钥
 3. 复制 `secret` 密钥（注意：这是敏感信息，具有完全数据库访问权限）
@@ -324,16 +332,12 @@ if (!supabaseUrl || !supabaseSecretKey) {
 }
 
 // 服务端客户端（用于向量操作）
-export const supabaseAdmin = createClient<Database>(
-  supabaseUrl,
-  supabaseSecretKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseSecretKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
 
 // 验证连接
 export async function testSupabaseConnection() {
@@ -342,7 +346,7 @@ export async function testSupabaseConnection() {
       .from('resource_embeddings')
       .select('count')
       .limit(1);
-    
+
     if (error) throw error;
     console.log('✅ Supabase connection successful');
     return true;
@@ -432,12 +436,7 @@ export class SupabaseVectorStore {
     queryEmbedding: number[],
     options: VectorSearchOptions = {}
   ): Promise<VectorSearchResult[]> {
-    const {
-      limit = 10,
-      minSimilarity = 0.3,
-      categoryFilter,
-      minRating,
-    } = options;
+    const { limit = 10, minSimilarity = 0.3, categoryFilter, minRating } = options;
 
     try {
       const { data, error } = await this.client.rpc('match_resources', {
@@ -452,7 +451,7 @@ export class SupabaseVectorStore {
         throw new Error(`Vector search failed: ${error.message}`);
       }
 
-      return data.map(row => ({
+      return data.map((row) => ({
         resourceId: row.resource_id,
         similarity: row.similarity,
         metadata: row.metadata,
@@ -472,13 +471,11 @@ export class SupabaseVectorStore {
     metadata: ResourceMetadata
   ): Promise<void> {
     try {
-      const { error } = await this.client
-        .from('resource_embeddings')
-        .upsert({
-          resource_id: resourceId,
-          embedding,
-          metadata,
-        });
+      const { error } = await this.client.from('resource_embeddings').upsert({
+        resource_id: resourceId,
+        embedding,
+        metadata,
+      });
 
       if (error) {
         throw new Error(`Vector upsert failed: ${error.message}`);
@@ -500,15 +497,13 @@ export class SupabaseVectorStore {
     }>
   ): Promise<void> {
     try {
-      const records = embeddings.map(item => ({
+      const records = embeddings.map((item) => ({
         resource_id: item.resourceId,
         embedding: item.embedding,
         metadata: item.metadata,
       }));
 
-      const { error } = await this.client
-        .from('resource_embeddings')
-        .upsert(records);
+      const { error } = await this.client.from('resource_embeddings').upsert(records);
 
       if (error) {
         throw new Error(`Batch vector upsert failed: ${error.message}`);
@@ -566,8 +561,8 @@ export class SupabaseVectorStore {
 
       return {
         totalEmbeddings: count || 0,
-        lastUpdated: lastUpdatedData?.[0]?.updated_at 
-          ? new Date(lastUpdatedData[0].updated_at) 
+        lastUpdated: lastUpdatedData?.[0]?.updated_at
+          ? new Date(lastUpdatedData[0].updated_at)
           : null,
       };
     } catch (error) {
@@ -658,7 +653,7 @@ export class EmbeddingSyncService {
         try {
           // 检查是否需要更新
           const needsUpdate = await this.needsVectorUpdate(resource);
-          
+
           if (!needsUpdate) {
             result.skippedResources++;
             continue;
@@ -719,7 +714,7 @@ export class EmbeddingSyncService {
 
     try {
       // 批量生成向量
-      const texts = (resources as Resource[]).map(r => this.resourceToText(r));
+      const texts = (resources as Resource[]).map((r) => this.resourceToText(r));
       const embeddings = await this.aiProvider.generateEmbeddings(texts);
 
       // 准备批量数据
@@ -824,10 +819,7 @@ export class SupabaseVectorSearchEngine {
   /**
    * 向量搜索（替换原有的 search 方法）
    */
-  async search(
-    query: string,
-    options: VectorSearchOptions = {}
-  ): Promise<VectorMatch[]> {
+  async search(query: string, options: VectorSearchOptions = {}): Promise<VectorMatch[]> {
     try {
       // 生成查询向量
       const queryEmbedding = await this.provider.generateEmbedding(query);
@@ -863,10 +855,7 @@ export class SupabaseVectorSearchEngine {
   /**
    * 查找相似资源
    */
-  async findSimilar(
-    resourceId: string,
-    options: VectorSearchOptions = {}
-  ): Promise<VectorMatch[]> {
+  async findSimilar(resourceId: string, options: VectorSearchOptions = {}): Promise<VectorMatch[]> {
     try {
       const resource = this.resources.get(resourceId);
       if (!resource) {
@@ -970,11 +959,11 @@ async function initializeRAGEngine() {
 
     // 1. 获取 AI 服务管理器并初始化
     const serviceManager = getAIServiceManager();
-    
+
     if (!serviceManager.isServiceAvailable()) {
       await serviceManager.initialize();
     }
-    
+
     const provider = serviceManager.getCurrentProvider();
 
     // 2. 初始化 Supabase 向量搜索引擎
@@ -983,9 +972,9 @@ async function initializeRAGEngine() {
     // 3. 确保向量数据已同步
     const syncService = new EmbeddingSyncService();
     const syncStatus = await syncService.getSyncStatus();
-    
+
     console.log('📊 Current sync status:', syncStatus);
-    
+
     if (syncStatus.totalEmbeddings === 0) {
       console.log('🔄 No embeddings found, starting initial sync...');
       await syncService.syncAllEmbeddings();
@@ -1050,18 +1039,21 @@ async function testVectorMigration() {
     const serviceManager = getAIServiceManager();
     await serviceManager.initialize();
     const provider = serviceManager.getCurrentProvider();
-    
+
     const searchEngine = new SupabaseVectorSearchEngine(provider);
     const searchResults = await searchEngine.search('颜色工具', {
       limit: 3,
       minSimilarity: 0.1,
     });
-    
-    console.log('Search results:', searchResults.map(r => ({
-      id: r.resourceId,
-      name: r.resource.name,
-      similarity: r.similarity,
-    })));
+
+    console.log(
+      'Search results:',
+      searchResults.map((r) => ({
+        id: r.resourceId,
+        name: r.resource.name,
+        similarity: r.similarity,
+      }))
+    );
 
     // 4. 测试统计信息
     console.log('\n4️⃣ Testing statistics...');
@@ -1137,7 +1129,7 @@ EMBEDDING_BATCH_SIZE=50
 ANALYZE resource_embeddings;
 
 -- 检查索引使用情况
-EXPLAIN (ANALYZE, BUFFERS) 
+EXPLAIN (ANALYZE, BUFFERS)
 SELECT * FROM match_resources(
   array_fill(0.1, ARRAY[1536])::vector,
   0.3,
@@ -1146,8 +1138,8 @@ SELECT * FROM match_resources(
 
 -- 如果数据量较大，调整索引参数
 DROP INDEX IF EXISTS resource_embeddings_embedding_idx;
-CREATE INDEX resource_embeddings_embedding_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_embedding_idx
+ON resource_embeddings
 USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 200);  -- 根据数据量调整
 ```
@@ -1161,23 +1153,22 @@ import { SupabaseVectorStore } from '../lib/ai/supabase-vector-store';
 
 async function monitorVectorService() {
   const vectorStore = new SupabaseVectorStore();
-  
+
   try {
     const healthCheck = await vectorStore.healthCheck();
     const stats = await vectorStore.getStats();
-    
+
     const report = {
       timestamp: new Date().toISOString(),
       health: healthCheck.status,
       totalEmbeddings: stats.totalEmbeddings,
       lastUpdated: stats.lastUpdated,
     };
-    
+
     console.log('📊 Vector Service Report:', JSON.stringify(report, null, 2));
-    
+
     // 在生产环境中，可以发送到监控系统
     // await sendToMonitoringSystem(report);
-    
   } catch (error) {
     console.error('❌ Monitoring failed:', error);
   }
@@ -1192,6 +1183,7 @@ setInterval(monitorVectorService, 60000); // 每分钟检查一次
 ### 常见问题和解决方案
 
 #### 1. pgvector 扩展未启用
+
 ```sql
 -- 检查扩展状态
 SELECT * FROM pg_extension WHERE extname = 'vector';
@@ -1201,26 +1193,30 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 #### 2. GIN 索引创建失败
+
 **错误信息：** `data type text has no default operator class for access method "gin"`
 
 **解决方案：** 使用 BTREE 索引替代 GIN 索引
+
 ```sql
 -- 正确的索引创建方式
-CREATE INDEX resource_embeddings_category_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_category_idx
+ON resource_embeddings
 USING BTREE ((metadata->>'category'));
 
 -- 如果确实需要 GIN 索引，需要指定操作符类：
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX resource_embeddings_category_gin_idx 
-ON resource_embeddings 
+CREATE INDEX resource_embeddings_category_gin_idx
+ON resource_embeddings
 USING GIN ((metadata->>'category') gin_trgm_ops);
 ```
 
 #### 3. 函数返回类型不匹配
+
 **错误信息：** `structure of query does not match function result type`
 
 **原因：** 函数返回类型与表字段类型不匹配
+
 ```sql
 -- 错误示例：表字段是 VARCHAR(255)，但函数返回 text
 RETURNS TABLE (resource_id text, ...)  -- ❌ 错误
@@ -1230,16 +1226,18 @@ RETURNS TABLE (resource_id varchar(255), ...)  -- ✅ 正确
 ```
 
 **解决方案：** 确保函数返回类型与表结构一致
+
 ```sql
 -- 查看表字段的确切类型
-SELECT column_name, data_type, character_maximum_length 
-FROM information_schema.columns 
+SELECT column_name, data_type, character_maximum_length
+FROM information_schema.columns
 WHERE table_name = 'resource_embeddings' AND column_name = 'resource_id';
 
 -- 根据查询结果调整函数定义
 ```
 
 #### 4. 向量维度不匹配
+
 ```typescript
 // 确保向量维度为 1536
 const embedding = await provider.generateEmbedding(text);
@@ -1247,6 +1245,7 @@ console.log('Embedding dimension:', embedding.length); // 应该是 1536
 ```
 
 #### 5. 权限问题
+
 ```sql
 -- 检查表权限
 \dp resource_embeddings
@@ -1257,9 +1256,10 @@ GRANT USAGE ON SEQUENCE resource_embeddings_id_seq TO your_user;
 ```
 
 #### 6. 搜索性能问题
+
 ```sql
 -- 检查查询计划
-EXPLAIN (ANALYZE, BUFFERS) 
+EXPLAIN (ANALYZE, BUFFERS)
 SELECT * FROM match_resources(
   array_fill(0.1, ARRAY[1536])::vector,
   0.3,

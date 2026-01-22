@@ -5,21 +5,25 @@
 基于对ChatGPT、Perplexity、Claude等成熟AI产品的研究，以及OpenAI官方UI指南，本方案遵循以下核心原则：
 
 ### 1. **对话优先 (Conversation-First)**
+
 - 保持对话流的连贯性，不打断用户思路
 - 所有交互都应该感觉像自然对话的一部分
 - 避免复杂的多步骤流程
 
 ### 2. **渐进式披露 (Progressive Disclosure)**
+
 - 默认显示最少必要信息
 - 用户需要时才展开详细内容
 - 避免信息过载
 
 ### 3. **即时反馈 (Immediate Feedback)**
+
 - 清晰的加载状态
 - 实时的打字效果（流式响应）
 - 明确的操作结果反馈
 
 ### 4. **简单直观 (Simple & Intuitive)**
+
 - 减少学习成本
 - 符合用户心智模型
 - 一致的交互模式
@@ -123,6 +127,7 @@
 ```
 
 **关键点**：
+
 - 主内容区域不被遮挡 ✅
 - 右侧面板固定宽度（400px）✅
 - 底部输入框作为触发开关 ✅
@@ -137,6 +142,7 @@
 ### 移动端布局（<768px）
 
 #### 主页面状态
+
 ```
 ┌─────────────────────┐
 │  Header             │
@@ -155,6 +161,7 @@
 ```
 
 #### 聊天界面（全屏模式 - fixed覆盖）
+
 ```
 ┌─────────────────────┐
 │  [← 返回] AI助手     │ ← fixed定位，z-index高
@@ -188,6 +195,7 @@
 ```
 
 **实现方式**：
+
 ```typescript
 // 使用 fixed 定位覆盖，不替换DOM
 <AnimatePresence>
@@ -210,6 +218,7 @@
 ```
 
 **关键点**：
+
 - 全屏模式覆盖主界面 ✅
 - 明显的返回按钮 ✅
 - 输入框固定在屏幕底部 ✅
@@ -221,6 +230,7 @@
 ### 方案B：Perplexity风格（备选）
 
 #### 核心特点
+
 - **搜索优先**：强调搜索和结果展示
 - **来源引用**：资源以引用形式展示
 - **相关问题**：提供后续问题建议
@@ -294,6 +304,7 @@
 ### 1. 消息气泡设计
 
 #### 用户消息
+
 ```typescript
 <div className="flex justify-end mb-4">
   <div className={cn(
@@ -307,6 +318,7 @@
 ```
 
 #### AI消息
+
 ```typescript
 <div className="flex justify-start mb-6">
   <div className="max-w-[90%] space-y-3">
@@ -318,7 +330,7 @@
     )}>
       {content}
     </div>
-    
+
     {/* 快速回复按钮（澄清问题） */}
     {quickReplies && (
       <div className="flex flex-wrap gap-2">
@@ -335,7 +347,7 @@
         ))}
       </div>
     )}
-    
+
     {/* 资源卡片 */}
     {resources && (
       <div className="space-y-2">
@@ -358,7 +370,7 @@ interface ResourceInlineCardProps {
 
 export function ResourceInlineCard({ resource, onViewDetails }: ResourceInlineCardProps) {
   return (
-    <Card 
+    <Card
       className={cn(
         "flex items-center gap-3 p-3",
         "hover:bg-accent/50 transition-colors cursor-pointer"
@@ -374,7 +386,7 @@ export function ResourceInlineCard({ resource, onViewDetails }: ResourceInlineCa
           className="object-cover"
         />
       </div>
-      
+
       {/* 信息 */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -393,7 +405,7 @@ export function ResourceInlineCard({ resource, onViewDetails }: ResourceInlineCa
           </span>
         </div>
       </div>
-      
+
       {/* 操作 */}
       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
     </Card>
@@ -435,6 +447,7 @@ export function ResourceInlineCard({ resource, onViewDetails }: ResourceInlineCa
 ```
 
 **关键改进**：
+
 - ✅ 一次显示所有澄清选项（不是步骤式）
 - ✅ 用户可以点击按钮或直接输入
 - ✅ 不打断对话流
@@ -461,6 +474,7 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 ### 5. 输入框设计
 
 #### PC端（右侧面板内）
+
 ```typescript
 <div className="border-t bg-background p-4 shrink-0">
   <PromptInput
@@ -489,6 +503,7 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 ```
 
 #### 移动端（全屏模式底部）
+
 ```typescript
 <div className={cn(
   "fixed bottom-0 left-0 right-0 z-50",
@@ -513,6 +528,7 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 ```
 
 #### 底部触发输入框（PC端，用于打开聊天）
+
 ```typescript
 <AIPromptInput
   onSubmit={handleOpenChat}
@@ -530,16 +546,16 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 
 ### 使用现有组件
 
-| 功能 | 组件来源 | 组件名称 |
-|------|---------|---------|
-| 聊天容器 | @prompt-kit | `chat-container` |
-| 消息气泡 | @prompt-kit | `message` |
-| 输入框 | @prompt-kit | `prompt-input` |
-| 加载状态 | @prompt-kit | `thinking-bar`, `loader` |
-| Markdown渲染 | @prompt-kit | `markdown` |
-| 卡片 | @shadcn | `card` |
-| 按钮 | @shadcn | `button` |
-| 徽章 | @shadcn | `badge` |
+| 功能         | 组件来源    | 组件名称                 |
+| ------------ | ----------- | ------------------------ |
+| 聊天容器     | @prompt-kit | `chat-container`         |
+| 消息气泡     | @prompt-kit | `message`                |
+| 输入框       | @prompt-kit | `prompt-input`           |
+| 加载状态     | @prompt-kit | `thinking-bar`, `loader` |
+| Markdown渲染 | @prompt-kit | `markdown`               |
+| 卡片         | @shadcn     | `card`                   |
+| 按钮         | @shadcn     | `button`                 |
+| 徽章         | @shadcn     | `badge`                  |
 
 ### 需要创建的新组件
 
@@ -563,6 +579,7 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 ## 📱 响应式设计
 
 ### 桌面端（≥768px）
+
 - **布局**：右侧固定面板（400px宽度）
 - **主内容**：不被遮挡，正常显示资源网格
 - **输入框**：
@@ -571,10 +588,12 @@ import { ThinkingBar } from '@/components/prompt-kit/thinking-bar';
 - **资源卡片**：横向布局，缩略图 + 信息
 
 ### 平板端（768px-1199px）
+
 - **布局**：右侧面板宽度调整为 350px
 - **其他**：与桌面端相同
 
 ### 移动端（<768px）
+
 - **布局**：全屏模式，覆盖主界面
 - **返回按钮**：顶部左侧，明显可见
 - **输入框**：固定在屏幕底部
@@ -739,36 +758,40 @@ AI回复："我可以帮您找到设计资源。请问您需要哪方面的？"
 
 ## 📊 与当前实现的对比
 
-| 方面 | 当前实现 | 新设计 | 改进 |
-|------|---------|--------|------|
-| PC端布局 | 右侧固定面板 ✅ | 右侧固定面板 ✅ | ✅ 保持不变，符合需求 |
-| 移动端布局 | 全屏遮挡 ✅ | 全屏遮挡 + 明显返回按钮 ✅ | ✅ 优化用户体验 |
-| 澄清问题 | 步骤式，一次一个 ❌ | 快速回复按钮，一次显示所有 ✅ | ✅ 不打断对话流 |
-| 资源展示 | 完整卡片，信息密集 ⚠️ | 简化卡片 + 悬停展开 ✅ | ✅ 减少信息过载 |
-| PC端输入框 | 底部悬浮（触发） ✅ | 面板内固定 + 底部触发 ✅ | ✅ 更清晰的职责划分 |
-| 移动端输入框 | 面板内 | 屏幕底部固定 ✅ | ✅ 更符合移动端习惯 |
-| 组件复用 | 部分使用 | 最大化复用 ✅ | ✅ 减少维护成本 |
+| 方面         | 当前实现              | 新设计                        | 改进                  |
+| ------------ | --------------------- | ----------------------------- | --------------------- |
+| PC端布局     | 右侧固定面板 ✅       | 右侧固定面板 ✅               | ✅ 保持不变，符合需求 |
+| 移动端布局   | 全屏遮挡 ✅           | 全屏遮挡 + 明显返回按钮 ✅    | ✅ 优化用户体验       |
+| 澄清问题     | 步骤式，一次一个 ❌   | 快速回复按钮，一次显示所有 ✅ | ✅ 不打断对话流       |
+| 资源展示     | 完整卡片，信息密集 ⚠️ | 简化卡片 + 悬停展开 ✅        | ✅ 减少信息过载       |
+| PC端输入框   | 底部悬浮（触发） ✅   | 面板内固定 + 底部触发 ✅      | ✅ 更清晰的职责划分   |
+| 移动端输入框 | 面板内                | 屏幕底部固定 ✅               | ✅ 更符合移动端习惯   |
+| 组件复用     | 部分使用              | 最大化复用 ✅                 | ✅ 减少维护成本       |
 
 ---
 
 ## 🎯 关键改进总结
 
 ### 1. 布局优化
+
 - **PC端**：保持右侧固定面板，不遮挡主内容 ✅
 - **移动端**：全屏模式 + 明显返回按钮，符合需求 ✅
 - **输入框**：PC端面板内 + 底部触发，移动端屏幕底部 ✅
 
 ### 2. 交互优化
+
 - **澄清问题**：快速回复按钮，一次显示所有选项 ✅
 - **资源展示**：简化卡片 + 悬停/点击展开详情 ✅
 - **对话流**：保持连贯，不打断用户思路 ✅
 
 ### 3. 视觉优化
+
 - **清晰的消息层次**：用户/AI消息区分明显
 - **合理的间距和圆角**：符合设计系统
 - **简化的资源卡片**：减少信息密度
 
 ### 4. 符合需求文档
+
 - ✅ Requirement 1.3: 右侧固定宽度区域，不遮挡主内容
 - ✅ Requirement 3.2: 提供多个澄清选项（快速回复按钮）
 - ✅ Requirement 4.2: 显示截图、名称、类别、评分、描述

@@ -1,64 +1,64 @@
-'use client'
+'use client';
 
-import { useState, useMemo } from 'react'
-import { MasonryGrid } from '@/components/masonry-grid'
-import { Button } from '@/components/ui/button'
+import { useState, useMemo } from 'react';
+import { MasonryGrid } from '@/components/masonry-grid';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useFavorites } from '@/hooks/use-favorites'
-import { useResources } from '@/hooks/use-resources'
-import { Heart, ArrowUpDown } from 'lucide-react'
+} from '@/components/ui/select';
+import { useFavorites } from '@/hooks/use-favorites';
+import { useResources } from '@/hooks/use-resources';
+import { Heart, ArrowUpDown } from 'lucide-react';
 
-type SortOption = 'time-desc' | 'time-asc' | 'category'
+type SortOption = 'time-desc' | 'time-asc' | 'category';
 
 export default function FavoritesPage() {
-  const { favorites, isFavorited, addFavorite, removeFavorite } = useFavorites()
-  const { data: allResources } = useResources()
-  const [sortBy, setSortBy] = useState<SortOption>('time-desc')
+  const { favorites, isFavorited, addFavorite, removeFavorite } = useFavorites();
+  const { data: allResources } = useResources();
+  const [sortBy, setSortBy] = useState<SortOption>('time-desc');
 
   // 获取收藏的资源
   const favoriteResources = useMemo(() => {
-    if (!allResources) return []
-    
+    if (!allResources) return [];
+
     const resources = allResources.filter((resource) =>
       favorites.some((fav) => fav.resourceId === resource.id)
-    )
+    );
 
     // 排序
     switch (sortBy) {
       case 'time-desc':
         return resources.sort((a, b) => {
-          const aFav = favorites.find((f) => f.resourceId === a.id)
-          const bFav = favorites.find((f) => f.resourceId === b.id)
-          if (!aFav || !bFav) return 0
-          return new Date(bFav.addedAt).getTime() - new Date(aFav.addedAt).getTime()
-        })
+          const aFav = favorites.find((f) => f.resourceId === a.id);
+          const bFav = favorites.find((f) => f.resourceId === b.id);
+          if (!aFav || !bFav) return 0;
+          return new Date(bFav.addedAt).getTime() - new Date(aFav.addedAt).getTime();
+        });
       case 'time-asc':
         return resources.sort((a, b) => {
-          const aFav = favorites.find((f) => f.resourceId === a.id)
-          const bFav = favorites.find((f) => f.resourceId === b.id)
-          if (!aFav || !bFav) return 0
-          return new Date(aFav.addedAt).getTime() - new Date(bFav.addedAt).getTime()
-        })
+          const aFav = favorites.find((f) => f.resourceId === a.id);
+          const bFav = favorites.find((f) => f.resourceId === b.id);
+          if (!aFav || !bFav) return 0;
+          return new Date(aFav.addedAt).getTime() - new Date(bFav.addedAt).getTime();
+        });
       case 'category':
-        return resources.sort((a, b) => a.categoryId.localeCompare(b.categoryId))
+        return resources.sort((a, b) => a.categoryId.localeCompare(b.categoryId));
       default:
-        return resources
+        return resources;
     }
-  }, [allResources, favorites, sortBy])
+  }, [allResources, favorites, sortBy]);
 
   const handleFavorite = (resourceId: string) => {
     if (isFavorited(resourceId)) {
-      removeFavorite(resourceId)
+      removeFavorite(resourceId);
     } else {
-      addFavorite(resourceId)
+      addFavorite(resourceId);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen">
@@ -123,5 +123,5 @@ export default function FavoritesPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

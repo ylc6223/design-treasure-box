@@ -54,6 +54,7 @@ const wrappers = Array.from(container.children);
 通过对比代码实现和官方文档，发现了关键问题：
 
 **错误的实现方式**：
+
 ```tsx
 // ❌ 错误：手动创建 positioner 并传递给 <Masonry>
 const containerRef = React.useRef<HTMLDivElement>(null)
@@ -109,15 +110,15 @@ export function MasonicGrid({
     isItemLoaded: (index) => index < resources.length,
     minimumBatchSize: 24,
     threshold: 3,
-  })
+  });
 
   return (
     <div className={className}>
       <Masonry
         items={resources}
-        columnWidth={280}      // ✅ 直接传递 props
-        columnGutter={24}      // ✅ 水平间距
-        rowGutter={24}         // ✅ 垂直间距
+        columnWidth={280} // ✅ 直接传递 props
+        columnGutter={24} // ✅ 水平间距
+        rowGutter={24} // ✅ 垂直间距
         overscanBy={2}
         onRender={maybeLoadMore}
         render={({ data, width }) => (
@@ -131,7 +132,7 @@ export function MasonicGrid({
         )}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -150,6 +151,7 @@ export function MasonicGrid({
 ```
 
 **计算验证**：
+
 - 容器宽度：1248px
 - 列数：4
 - 列宽：294px
@@ -162,6 +164,7 @@ export function MasonicGrid({
 ### 1. 理解 `<Masonry>` 组件的设计
 
 `<Masonry>` 是一个高级封装组件，内部已经集成了：
+
 - `usePositioner()` - 布局计算
 - `useContainerPosition()` - 容器尺寸测量
 - `useScroller()` - 滚动监听

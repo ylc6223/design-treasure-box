@@ -39,6 +39,7 @@ ExpandableCards (Container)
 **File**: `components/smoothui/expandable-cards/index.tsx`
 
 **Props Interface** (unchanged):
+
 ```typescript
 export type ExpandableCardsProps = {
   resources: Resource[];
@@ -55,43 +56,43 @@ export type ExpandableCardsProps = {
 **Internal Structure Changes**:
 
 1. **Left Panel Structure** (new layout):
+
 ```tsx
 <div className="relative h-full w-[240px]">
   {/* Image */}
   <img src={resource.screenshot} alt={resource.name} />
-  
+
   {/* Enhanced Gradient Overlay */}
   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-  
+
   {/* Featured Badge - top-left */}
-  {resource.isFeatured && (
-    <div className="absolute top-2 left-2">...</div>
-  )}
-  
+  {resource.isFeatured && <div className="absolute top-2 left-2">...</div>}
+
   {/* Favorite Button - top-right (NEW) */}
   <div className="absolute top-2 right-2">
     <Button
       variant="ghost"
       size="icon"
       onClick={(e) => {
-        e.stopPropagation()
-        onFavorite(resource.id)
+        e.stopPropagation();
+        onFavorite(resource.id);
       }}
       className={cn(
-        "h-8 w-8 bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors",
-        isFavorited(resource.id) && "text-red-500 hover:text-red-600"
+        'h-8 w-8 bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors',
+        isFavorited(resource.id) && 'text-red-500 hover:text-red-600'
       )}
     >
-      <Heart className={cn("h-4 w-4", isFavorited(resource.id) && "fill-current")} />
+      <Heart className={cn('h-4 w-4', isFavorited(resource.id) && 'fill-current')} />
     </Button>
   </div>
-  
+
   {/* Content Area - bottom */}
   <div className="absolute bottom-0 left-0 right-0 p-3">...</div>
 </div>
 ```
 
 2. **Right Panel Structure** (simplified):
+
 ```tsx
 <motion.div
   className="absolute top-0 right-0 h-full bg-background border-l"
@@ -103,15 +104,15 @@ export type ExpandableCardsProps = {
       <h4>简介</h4>
       <p>{resource.description}</p>
     </div>
-    
+
     {/* Action Buttons - Remove favorite button, keep only visit */}
     <div className="flex flex-col gap-1.5">
       <Button
         variant="default"
         size="sm"
         onClick={(e) => {
-          e.stopPropagation()
-          onVisit(resource.url)
+          e.stopPropagation();
+          onVisit(resource.url);
         }}
       >
         <ExternalLink className="h-3 w-3 mr-1" />
@@ -125,19 +126,21 @@ export type ExpandableCardsProps = {
 ### Styling Constants
 
 **Gradient Overlay Enhancement**:
+
 - Previous: `from-black/80 via-black/20 to-transparent`
 - New: `from-black/90 via-black/40 to-transparent`
 - Rationale: Increased opacity provides better contrast for white text
 
 **Favorite Button Styling**:
+
 ```typescript
 const favoriteButtonClasses = cn(
-  "h-8 w-8",                              // Size
-  "bg-black/40 backdrop-blur-sm",         // Semi-transparent background
-  "hover:bg-black/60",                    // Hover state
-  "transition-colors",                    // Smooth transitions
-  isFavorited && "text-red-500 hover:text-red-600"  // Favorited state
-)
+  'h-8 w-8', // Size
+  'bg-black/40 backdrop-blur-sm', // Semi-transparent background
+  'hover:bg-black/60', // Hover state
+  'transition-colors', // Smooth transitions
+  isFavorited && 'text-red-500 hover:text-red-600' // Favorited state
+);
 ```
 
 ## Data Models
@@ -158,58 +161,58 @@ type Resource = {
   tags: string[];
   isFeatured: boolean;
   // ... other fields
-}
+};
 ```
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: Favorite Button Visibility
 
-*For any* featured resource card (collapsed or expanded), the favorite button should be visible in the top-right corner of the image area with appropriate styling (semi-transparent background, backdrop blur).
+_For any_ featured resource card (collapsed or expanded), the favorite button should be visible in the top-right corner of the image area with appropriate styling (semi-transparent background, backdrop blur).
 
 **Validates: Requirements 1.1, 1.2, 1.4**
 
 ### Property 2: Favorite Button Interaction Isolation
 
-*For any* favorite button click event, the event should not propagate to the card container, preventing unintended card expansion/collapse.
+_For any_ favorite button click event, the event should not propagate to the card container, preventing unintended card expansion/collapse.
 
 **Validates: Requirements 1.3, 5.1**
 
 ### Property 3: Gradient Overlay Consistency
 
-*For any* resource card with a screenshot, the gradient overlay should apply consistent opacity values (black/90 at bottom, black/40 in middle, transparent at top) regardless of theme mode.
+_For any_ resource card with a screenshot, the gradient overlay should apply consistent opacity values (black/90 at bottom, black/40 in middle, transparent at top) regardless of theme mode.
 
 **Validates: Requirements 2.1, 2.2, 2.5**
 
 ### Property 4: Content Area Contrast
 
-*For any* resource card, the content area text (name, rating, tags) should be displayed in white color against the gradient overlay background.
+_For any_ resource card, the content area text (name, rating, tags) should be displayed in white color against the gradient overlay background.
 
 **Validates: Requirements 2.3, 2.4**
 
 ### Property 5: Border Styling Correctness
 
-*For any* expanded card, the right panel should display only a left border (border-l) and no right border (border-r).
+_For any_ expanded card, the right panel should display only a left border (border-l) and no right border (border-r).
 
 **Validates: Requirements 3.1, 3.2, 3.3**
 
 ### Property 6: Component Library Usage
 
-*For any* interactive UI element (buttons, badges), the implementation should use shadcn components (Button, Badge) with appropriate variants rather than custom implementations.
+_For any_ interactive UI element (buttons, badges), the implementation should use shadcn components (Button, Badge) with appropriate variants rather than custom implementations.
 
 **Validates: Requirements 4.1, 4.2, 4.3, 4.5**
 
 ### Property 7: Animation Preservation
 
-*For any* card expansion/collapse interaction, the animation should maintain the existing smooth easing curve (0.4, 0.0, 0.2, 1.0) and duration (0.5s).
+_For any_ card expansion/collapse interaction, the animation should maintain the existing smooth easing curve (0.4, 0.0, 0.2, 1.0) and duration (0.5s).
 
 **Validates: Requirements 5.4**
 
 ### Property 8: Dimension Consistency
 
-*For any* featured resource card, the dimensions should remain constant: 240px collapsed width, 420px expanded width, 280px height.
+_For any_ featured resource card, the dimensions should remain constant: 240px collapsed width, 420px expanded width, 280px height.
 
 **Validates: Requirements 6.2, 6.3, 6.4**
 
@@ -349,9 +352,11 @@ The component receives resources as props from the parent. Input validation is h
 ### CSS Class Changes
 
 **Remove**:
+
 - `border-r` from right panel
 
 **Add**:
+
 - `from-black/90 via-black/40` to gradient overlay (replacing `from-black/80 via-black/20`)
 - `absolute top-2 right-2` for favorite button positioning
 - `h-8 w-8 bg-black/40 backdrop-blur-sm hover:bg-black/60` for favorite button styling
@@ -361,17 +366,19 @@ The component receives resources as props from the parent. Input validation is h
 The right panel will be simplified by removing the favorite button, as it's now in the left panel. This reduces duplication and improves maintainability.
 
 **Before** (Right Panel):
+
 ```tsx
 <div className="flex flex-col gap-1.5">
-  <Button>收藏</Button>  {/* Remove this */}
+  <Button>收藏</Button> {/* Remove this */}
   <Button>访问</Button>
 </div>
 ```
 
 **After** (Right Panel):
+
 ```tsx
 <div className="flex flex-col gap-1.5">
-  <Button>访问</Button>  {/* Only visit button */}
+  <Button>访问</Button> {/* Only visit button */}
 </div>
 ```
 

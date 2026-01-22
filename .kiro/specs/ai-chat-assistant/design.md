@@ -5,6 +5,7 @@
 AI聊天助手是设计百宝箱平台的智能对话功能，通过RAG（检索增强生成）技术和混合搜索，为用户提供个性化的设计资源推荐。该系统结合了语义向量搜索和结构化过滤，能够理解用户的自然语言查询并提供精准的资源匹配。
 
 ### 核心特性
+
 - **RAG检索增强生成**: 结合向量搜索和传统搜索提供精准匹配
 - **混合搜索**: 语义搜索 + 结构化过滤（评分、类别等）
 - **引导式对话**: 智能澄清模糊需求
@@ -23,21 +24,21 @@ graph TB
         RC[Resource Cards]
         CQ[Clarification Questions]
     end
-    
+
     subgraph "AI服务层"
         VSDK[Vercel AI SDK v6]
         ZAP[zhipu-ai-provider]
         AIM[AI Service Manager]
         GLM[智谱大模型 GLM-4]
     end
-    
+
     subgraph "业务逻辑层"
         RAG[RAG Engine]
         HS[Hybrid Search]
         GQ[Guided Questioning]
         RE[Recommendation Engine]
     end
-    
+
     subgraph "数据层"
         VS[Vector Search]
         SF[Structured Filter]
@@ -45,13 +46,13 @@ graph TB
         RDB[(Resource Database)]
         LS[(Local Storage)]
     end
-    
+
     PK --> CI
     CI --> AIM
     AIM --> VSDK
     VSDK --> ZAP
     ZAP --> GLM
-    
+
     CI --> RAG
     RAG --> HS
     RAG --> GQ
@@ -59,13 +60,13 @@ graph TB
     HS --> SF
     VS --> VDB
     SF --> RDB
-    
+
     RAG --> RE
     RE --> RC
     GQ --> CQ
-    
+
     CI --> LS
-    
+
     style PK fill:#e1f5fe
     style VSDK fill:#f3e5f5
     style RAG fill:#e8f5e8
@@ -75,11 +76,13 @@ graph TB
 ### 技术栈选择
 
 **前端框架**:
+
 - Next.js 16 (App Router) - 服务端渲染和客户端交互
 - React 19 - UI组件库
 - TypeScript 5 - 类型安全
 
 **AI与搜索**:
+
 - Vercel AI SDK v6 - LLM集成和流式响应
 - prompt-kit - AI聊天界面组件库
 - zhipu-ai-provider - 智谱大模型集成 (兼容Vercel AI SDK)
@@ -88,12 +91,14 @@ graph TB
 - 本地向量存储 - 基于现有资源数据
 
 **UI组件**:
+
 - shadcn/ui - 基础组件库
 - Tailwind CSS 4 - 样式系统
 - motion/react - 动画效果
 - Lucide React - 图标库
 
 **状态管理**:
+
 - React Context - 聊天状态管理
 - localStorage - 会话持久化
 - TanStack Query - 服务端状态缓存
@@ -108,16 +113,16 @@ interface AIProvider {
   name: string;
   version: string;
   capabilities: AICapabilities;
-  
+
   // 聊天完成
   generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse>;
-  
+
   // 流式聊天
   streamChatCompletion(messages: ChatMessage[], options?: ChatOptions): AsyncIterable<ChatChunk>;
-  
+
   // 文本嵌入
   generateEmbedding(text: string): Promise<number[]>;
-  
+
   // 批量嵌入
   generateEmbeddings(texts: string[]): Promise<number[][]>;
 }
@@ -142,12 +147,18 @@ class ZhipuAIProvider implements AIProvider {
     embedding: true,
     functionCalling: true,
     maxTokens: 8192,
-    supportedLanguages: ['zh', 'en']
+    supportedLanguages: ['zh', 'en'],
   };
 
-  constructor(private apiKey: string, private baseURL?: string) {}
+  constructor(
+    private apiKey: string,
+    private baseURL?: string
+  ) {}
 
-  async generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse> {
+  async generateChatCompletion(
+    messages: ChatMessage[],
+    options?: ChatOptions
+  ): Promise<ChatResponse> {
     // 使用zhipu-ai-provider实现
   }
 
@@ -222,11 +233,11 @@ interface AIEnvironmentConfig {
   ZHIPU_AI_API_KEY: string;
   ZHIPU_AI_BASE_URL?: string;
   ZHIPU_AI_MODEL?: 'glm-4' | 'glm-4-turbo' | 'glm-3-turbo';
-  
+
   // 备用提供者配置（预留）
   OPENAI_API_KEY?: string;
   ANTHROPIC_API_KEY?: string;
-  
+
   // 功能开关
   ENABLE_STREAMING?: boolean;
   ENABLE_FUNCTION_CALLING?: boolean;
@@ -292,23 +303,28 @@ class AIConfigManager {
 #### 扩展新AI提供者的步骤
 
 1. **实现AIProvider接口**：
+
 ```typescript
 class NewAIProvider implements AIProvider {
   name = 'new-provider';
   version = '1.0.0';
-  capabilities = { /* ... */ };
-  
+  capabilities = {
+    /* ... */
+  };
+
   // 实现所有必需方法
 }
 ```
 
 2. **注册到工厂**：
+
 ```typescript
 const factory = new AIProviderFactory();
 factory.register(new NewAIProvider(config));
 ```
 
 3. **更新配置管理器**：
+
 ```typescript
 // 在AIConfigManager中添加新的配置分支
 case 'new-provider':
@@ -319,6 +335,7 @@ case 'new-provider':
 ```
 
 4. **环境变量配置**：
+
 ```bash
 # .env.local
 NEW_PROVIDER_API_KEY=your_api_key
@@ -332,6 +349,7 @@ NEW_PROVIDER_MODEL=model_name
 ### 核心组件架构
 
 #### 1. 底部触发输入框 (AIPromptInput)
+
 ```typescript
 interface AIPromptInputProps {
   value: string;
@@ -350,6 +368,7 @@ interface AIPromptInputProps {
 ```
 
 #### 2. 聊天界面 (AIChatInterface)
+
 ```typescript
 interface AIChatInterfaceProps {
   isOpen: boolean;
@@ -363,6 +382,7 @@ interface AIChatInterfaceProps {
 ```
 
 #### 3. 快速回复按钮 (QuickReplyButtons)
+
 ```typescript
 interface QuickReplyButtonsProps {
   replies: string[];
@@ -378,6 +398,7 @@ interface QuickReplyButtonsProps {
 ```
 
 #### 4. 简化资源卡片 (ResourceInlineCard)
+
 ```typescript
 interface ResourceInlineCardProps {
   resource: Resource;
@@ -390,7 +411,7 @@ interface ResourceInlineCardProps {
 // - 资源名称
 // - 评分星级
 // - 类别标签
-// 
+//
 // 点击/悬停展开：
 // - 大图预览
 // - 详细描述
@@ -399,6 +420,7 @@ interface ResourceInlineCardProps {
 ```
 
 #### 5. 资源详情展开 (ResourceDetailSheet)
+
 ```typescript
 interface ResourceDetailSheetProps {
   resource: Resource;
@@ -412,6 +434,7 @@ interface ResourceDetailSheetProps {
 ```
 
 #### 6. 扩展的聊天消息类型
+
 ```typescript
 interface ExtendedChatMessage extends ChatMessage {
   id: string;
@@ -419,20 +442,23 @@ interface ExtendedChatMessage extends ChatMessage {
   content: string;
   timestamp: Date;
   resources?: ResourceRecommendation[];
-  quickReplies?: string[];  // 快速回复选项
+  quickReplies?: string[]; // 快速回复选项
   searchMetadata?: SearchMetadata;
   isLoading?: boolean;
 }
 ```
+
     switch (config.provider) {
       case 'zhipu-ai':
         return new ZhipuAIProvider(config as ZhipuAIConfig);
       default:
         throw new Error(`Unsupported provider: ${config.provider}`);
     }
-  }
+
 }
-```
+}
+
+````
 
 #### 3. Prompt-Kit集成与自定义
 
@@ -494,17 +520,22 @@ interface ClarificationMessageProps {
   onQuestionSelect: (question: string) => void;
   onCustomResponse: (response: string) => void;
 }
-```
+````
 
 #### 4. RAG Engine (检索增强生成引擎)
+
 ```typescript
 interface RAGEngine {
   search(query: string, filters?: SearchFilters): Promise<SearchResult[]>;
   generateResponse(query: string, context: SearchResult[], provider: AIProvider): Promise<string>;
   embedQuery(query: string, provider: AIProvider): Promise<number[]>;
-  
+
   // 新增：支持流式响应
-  streamResponse(query: string, context: SearchResult[], provider: AIProvider): AsyncIterable<string>;
+  streamResponse(
+    query: string,
+    context: SearchResult[],
+    provider: AIProvider
+  ): AsyncIterable<string>;
 }
 
 // 集成Vercel AI SDK的RAG实现
@@ -514,7 +545,11 @@ class VercelAIRAGEngine implements RAGEngine {
     private guidedQuestioning: GuidedQuestioningEngine
   ) {}
 
-  async generateResponse(query: string, context: SearchResult[], provider: AIProvider): Promise<string> {
+  async generateResponse(
+    query: string,
+    context: SearchResult[],
+    provider: AIProvider
+  ): Promise<string> {
     // 使用Vercel AI SDK生成响应
     const { text } = await generateText({
       model: provider.getModel(),
@@ -522,11 +557,15 @@ class VercelAIRAGEngine implements RAGEngine {
       maxTokens: 1000,
       temperature: 0.7,
     });
-    
+
     return text;
   }
 
-  async *streamResponse(query: string, context: SearchResult[], provider: AIProvider): AsyncIterable<string> {
+  async *streamResponse(
+    query: string,
+    context: SearchResult[],
+    provider: AIProvider
+  ): AsyncIterable<string> {
     // 使用Vercel AI SDK流式生成
     const { textStream } = await streamText({
       model: provider.getModel(),
@@ -544,14 +583,17 @@ class VercelAIRAGEngine implements RAGEngine {
     const systemPrompt = this.buildSystemPrompt(context);
     return [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: query }
+      { role: 'user', content: query },
     ];
   }
 
   private buildSystemPrompt(context: SearchResult[]): string {
-    const resourceContext = context.map(result => 
-      `资源: ${result.resource.name}\n类别: ${result.resource.category}\n评分: ${result.resource.rating}\n描述: ${result.resource.description}\n匹配理由: ${result.matchReason}`
-    ).join('\n\n');
+    const resourceContext = context
+      .map(
+        (result) =>
+          `资源: ${result.resource.name}\n类别: ${result.resource.category}\n评分: ${result.resource.rating}\n描述: ${result.resource.description}\n匹配理由: ${result.matchReason}`
+      )
+      .join('\n\n');
 
     return `你是设计百宝箱的AI助手，专门帮助用户找到最适合的设计资源。
 
@@ -567,6 +609,7 @@ ${resourceContext}
   }
 }
 ```
+
 ```typescript
 interface RAGEngine {
   search(query: string, filters?: SearchFilters): Promise<SearchResult[]>;
@@ -589,6 +632,7 @@ interface SearchResult {
 ```
 
 #### 3. Hybrid Search System (混合搜索系统)
+
 ```typescript
 interface HybridSearchEngine {
   vectorSearch(embedding: number[], limit: number): Promise<VectorMatch[]>;
@@ -604,6 +648,7 @@ interface VectorMatch {
 ```
 
 #### 4. Guided Questioning (引导式提问)
+
 ```typescript
 interface GuidedQuestioningEngine {
   analyzeQueryClarity(query: string): QueryAnalysis;
@@ -619,6 +664,7 @@ interface QueryAnalysis {
 ```
 
 #### 5. Visual Preview Component (视觉预览组件)
+
 ```typescript
 interface ResourcePreviewCard {
   resource: Resource;
@@ -639,6 +685,7 @@ interface PreviewImage {
 ### UI/UX设计方案
 
 #### 设计原则
+
 1. **对话优先**: 保持对话流连贯性，不打断用户思路
 2. **渐进式披露**: 默认显示最少必要信息，需要时才展开
 3. **即时反馈**: 清晰的加载状态和实时响应
@@ -648,6 +695,7 @@ interface PreviewImage {
 #### 响应式布局设计
 
 ##### 桌面设备 (≥768px)
+
 - **布局**: 右侧固定宽度面板 (400px)
 - **主内容**: 不被遮挡，正常显示资源网格
 - **触发方式**: 底部悬浮输入框（作为开关）
@@ -659,10 +707,12 @@ interface PreviewImage {
 - **动画**: 面板从右侧滑入/滑出，底部输入框淡入/淡出
 
 ##### 平板设备 (768px - 1199px)
+
 - 右侧面板宽度调整为 350px
 - 其他与桌面端相同
 
 ##### 移动设备 (<768px)
+
 - **布局**: 全屏模式（fixed定位覆盖）
 - **性能优化**: 主页面保留在DOM中，不卸载/重新挂载
 - **返回按钮**: 顶部左侧，明显可见
@@ -672,29 +722,30 @@ interface PreviewImage {
 #### 交互流程设计
 
 ##### PC端完整交互流程
+
 ```
 1. 初始状态
    - 底部输入框显示（居中悬浮）
    - 右侧面板隐藏
-   
+
 2. 用户输入触发
    - 用户在底部输入框输入内容
    - 按回车或点击发送按钮
-   
+
 3. 面板打开
    - 右侧面板滑入动画（400px宽）
    - 底部输入框淡出并隐藏
    - 面板显示用户的初始消息
-   
+
 4. 对话进行
    - AI回复显示
    - 如需澄清，显示快速回复按钮
    - 用户使用面板内输入框继续对话
-   
+
 5. 资源展示
    - 显示简化资源卡片（缩略图+名称+评分）
    - 悬停/点击展开详细信息
-   
+
 6. 面板关闭
    - 用户点击关闭按钮
    - 面板滑出动画
@@ -702,25 +753,26 @@ interface PreviewImage {
 ```
 
 ##### 移动端完整交互流程
+
 ```
 1. 初始状态
    - 底部输入框显示
    - 主页面正常显示
-   
+
 2. 用户输入触发
    - 用户在底部输入框输入内容
    - 按回车或点击发送按钮
-   
+
 3. 全屏覆盖
    - 聊天界面以fixed定位覆盖整个屏幕
    - 主页面保留在DOM中（性能优化）
    - 滑入动画
-   
+
 4. 对话进行
    - 显示用户消息和AI回复
    - 快速回复按钮
    - 简化资源卡片
-   
+
 5. 返回主页
    - 用户点击返回按钮
    - 聊天界面滑出
@@ -730,18 +782,21 @@ interface PreviewImage {
 #### 澄清问题交互设计
 
 ##### 快速回复按钮设计
+
 - **显示方式**: 一次显示所有澄清选项（不使用步骤式）
 - **样式**: 圆角胶囊按钮，支持emoji图标
 - **布局**: 横向排列，自动换行
 - **交互**: 点击后作为用户消息发送
 - **示例**:
+
   ```
   AI: "为了给您更精准的推荐，请问您主要需要哪方面的资源？"
-  
+
   [🎨 UI设计灵感] [🔤 字体资源] [🎨 配色工具] [📐 布局模板]
   ```
 
 ##### 用户选择方式
+
 1. **点击快速回复按钮**: 直接选择预设选项
 2. **直接输入**: 在输入框中输入自定义回答
 3. **组合使用**: 点击按钮后可继续补充说明
@@ -749,6 +804,7 @@ interface PreviewImage {
 #### 资源展示设计
 
 ##### 简化资源卡片（默认状态）
+
 - **布局**: 横向卡片（16:9或4:3比例）
 - **内容**:
   - 缩略图（左侧，48x48或64x64）
@@ -759,6 +815,7 @@ interface PreviewImage {
 - **交互**: 悬停显示阴影，点击展开详情
 
 ##### 资源详情展开（悬停/点击状态）
+
 - **桌面端**: 使用Popover或Sheet从右侧滑出
 - **移动端**: 使用Sheet从底部滑出（占屏幕80%高度）
 - **内容**:
@@ -771,6 +828,7 @@ interface PreviewImage {
 #### 动画效果规范
 
 ##### 面板动画
+
 ```typescript
 // 滑入/滑出
 transition: {
@@ -782,6 +840,7 @@ transition: {
 ```
 
 ##### 消息动画
+
 ```typescript
 // 消息进入
 initial: { opacity: 0, y: 20 }
@@ -790,12 +849,16 @@ transition: { duration: 0.3, ease: 'easeOut' }
 ```
 
 ##### 快速回复按钮动画
+
 ```typescript
 // 按钮依次出现
-transition: { delay: index * 0.05 }
+transition: {
+  delay: index * 0.05;
+}
 ```
 
 ##### 底部输入框动画
+
 ```typescript
 // 淡入/淡出
 animate: {
@@ -808,11 +871,12 @@ transition: { duration: 0.2 }
 #### 性能优化策略
 
 ##### 移动端DOM保留
+
 ```typescript
 // ✅ 正确：覆盖显示（性能好）
 <>
   <ResourceGrid />  {/* 始终保留在DOM中 */}
-  
+
   <AnimatePresence>
     {isChatOpen && (
       <motion.div className="fixed inset-0 z-50">
@@ -824,16 +888,19 @@ transition: { duration: 0.2 }
 ```
 
 ##### 虚拟滚动
+
 - 当对话历史超过50条时，使用@tanstack/react-virtual
 - 预估每条消息高度100px
 - 保持5条消息的overscan
 
 ##### 图片懒加载
+
 - 使用Next.js Image组件的loading="lazy"
 - 提供blur占位符
 - 错误处理显示默认占位图
 
 ##### 请求优化
+
 - 使用TanStack Query缓存AI响应
 - 实现请求去重（相同查询不重复请求）
 - 流式响应减少首字节时间
@@ -926,7 +993,7 @@ interface SearchQuery {
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property-Based Testing Overview
 
@@ -957,39 +1024,39 @@ After analyzing all acceptance criteria, I identified several areas where proper
 Based on the prework analysis, here are the essential correctness properties:
 
 **Property 1: Chat Interface Trigger and Display**
-*For any* user input in the bottom AI input box, triggering the send action should cause the chat interface to slide in from the right and display the user's query as the first message
+_For any_ user input in the bottom AI input box, triggering the send action should cause the chat interface to slide in from the right and display the user's query as the first message
 **Validates: Requirements 1.1, 1.2**
 
 **Property 2: Session State Persistence**
-*For any* chat session, closing and reopening the interface should preserve the complete conversation history and restore the session state
+_For any_ chat session, closing and reopening the interface should preserve the complete conversation history and restore the session state
 **Validates: Requirements 1.4, 1.5, 7.1, 7.2, 7.3, 7.4**
 
 **Property 3: Hybrid Search Integration**
-*For any* user query containing both semantic content and structured filters (rating, category), the RAG engine should return results that satisfy both the semantic similarity and the structured constraints
+_For any_ user query containing both semantic content and structured filters (rating, category), the RAG engine should return results that satisfy both the semantic similarity and the structured constraints
 **Validates: Requirements 2.1, 2.2, 2.3, 2.4**
 
 **Property 4: Guided Questioning for Vague Queries**
-*For any* ambiguous or vague user query, the system should detect the ambiguity and provide specific clarification questions related to the missing information
+_For any_ ambiguous or vague user query, the system should detect the ambiguity and provide specific clarification questions related to the missing information
 **Validates: Requirements 3.1, 3.2, 3.3, 3.4**
 
 **Property 5: Visual Preview Completeness**
-*For any* resource recommendation, the visual preview card should contain all required elements (screenshot, name, category, rating, description) and handle loading/error states appropriately
+_For any_ resource recommendation, the visual preview card should contain all required elements (screenshot, name, category, rating, description) and handle loading/error states appropriately
 **Validates: Requirements 4.1, 4.2, 4.3, 4.4**
 
 **Property 6: Recommendation Quality and Explanation**
-*For any* search query, the recommendation engine should return at most 5 resources with specific match reasons that relate to the user's query
+_For any_ search query, the recommendation engine should return at most 5 resources with specific match reasons that relate to the user's query
 **Validates: Requirements 5.1, 5.2, 5.3, 5.4**
 
 **Property 7: Resource Interaction Functionality**
-*For any* resource card in the chat interface, clicking different action buttons (view details, favorite, visit) should trigger the appropriate navigation or state changes
+_For any_ resource card in the chat interface, clicking different action buttons (view details, favorite, visit) should trigger the appropriate navigation or state changes
 **Validates: Requirements 6.1, 6.2, 6.3**
 
 **Property 8: Responsive Layout Adaptation**
-*For any* screen size change, the chat interface should adapt its layout appropriately (right panel for desktop, adjusted width for tablet, fullscreen for mobile)
+_For any_ screen size change, the chat interface should adapt its layout appropriately (right panel for desktop, adjusted width for tablet, fullscreen for mobile)
 **Validates: Requirements 8.1, 8.2, 8.3, 8.4**
 
 **Property 9: Performance and Error Resilience**
-*For any* user query, the system should respond within 3 seconds or provide appropriate error handling with fallback suggestions
+_For any_ user query, the system should respond within 3 seconds or provide appropriate error handling with fallback suggestions
 **Validates: Requirements 9.1, 9.2, 9.4**
 
 ## Error Handling
@@ -997,21 +1064,25 @@ Based on the prework analysis, here are the essential correctness properties:
 ### 错误处理策略
 
 #### 1. AI服务错误处理
+
 - **服务不可用**: 显示友好错误提示，提供基础搜索功能
 - **响应超时**: 3秒超时机制，显示加载状态后提供备用建议
 - **API限制**: 实现请求队列和重试机制
 
 #### 2. 网络连接错误
+
 - **离线检测**: 监听网络状态变化
 - **请求缓存**: 保存失败的请求，连接恢复后重试
 - **优雅降级**: 提供基于本地数据的基础搜索
 
 #### 3. 数据加载错误
+
 - **资源图片加载失败**: 显示默认占位图
 - **向量搜索失败**: 回退到传统关键词搜索
 - **会话数据损坏**: 重置会话并通知用户
 
 #### 4. 用户输入错误
+
 - **空查询**: 提供搜索建议和热门资源
 - **无效字符**: 清理输入并提示用户
 - **过长查询**: 截断并提示字数限制
@@ -1041,12 +1112,14 @@ interface ErrorHandler {
 本项目采用单元测试和基于属性的测试相结合的方法：
 
 **单元测试**:
+
 - 验证特定示例和边界情况
 - 测试组件集成点
 - 验证错误处理逻辑
 - 测试用户交互流程
 
 **基于属性的测试**:
+
 - 验证跨所有输入的通用属性
 - 通过随机化实现全面的输入覆盖
 - 测试系统在各种条件下的正确性
@@ -1055,11 +1128,13 @@ interface ErrorHandler {
 ### 测试框架配置
 
 **属性测试库**: fast-check
+
 - 每个属性测试最少运行100次迭代
 - 每个测试必须引用其设计文档属性
 - 标签格式: **Feature: ai-chat-assistant, Property {number}: {property_text}**
 
 **单元测试库**: Vitest + @testing-library/react
+
 - 组件渲染和交互测试
 - 钩子函数行为验证
 - API集成测试
@@ -1067,6 +1142,7 @@ interface ErrorHandler {
 ### 测试覆盖范围
 
 #### 核心功能测试
+
 1. **聊天界面交互**: 打开/关闭、消息显示、响应式布局
 2. **RAG搜索引擎**: 向量搜索、混合搜索、结果排序
 3. **引导式提问**: 模糊查询检测、澄清问题生成
@@ -1074,11 +1150,13 @@ interface ErrorHandler {
 5. **会话管理**: 状态持久化、历史恢复、存储限制
 
 #### 集成测试
+
 1. **端到端用户流程**: 从查询输入到资源推荐的完整流程
 2. **跨组件通信**: 组件间状态同步和数据传递
 3. **外部服务集成**: AI API调用、错误处理、重试机制
 
 #### 性能测试
+
 1. **响应时间**: 查询处理时间、界面渲染性能
 2. **内存使用**: 会话数据管理、组件卸载清理
 3. **并发处理**: 多个查询同时处理的稳定性
@@ -1093,7 +1171,7 @@ const resourceGenerator = fc.record({
   name: fc.string(),
   category: fc.constantFrom('colors', 'fonts', 'icons', 'templates'),
   rating: fc.float({ min: 1, max: 5 }),
-  description: fc.string({ maxLength: 500 })
+  description: fc.string({ maxLength: 500 }),
 });
 
 // 测试场景生成
@@ -1102,9 +1180,9 @@ const searchScenarioGenerator = fc.record({
   filters: fc.record({
     categories: fc.array(fc.string()),
     minRating: fc.option(fc.float({ min: 1, max: 5 })),
-    maxResults: fc.option(fc.integer({ min: 1, max: 10 }))
+    maxResults: fc.option(fc.integer({ min: 1, max: 10 })),
   }),
-  expectedBehavior: fc.constantFrom('success', 'clarification_needed', 'no_results')
+  expectedBehavior: fc.constantFrom('success', 'clarification_needed', 'no_results'),
 });
 ```
 

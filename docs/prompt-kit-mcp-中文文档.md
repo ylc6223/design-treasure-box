@@ -5,6 +5,7 @@
 ## ⚠️ 重要更新
 
 根据最新的仓库更新，MCP 配置已更改：
+
 - **旧版本**: `"args": ["-y", "shadcn@canary", "registry:mcp"]`
 - **新版本**: `"args": ["-y", "shadcn@canary", "mcp"]`
 
@@ -13,6 +14,7 @@
 MCP 是一个开放协议，标准化了应用程序如何为大语言模型（LLM）提供上下文。可以将其视为连接您的 AI 工具与外部数据源和工具的插件系统。
 
 了解更多关于 MCP 的信息：
+
 - [Cursor MCP 文档](https://docs.cursor.com/mcp)
 - [官方 MCP 文档](https://modelcontextprotocol.io/)
 
@@ -66,25 +68,29 @@ MCP 是一个开放协议，标准化了应用程序如何为大语言模型（L
 配置完成后，您可以开始在 AI 工具的聊天中使用 prompt-kit 组件。
 
 ### 浏览组件
+
 ```
 显示所有可用的 prompt-kit 组件
 ```
 
 ### 添加特定组件
+
 ```
 将 prompt-kit 的 PromptInput 组件添加到我的项目中
 ```
 
 ### 获取组件详情
+
 ```
 显示 PromptTextarea 组件的文档和预览
 ```
 
 ### 构建基础聊天应用
+
 ```
 使用 prompt-kit 构建一个聊天应用：使用 ChatContainer 内含 ScrollButton，加上 Message 和 PromptInput
 ```
 
 ---
 
-*本文档翻译自 prompt-kit 官方 MCP 文档。*
+_本文档翻译自 prompt-kit 官方 MCP 文档。_

@@ -3,6 +3,7 @@
 ## ✅ 已确认的设计要点
 
 ### 1. PC端布局
+
 - ✅ 右侧固定面板（400px宽度）
 - ✅ 主内容区域不被遮挡
 - ✅ 底部输入框作为触发开关
@@ -12,17 +13,20 @@
   - 关闭面板后底部输入框复原
 
 ### 2. 移动端布局
+
 - ✅ 全屏模式（fixed定位覆盖）
 - ✅ 主页面保留在DOM中（性能优化）
 - ✅ 明显的返回按钮
 - ✅ 输入框固定在屏幕底部
 
 ### 3. 澄清问题交互
+
 - ✅ 快速回复按钮（一次显示所有选项）
 - ✅ 不使用步骤式提问
 - ✅ 用户可以点击按钮或直接输入
 
 ### 4. 资源展示
+
 - ✅ 默认显示简化版（截图、名称、评分）
 - ✅ 悬停/点击显示详细信息
 - ✅ 符合"渐进式披露"原则
@@ -195,7 +199,7 @@ interface ResourceInlineCardProps {
   <div className="relative w-16 h-16 rounded-md overflow-hidden shrink-0">
     <Image src={resource.screenshot} alt={resource.name} fill />
   </div>
-  
+
   {/* 信息 */}
   <div className="flex-1 min-w-0">
     <h4 className="font-semibold text-sm truncate">{resource.name}</h4>
@@ -204,7 +208,7 @@ interface ResourceInlineCardProps {
       <span className="text-xs text-muted-foreground">{resource.category}</span>
     </div>
   </div>
-  
+
   {/* 箭头 */}
   <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
 </Card>
@@ -222,18 +226,18 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
     <div className="relative w-full h-48 rounded-lg overflow-hidden">
       <Image src={resource.screenshot} alt={resource.name} fill />
     </div>
-    
+
     {/* 详细信息 */}
     <div className="mt-4 space-y-4">
       <h2 className="text-2xl font-bold">{resource.name}</h2>
-      
+
       <div className="flex items-center gap-4">
         <RatingStars rating={resource.rating.overall} size="lg" showValue />
         <Badge>{resource.category}</Badge>
       </div>
-      
+
       <p className="text-muted-foreground">{resource.description}</p>
-      
+
       {/* 详细评分 */}
       <div className="space-y-2">
         <div className="flex justify-between">
@@ -246,7 +250,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
         </div>
         {/* ... */}
       </div>
-      
+
       {/* 操作按钮 */}
       <div className="flex gap-2">
         <Button onClick={() => handleFavorite(resource.id)}>
@@ -354,7 +358,7 @@ import { motion, AnimatePresence } from 'motion/react';
 // ✅ 正确：覆盖显示（性能好）
 <>
   <ResourceGrid />  {/* 始终保留在DOM中 */}
-  
+
   <AnimatePresence>
     {isChatOpen && (
       <motion.div className="fixed inset-0 z-50">
@@ -375,7 +379,7 @@ const virtualizer = useVirtualizer({
   count: messages.length,
   getScrollElement: () => scrollRef.current,
   estimateSize: () => 100,
-  overscan: 5
+  overscan: 5,
 });
 ```
 
@@ -397,6 +401,7 @@ const virtualizer = useVirtualizer({
 ## ✅ 实现检查清单
 
 ### P0 - 核心功能
+
 - [ ] 底部触发输入框组件
 - [ ] 右侧聊天面板组件（PC端）
 - [ ] 全屏聊天界面（移动端）
@@ -406,6 +411,7 @@ const virtualizer = useVirtualizer({
 - [ ] 面板滑入/滑出动画
 
 ### P1 - 增强功能
+
 - [ ] 资源详情展开（Sheet/Popover）
 - [ ] 悬停预览效果
 - [ ] 加载状态指示器
@@ -413,6 +419,7 @@ const virtualizer = useVirtualizer({
 - [ ] 会话状态持久化
 
 ### P2 - 优化功能
+
 - [ ] 虚拟滚动（长对话历史）
 - [ ] 图片懒加载优化
 - [ ] 手势滑动返回（移动端）

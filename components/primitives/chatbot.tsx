@@ -1,110 +1,95 @@
-"use client"
+'use client';
 
-import {
-  ChatContainerContent,
-  ChatContainerRoot,
-} from "@/components/prompt-kit/chat-container"
-import { DotsLoader } from "@/components/prompt-kit/loader"
+import { ChatContainerContent, ChatContainerRoot } from '@/components/prompt-kit/chat-container';
+import { DotsLoader } from '@/components/prompt-kit/loader';
 import {
   Message,
   MessageAction,
   MessageActions,
   MessageContent,
-} from "@/components/prompt-kit/message"
+} from '@/components/prompt-kit/message';
 import {
   PromptInput,
   PromptInputActions,
   PromptInputTextarea,
-} from "@/components/prompt-kit/prompt-input"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
-import type { UIMessage } from "ai"
-import {
-  AlertTriangle,
-  ArrowUp,
-  Copy,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react"
-import { memo, useState } from "react"
+} from '@/components/prompt-kit/prompt-input';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import type { UIMessage } from 'ai';
+import { AlertTriangle, ArrowUp, Copy, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { memo, useState } from 'react';
 
 type MessageComponentProps = {
-  message: UIMessage
-  isLastMessage: boolean
-}
+  message: UIMessage;
+  isLastMessage: boolean;
+};
 
-export const MessageComponent = memo(
-  ({ message, isLastMessage }: MessageComponentProps) => {
-    const isAssistant = message.role === "assistant"
+export const MessageComponent = memo(({ message, isLastMessage }: MessageComponentProps) => {
+  const isAssistant = message.role === 'assistant';
 
-    return (
-      <Message
-        className={cn(
-          "mx-auto flex w-full max-w-3xl flex-col gap-2 px-2 md:px-10",
-          isAssistant ? "items-start" : "items-end"
-        )}
-      >
-        {isAssistant ? (
-          <div className="group flex w-full flex-col gap-0">
-            <MessageContent
-              className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0"
-              markdown
-            >
-              {message.parts
-                .map((part) => (part.type === "text" ? part.text : null))
-                .join("")}
-            </MessageContent>
-            <MessageActions
-              className={cn(
-                "-ml-2.5 flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100",
-                isLastMessage && "opacity-100"
-              )}
-            >
-              <MessageAction tooltip="Copy" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Copy />
-                </Button>
-              </MessageAction>
-              <MessageAction tooltip="Upvote" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <ThumbsUp />
-                </Button>
-              </MessageAction>
-              <MessageAction tooltip="Downvote" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <ThumbsDown />
-                </Button>
-              </MessageAction>
-            </MessageActions>
-          </div>
-        ) : (
-          <div className="group flex w-full flex-col items-end gap-1">
-            <MessageContent className="bg-muted text-primary max-w-[85%] rounded-3xl px-5 py-2.5 whitespace-pre-wrap sm:max-w-[75%]">
-              {message.parts
-                .map((part) => (part.type === "text" ? part.text : null))
-                .join("")}
-            </MessageContent>
-            <MessageActions
-              className={cn(
-                "flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-              )}
-            >
-              <MessageAction tooltip="Copy" delayDuration={100}>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Copy />
-                </Button>
-              </MessageAction>
-            </MessageActions>
-          </div>
-        )}
-      </Message>
-    )
-  }
-)
+  return (
+    <Message
+      className={cn(
+        'mx-auto flex w-full max-w-3xl flex-col gap-2 px-2 md:px-10',
+        isAssistant ? 'items-start' : 'items-end'
+      )}
+    >
+      {isAssistant ? (
+        <div className="group flex w-full flex-col gap-0">
+          <MessageContent
+            className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0"
+            markdown
+          >
+            {message.parts.map((part) => (part.type === 'text' ? part.text : null)).join('')}
+          </MessageContent>
+          <MessageActions
+            className={cn(
+              '-ml-2.5 flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100',
+              isLastMessage && 'opacity-100'
+            )}
+          >
+            <MessageAction tooltip="Copy" delayDuration={100}>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Copy />
+              </Button>
+            </MessageAction>
+            <MessageAction tooltip="Upvote" delayDuration={100}>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ThumbsUp />
+              </Button>
+            </MessageAction>
+            <MessageAction tooltip="Downvote" delayDuration={100}>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ThumbsDown />
+              </Button>
+            </MessageAction>
+          </MessageActions>
+        </div>
+      ) : (
+        <div className="group flex w-full flex-col items-end gap-1">
+          <MessageContent className="bg-muted text-primary max-w-[85%] rounded-3xl px-5 py-2.5 whitespace-pre-wrap sm:max-w-[75%]">
+            {message.parts.map((part) => (part.type === 'text' ? part.text : null)).join('')}
+          </MessageContent>
+          <MessageActions
+            className={cn(
+              'flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100'
+            )}
+          >
+            <MessageAction tooltip="Copy" delayDuration={100}>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Copy />
+              </Button>
+            </MessageAction>
+          </MessageActions>
+        </div>
+      )}
+    </Message>
+  );
+});
 
-MessageComponent.displayName = "MessageComponent"
+MessageComponent.displayName = 'MessageComponent';
 
 const LoadingMessage = memo(() => (
   <Message className="mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-0 md:px-10">
@@ -114,9 +99,9 @@ const LoadingMessage = memo(() => (
       </div>
     </div>
   </Message>
-))
+));
 
-LoadingMessage.displayName = "LoadingMessage"
+LoadingMessage.displayName = 'LoadingMessage';
 
 const ErrorMessage = memo(({ error }: { error: Error }) => (
   <Message className="not-prose mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-0 md:px-10">
@@ -127,49 +112,45 @@ const ErrorMessage = memo(({ error }: { error: Error }) => (
       </div>
     </div>
   </Message>
-))
+));
 
-ErrorMessage.displayName = "ErrorMessage"
+ErrorMessage.displayName = 'ErrorMessage';
 
 function ConversationPromptInput() {
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState('');
 
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/primitives/chatbot",
+      api: '/api/primitives/chatbot',
     }),
-  })
+  });
 
   const handleSubmit = () => {
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
-    sendMessage({ text: input })
-    setInput("")
-  }
+    sendMessage({ text: input });
+    setInput('');
+  };
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <ChatContainerRoot className="relative flex-1 space-y-0 overflow-y-auto">
         <ChatContainerContent className="space-y-12 px-4 py-12">
           {messages.map((message, index) => {
-            const isLastMessage = index === messages.length - 1
+            const isLastMessage = index === messages.length - 1;
 
             return (
-              <MessageComponent
-                key={message.id}
-                message={message}
-                isLastMessage={isLastMessage}
-              />
-            )
+              <MessageComponent key={message.id} message={message} isLastMessage={isLastMessage} />
+            );
           })}
 
-          {status === "submitted" && <LoadingMessage />}
-          {status === "error" && error && <ErrorMessage error={error} />}
+          {status === 'submitted' && <LoadingMessage />}
+          {status === 'error' && error && <ErrorMessage error={error} />}
         </ChatContainerContent>
       </ChatContainerRoot>
       <div className="inset-x-0 bottom-0 mx-auto w-full max-w-3xl shrink-0 px-3 pb-3 md:px-5 md:pb-5">
         <PromptInput
-          isLoading={status !== "ready"}
+          isLoading={status !== 'ready'}
           value={input}
           onValueChange={setInput}
           onSubmit={handleSubmit}
@@ -186,13 +167,11 @@ function ConversationPromptInput() {
               <div className="flex items-center gap-2">
                 <Button
                   size="icon"
-                  disabled={
-                    !input.trim() || (status !== "ready" && status !== "error")
-                  }
+                  disabled={!input.trim() || (status !== 'ready' && status !== 'error')}
                   onClick={handleSubmit}
                   className="size-9 rounded-full"
                 >
-                  {status === "ready" || status === "error" ? (
+                  {status === 'ready' || status === 'error' ? (
                     <ArrowUp size={18} />
                   ) : (
                     <span className="size-3 rounded-xs bg-white" />
@@ -204,7 +183,7 @@ function ConversationPromptInput() {
         </PromptInput>
       </div>
     </div>
-  )
+  );
 }
 
-export default ConversationPromptInput
+export default ConversationPromptInput;

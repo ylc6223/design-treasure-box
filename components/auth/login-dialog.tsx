@@ -1,57 +1,55 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Github } from 'lucide-react'
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Github } from 'lucide-react';
 
 interface LoginDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
-  const [isLoading, setIsLoading] = useState<'google' | 'github' | null>(null)
-  const supabase = createClient()
+  const [isLoading, setIsLoading] = useState<'google' | 'github' | null>(null);
+  const supabase = createClient();
 
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
     try {
-      setIsLoading(provider)
-      
+      setIsLoading(provider);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
-      })
+      });
 
       if (error) {
-        console.error('OAuth login error:', error)
-        alert('登录失败，请重试')
+        console.error('OAuth login error:', error);
+        alert('登录失败，请重试');
       }
     } catch (error) {
-      console.error('OAuth login error:', error)
-      alert('登录失败，请重试')
+      console.error('OAuth login error:', error);
+      alert('登录失败，请重试');
     } finally {
-      setIsLoading(null)
+      setIsLoading(null);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>登录到设计百宝箱</DialogTitle>
-          <DialogDescription>
-            选择一个方式登录，开始评分和收藏你喜欢的设计资源
-          </DialogDescription>
+          <DialogDescription>选择一个方式登录，开始评分和收藏你喜欢的设计资源</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-3 py-4">
@@ -116,5 +114,5 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
         </p>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

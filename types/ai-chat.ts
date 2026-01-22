@@ -20,13 +20,15 @@ export const ChatMessageSchema = z.object({
   timestamp: z.date(),
   resources: z.array(z.any()).optional(), // 将在后续定义ResourceRecommendation
   clarificationQuestions: z.array(z.string()).optional(),
-  searchMetadata: z.object({
-    query: z.string(),
-    filters: z.any(), // 将在后续定义SearchFilters
-    resultCount: z.number(),
-    processingTime: z.number(),
-    searchType: z.enum(['semantic', 'hybrid', 'fallback']),
-  }).optional(),
+  searchMetadata: z
+    .object({
+      query: z.string(),
+      filters: z.any(), // 将在后续定义SearchFilters
+      resultCount: z.number(),
+      processingTime: z.number(),
+      searchType: z.enum(['semantic', 'hybrid', 'fallback']),
+    })
+    .optional(),
   isLoading: z.boolean().optional(),
 });
 
@@ -39,25 +41,33 @@ export const ExtendedChatMessageSchema = z.object({
   type: z.enum(['user', 'assistant', 'system']),
   content: z.string(),
   timestamp: z.date(),
-  metadata: z.object({
-    query: z.string().optional(),
-    searchResults: z.array(z.any()).optional(), // SearchResult[]
-    clarificationNeeded: z.boolean().optional(),
-    resources: z.array(z.any()).optional(), // ResourceRecommendation[]
-  }).optional(),
+  metadata: z
+    .object({
+      query: z.string().optional(),
+      searchResults: z.array(z.any()).optional(), // SearchResult[]
+      clarificationNeeded: z.boolean().optional(),
+      resources: z.array(z.any()).optional(), // ResourceRecommendation[]
+    })
+    .optional(),
   resources: z.array(z.any()).optional(),
-  clarificationQuestions: z.array(z.object({
-    question: z.string(),
-    options: z.array(z.string()),
-    aspect: z.enum(['category', 'style', 'audience', 'purpose']),
-  })).optional(),
-  searchMetadata: z.object({
-    query: z.string(),
-    filters: z.any(),
-    resultCount: z.number(),
-    processingTime: z.number(),
-    searchType: z.enum(['semantic', 'hybrid', 'fallback']),
-  }).optional(),
+  clarificationQuestions: z
+    .array(
+      z.object({
+        question: z.string(),
+        options: z.array(z.string()),
+        aspect: z.enum(['category', 'style', 'audience', 'purpose']),
+      })
+    )
+    .optional(),
+  searchMetadata: z
+    .object({
+      query: z.string(),
+      filters: z.any(),
+      resultCount: z.number(),
+      processingTime: z.number(),
+      searchType: z.enum(['semantic', 'hybrid', 'fallback']),
+    })
+    .optional(),
   isLoading: z.boolean().optional(),
 });
 
@@ -76,11 +86,13 @@ export type ChatOptions = z.infer<typeof ChatOptionsSchema>;
 // 聊天响应
 export const ChatResponseSchema = z.object({
   content: z.string(),
-  usage: z.object({
-    promptTokens: z.number(),
-    completionTokens: z.number(),
-    totalTokens: z.number(),
-  }).optional(),
+  usage: z
+    .object({
+      promptTokens: z.number(),
+      completionTokens: z.number(),
+      totalTokens: z.number(),
+    })
+    .optional(),
   finishReason: z.enum(['stop', 'length', 'content_filter', 'function_call']).optional(),
 });
 
@@ -99,16 +111,16 @@ export interface AIProvider {
   name: string;
   version: string;
   capabilities: AICapabilities;
-  
+
   // 聊天完成
   generateChatCompletion(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResponse>;
-  
+
   // 流式聊天
   streamChatCompletion(messages: ChatMessage[], options?: ChatOptions): AsyncIterable<ChatChunk>;
-  
+
   // 文本嵌入
   generateEmbedding(text: string): Promise<number[]>;
-  
+
   // 批量嵌入
   generateEmbeddings(texts: string[]): Promise<number[][]>;
 }
@@ -131,19 +143,19 @@ export const ZhipuAIConfigSchema = VercelAIConfigSchema.extend({
   provider: z.literal('zhipu-ai'),
   model: z.enum([
     // 最新文本模型（2025）
-    'glm-4-plus',      // 推荐：增强版，性能最好
-    'glm-4-air',       // 轻量快速版本
-    'glm-4-flash',     // 超快速版本
-    'glm-4',           // 标准版本
-    'glm-4-0520',      // 特定版本
-    'glm-3-turbo',     // 旧版本（兼容）
+    'glm-4-plus', // 推荐：增强版，性能最好
+    'glm-4-air', // 轻量快速版本
+    'glm-4-flash', // 超快速版本
+    'glm-4', // 标准版本
+    'glm-4-0520', // 特定版本
+    'glm-3-turbo', // 旧版本（兼容）
     // 多模态模型
-    'glm-4.6v',        // 最新多模态（106B）
-    'glm-4.6v-flash',  // 轻量多模态（9B）
-    'glm-4.5v',        // 上一代多模态
-    'glm-4v-plus',     // 增强多模态
+    'glm-4.6v', // 最新多模态（106B）
+    'glm-4.6v-flash', // 轻量多模态（9B）
+    'glm-4.5v', // 上一代多模态
+    'glm-4v-plus', // 增强多模态
     // 代码专用
-    'glm-4.7',         // 代码编程专用
+    'glm-4.7', // 代码编程专用
   ]),
   embeddingModel: z.enum(['embedding-2', 'embedding-3']).optional(),
 });
@@ -154,11 +166,21 @@ export type ZhipuAIConfig = z.infer<typeof ZhipuAIConfigSchema>;
 export const AIEnvironmentConfigSchema = z.object({
   ZHIPU_AI_API_KEY: z.string(),
   ZHIPU_AI_BASE_URL: z.string().optional(),
-  ZHIPU_AI_MODEL: z.enum([
-    'glm-4-plus', 'glm-4-air', 'glm-4-flash', 'glm-4', 
-    'glm-4-0520', 'glm-3-turbo', 'glm-4.6v', 'glm-4.6v-flash',
-    'glm-4.5v', 'glm-4v-plus', 'glm-4.7'
-  ]).optional(),
+  ZHIPU_AI_MODEL: z
+    .enum([
+      'glm-4-plus',
+      'glm-4-air',
+      'glm-4-flash',
+      'glm-4',
+      'glm-4-0520',
+      'glm-3-turbo',
+      'glm-4.6v',
+      'glm-4.6v-flash',
+      'glm-4.5v',
+      'glm-4v-plus',
+      'glm-4.7',
+    ])
+    .optional(),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   ENABLE_STREAMING: z.boolean().optional(),

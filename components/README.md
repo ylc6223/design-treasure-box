@@ -9,6 +9,7 @@
 资源卡片组件，用于展示单个设计资源。
 
 **特性：**
+
 - 网站截图展示（自适应高度，16:10 比例）
 - 精选标识（Sparkles 图标）
 - 评分星星显示（支持半星精度）
@@ -22,11 +23,11 @@
 **使用示例：**
 
 ```tsx
-import { ResourceCard } from '@/components/resource-card'
-import { useFavorites } from '@/hooks'
+import { ResourceCard } from '@/components/resource-card';
+import { useFavorites } from '@/hooks';
 
 function MyComponent() {
-  const { isFavorited, toggleFavorite } = useFavorites()
+  const { isFavorited, toggleFavorite } = useFavorites();
 
   return (
     <ResourceCard
@@ -35,7 +36,7 @@ function MyComponent() {
       onFavorite={() => toggleFavorite(resource.id)}
       onVisit={() => window.open(resource.url, '_blank')}
     />
-  )
+  );
 }
 ```
 
@@ -44,6 +45,7 @@ function MyComponent() {
 瀑布流网格布局组件，用于展示多个资源卡片。
 
 **特性：**
+
 - CSS Grid 瀑布流布局
 - 响应式列数：
   - XL (≥1440px): 5列
@@ -57,12 +59,12 @@ function MyComponent() {
 **使用示例：**
 
 ```tsx
-import { MasonryGrid } from '@/components/masonry-grid'
-import { useFavorites, useResources } from '@/hooks'
+import { MasonryGrid } from '@/components/masonry-grid';
+import { useFavorites, useResources } from '@/hooks';
 
 function MyComponent() {
-  const { data: resources = [] } = useResources()
-  const { isFavorited, toggleFavorite } = useFavorites()
+  const { data: resources = [] } = useResources();
+  const { isFavorited, toggleFavorite } = useFavorites();
 
   return (
     <MasonryGrid
@@ -71,7 +73,7 @@ function MyComponent() {
       onFavorite={toggleFavorite}
       onVisit={(url) => window.open(url, '_blank')}
     />
-  )
+  );
 }
 ```
 
@@ -80,6 +82,7 @@ function MyComponent() {
 macOS 风格的侧边栏导航组件。
 
 **特性：**
+
 - 固定左侧 64px 宽度
 - 垂直居中紧凑型布局
 - Lucide 图标
@@ -94,6 +97,7 @@ macOS 风格的侧边栏导航组件。
 底部悬浮的 AI 提示输入框组件。
 
 **特性：**
+
 - 固定底部悬浮
 - 毛玻璃背景
 - 胶囊形圆角
@@ -108,6 +112,7 @@ macOS 风格的侧边栏导航组件。
 主题切换组件。
 
 **特性：**
+
 - Sun/Moon 图标切换
 - 支持浅色/深色模式
 - 平滑过渡动画
@@ -117,6 +122,7 @@ macOS 风格的侧边栏导航组件。
 顶部导航栏组件。
 
 **特性：**
+
 - Logo + 品牌名称
 - 分类标签横向滚动
 - 激活状态高亮
@@ -128,12 +134,12 @@ macOS 风格的侧边栏导航组件。
 **使用示例：**
 
 ```tsx
-import { Header } from '@/components/header'
-import { useState } from 'react'
-import categories from '@/data/categories.json'
+import { Header } from '@/components/header';
+import { useState } from 'react';
+import categories from '@/data/categories.json';
 
 function MyComponent() {
-  const [activeCategory, setActiveCategory] = useState('')
+  const [activeCategory, setActiveCategory] = useState('');
 
   return (
     <Header
@@ -141,7 +147,7 @@ function MyComponent() {
       activeCategory={activeCategory}
       onCategoryChange={setActiveCategory}
     />
-  )
+  );
 }
 ```
 

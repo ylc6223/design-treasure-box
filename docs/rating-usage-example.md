@@ -11,19 +11,12 @@
 单个评分维度的输入组件，支持 0.5 精度（半星）。
 
 ```tsx
-import { RatingInput } from '@/components/rating/rating-input'
+import { RatingInput } from '@/components/rating/rating-input';
 
 function MyComponent() {
-  const [rating, setRating] = useState(0)
+  const [rating, setRating] = useState(0);
 
-  return (
-    <RatingInput
-      label="综合评分"
-      value={rating}
-      onChange={setRating}
-      required
-    />
-  )
+  return <RatingInput label="综合评分" value={rating} onChange={setRating} required />;
 }
 ```
 
@@ -32,19 +25,19 @@ function MyComponent() {
 完整的评分表单对话框，包含所有评分维度和评论。
 
 ```tsx
-import { RatingDialog } from '@/components/rating/rating-dialog'
+import { RatingDialog } from '@/components/rating/rating-dialog';
 
 function MyComponent() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (data) => {
     const response = await fetch('/api/ratings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
-    })
+    });
     // 处理响应...
-  }
+  };
 
   return (
     <>
@@ -57,7 +50,7 @@ function MyComponent() {
         onSubmit={handleSubmit}
       />
     </>
-  )
+  );
 }
 ```
 
@@ -66,7 +59,7 @@ function MyComponent() {
 显示资源的评分信息，包括策展人评分、用户聚合评分和个人评分。
 
 ```tsx
-import { RatingDisplay } from '@/components/rating/rating-display'
+import { RatingDisplay } from '@/components/rating/rating-display';
 
 function MyComponent() {
   return (
@@ -78,7 +71,7 @@ function MyComponent() {
       isAuthenticated={!!user}
       onRate={() => setRatingDialogOpen(true)}
     />
-  )
+  );
 }
 ```
 
@@ -87,48 +80,48 @@ function MyComponent() {
 ### 在资源详情页中集成评分功能
 
 ```tsx
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { RatingDialog } from '@/components/rating/rating-dialog'
-import { RatingDisplay } from '@/components/rating/rating-display'
-import { createClient } from '@/lib/supabase/client'
-import type { Resource } from '@/types'
-import type { ResourceRatings, SubmitRatingRequest } from '@/types/rating'
+import { useState, useEffect } from 'react';
+import { RatingDialog } from '@/components/rating/rating-dialog';
+import { RatingDisplay } from '@/components/rating/rating-display';
+import { createClient } from '@/lib/supabase/client';
+import type { Resource } from '@/types';
+import type { ResourceRatings, SubmitRatingRequest } from '@/types/rating';
 
 export function ResourceDetailPage({ resource }: { resource: Resource }) {
-  const [user, setUser] = useState(null)
-  const [ratings, setRatings] = useState<ResourceRatings | null>(null)
-  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [ratings, setRatings] = useState<ResourceRatings | null>(null);
+  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 获取当前用户
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-    })
-  }, [])
+      setUser(data.user);
+    });
+  }, []);
 
   // 获取评分数据
   useEffect(() => {
-    fetchRatings()
-  }, [resource.id])
+    fetchRatings();
+  }, [resource.id]);
 
   const fetchRatings = async () => {
     try {
-      setIsLoading(true)
-      const response = await fetch(`/api/ratings/${resource.id}`)
-      const result = await response.json()
+      setIsLoading(true);
+      const response = await fetch(`/api/ratings/${resource.id}`);
+      const result = await response.json();
       if (result.success) {
-        setRatings(result.data)
+        setRatings(result.data);
       }
     } catch (error) {
-      console.error('Failed to fetch ratings:', error)
+      console.error('Failed to fetch ratings:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // 提交评分
   const handleSubmitRating = async (data: SubmitRatingRequest) => {
@@ -137,25 +130,25 @@ export function ResourceDetailPage({ resource }: { resource: Resource }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
         // 刷新评分数据
-        await fetchRatings()
-        alert('评分提交成功！')
+        await fetchRatings();
+        alert('评分提交成功！');
       } else {
-        alert('评分提交失败：' + result.error)
+        alert('评分提交失败：' + result.error);
       }
     } catch (error) {
-      console.error('Rating submission error:', error)
-      alert('评分提交失败，请稍后重试')
+      console.error('Rating submission error:', error);
+      alert('评分提交失败，请稍后重试');
     }
-  }
+  };
 
   if (isLoading) {
-    return <div>加载中...</div>
+    return <div>加载中...</div>;
   }
 
   return (
@@ -185,7 +178,7 @@ export function ResourceDetailPage({ resource }: { resource: Resource }) {
         onSubmit={handleSubmitRating}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -251,21 +244,21 @@ GET /api/ratings/[resourceId]
 推荐使用 TanStack Query 进行数据缓存和状态管理：
 
 ```tsx
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 function useResourceRatings(resourceId: string) {
   return useQuery({
     queryKey: ['ratings', resourceId],
     queryFn: async () => {
-      const response = await fetch(`/api/ratings/${resourceId}`)
-      const result = await response.json()
-      return result.data
+      const response = await fetch(`/api/ratings/${resourceId}`);
+      const result = await response.json();
+      return result.data;
     },
-  })
+  });
 }
 
 function useSubmitRating() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: SubmitRatingRequest) => {
@@ -273,26 +266,26 @@ function useSubmitRating() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      })
-      return response.json()
+      });
+      return response.json();
     },
     onSuccess: (_, variables) => {
       // 刷新评分数据
       queryClient.invalidateQueries({
         queryKey: ['ratings', variables.resourceId],
-      })
+      });
     },
-  })
+  });
 }
 
 // 使用
 function MyComponent({ resource }) {
-  const { data: ratings, isLoading } = useResourceRatings(resource.id)
-  const submitRating = useSubmitRating()
+  const { data: ratings, isLoading } = useResourceRatings(resource.id);
+  const submitRating = useSubmitRating();
 
   const handleSubmit = (data) => {
-    submitRating.mutate(data)
-  }
+    submitRating.mutate(data);
+  };
 
   // ...
 }

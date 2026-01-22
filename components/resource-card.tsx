@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { Sparkles, Heart } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { RatingStars } from './rating-stars'
-import { ResourceThumbnail } from './resource-thumbnail'
-import { cn } from '@/lib/utils'
-import type { Resource } from '@/types'
+import Link from 'next/link';
+import { Sparkles, Heart } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { RatingStars } from './rating-stars';
+import { ResourceThumbnail } from './resource-thumbnail';
+import { cn } from '@/lib/utils';
+import type { Resource } from '@/types';
 
 export interface ResourceCardProps {
-  resource: Resource
-  isFavorited: boolean
-  onFavorite: () => void
+  resource: Resource;
+  isFavorited: boolean;
+  onFavorite: () => void;
 }
 
 /**
  * ResourceCard 组件
- * 
+ *
  * 展示单个资源的卡片，包含：
  * - 网站截图（自适应高度）
  * - 精选标识（Sparkles 图标）
@@ -29,11 +29,7 @@ export interface ResourceCardProps {
  * - 悬停上浮动效
  * - 点击跳转到详情页
  */
-export function ResourceCard({
-  resource,
-  isFavorited,
-  onFavorite,
-}: ResourceCardProps) {
+export function ResourceCard({ resource, isFavorited, onFavorite }: ResourceCardProps) {
   return (
     <Card
       className={cn(
@@ -48,9 +44,9 @@ export function ResourceCard({
           variant="ghost"
           size="icon"
           onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onFavorite()
+            e.preventDefault();
+            e.stopPropagation();
+            onFavorite();
           }}
           className={cn(
             'h-8 w-8 rounded-full bg-black/20 text-white backdrop-blur-sm transition-colors hover:bg-black/40 hover:text-white',
@@ -58,9 +54,7 @@ export function ResourceCard({
           )}
           aria-label={isFavorited ? '取消收藏' : '收藏'}
         >
-          <Heart
-            className={cn('h-4 w-4', isFavorited && 'fill-current')}
-          />
+          <Heart className={cn('h-4 w-4', isFavorited && 'fill-current')} />
         </Button>
       </div>
 
@@ -86,9 +80,7 @@ export function ResourceCard({
         <div className="flex flex-col gap-3 p-4">
           {/* 资源名称 + 评分 */}
           <div className="space-y-1.5">
-            <h3 className="font-semibold text-base leading-tight line-clamp-1">
-              {resource.name}
-            </h3>
+            <h3 className="font-semibold text-base leading-tight line-clamp-1">{resource.name}</h3>
             <RatingStars rating={resource.rating.overall} showValue />
           </div>
 
@@ -113,5 +105,5 @@ export function ResourceCard({
         </div>
       </Link>
     </Card>
-  )
+  );
 }

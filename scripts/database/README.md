@@ -5,15 +5,18 @@
 ## 脚本列表
 
 ### 迁移脚本
+
 - `migrate-categories.ts` - Categories表数据迁移
-- `migrate-resources.ts` - Resources表数据迁移  
+- `migrate-resources.ts` - Resources表数据迁移
 - `migrate-data.ts` - 通用数据迁移脚本
 - `run-categories-migration.ts` - 执行Categories迁移流程
 
 ### 验证脚本
+
 - `verify-categories-migration.ts` - 验证Categories迁移结果
 
 ### 工具脚本
+
 - `generate-insert-sql.js` - 生成SQL插入语句
 
 ## 使用方法

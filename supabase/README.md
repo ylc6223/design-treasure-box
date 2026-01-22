@@ -44,11 +44,13 @@ supabase db push
 创建初始数据库结构：
 
 **表结构：**
+
 - `profiles`: 用户资料（扩展 auth.users）
 - `resources`: 设计资源
 - `ratings`: 用户评分
 
 **功能：**
+
 - UUID 主键
 - 自动更新 `updated_at` 时间戳
 - Row Level Security (RLS) 策略
@@ -56,6 +58,7 @@ supabase db push
 - 外键约束和级联删除
 
 **RLS 策略：**
+
 - 所有人可以查看资源和评分
 - 用户只能管理自己的评分
 - 管理员可以管理所有资源
@@ -66,11 +69,13 @@ supabase db push
 自动创建用户 Profile：
 
 **功能：**
+
 - 当用户通过 OAuth 登录时自动创建 profile 记录
 - 从 OAuth 提供商获取用户信息（name, avatar_url）
 - 默认角色设置为 'USER'
 
 **触发器：**
+
 - `on_auth_user_created`: 在 auth.users 插入新记录后自动执行
 - `handle_new_user()`: 触发器函数，创建 profile 记录
 
@@ -85,5 +90,6 @@ supabase db push
 ## 下一步
 
 迁移完成后，继续执行：
+
 - Task 2.4: 生成 TypeScript 类型
 - Task 4: 创建用户 Profile 自动创建触发器
