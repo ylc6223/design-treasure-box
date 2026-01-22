@@ -7,7 +7,6 @@ import { FeaturedSections } from '@/components/featured-sections';
 import { useFavorites, useInfiniteResources, useHotResources, useLatestResources } from '@/hooks';
 import { Loader2 } from 'lucide-react';
 import { useCategories } from '@/hooks/use-categories';
-import { AnimatePresence, motion } from 'motion/react';
 
 /**
  * 首页组件
@@ -105,29 +104,14 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* 2. 推荐板块 (热门 + 最新) 
-            策略：仅在未选择特定分类时（即“全部”视图）展示，保持界面简洁 
-            优化：添加高度过渡动画，减少视觉突变
-        */}
-        <AnimatePresence>
-          {!activeCategory && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="overflow-hidden"
-            >
-              <FeaturedSections
-                hotResources={hotResources}
-                latestResources={latestResources}
-                isFavorited={isFavorited}
-                onFavorite={handleFavorite}
-                onVisit={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* 2. 推荐板块 (热门 + 最新) */}
+        <FeaturedSections
+          hotResources={hotResources}
+          latestResources={latestResources}
+          isFavorited={isFavorited}
+          onFavorite={handleFavorite}
+          onVisit={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
+        />
 
         {/* 3. 分类筛选栏 */}
         <div className="mb-6 sticky top-16 z-30 bg-background/95 backdrop-blur-md py-4 -mx-4 px-4 border-b border-border/40 transition-all">
@@ -135,7 +119,6 @@ export function HomePage() {
             categories={categories}
             activeCategory={activeCategory}
             onCategoryChange={handleCategoryChange}
-            className="justify-center"
           />
         </div>
 
