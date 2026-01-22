@@ -39,7 +39,7 @@ window.__SUPABASE_CONFIG__ = {
             attribute="class"
             defaultTheme="system"
             enableSystem
-            disableTransitionOnChange
+            disableTransitionOnChange={false}
           >
             <LayoutWrapper profile={user?.profile ?? null}>{children}</LayoutWrapper>
             <Toaster />

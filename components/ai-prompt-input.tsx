@@ -1,27 +1,28 @@
-'use client'
+'use client';
 
-import { useState, type FormEvent } from 'react'
-import { MessageSquare, ArrowUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useScrollVisibility } from '@/hooks'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { useState, type FormEvent } from 'react';
+import { MessageSquare, ArrowUp } from 'lucide-react';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
+import { useScrollVisibility } from '@/hooks';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface AIPromptInputProps {
-  onSubmit: (prompt: string) => void
-  placeholder?: string
-  isLoading?: boolean
-  isHidden?: boolean  // 新增：控制输入框是否隐藏（用于聊天面板打开时）
-  className?: string
+  onSubmit: (prompt: string) => void;
+  placeholder?: string;
+  isLoading?: boolean;
+  isHidden?: boolean; // 新增：控制输入框是否隐藏（用于聊天面板打开时）
+  className?: string;
 }
 
 /**
  * AIPromptInput 组件
- * 
+ *
  * 固定底部悬浮的 AI Prompt 输入框，类似 ChatGPT 风格
  * 滚动时自动隐藏，停止滚动后延迟显示
  * 当聊天面板打开时，通过 isHidden prop 强制隐藏
- * 
+ *
  * @param onSubmit - 提交回调函数
  * @param placeholder - 输入框占位符
  * @param isLoading - 是否正在加载
@@ -35,20 +36,21 @@ export function AIPromptInput({
   isHidden = false,
   className,
 }: AIPromptInputProps) {
-  const [value, setValue] = useState('')
-  const isScrollVisible = useScrollVisibility(300)
-  
+  const [value, setValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const isScrollVisible = useScrollVisibility(300);
+
   // 最终显示状态：如果 isHidden 为 true，则强制隐藏；否则根据滚动状态决定
-  const isVisible = !isHidden && isScrollVisible
+  const isVisible = !isHidden && isScrollVisible;
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    
-    if (!value.trim() || isLoading) return
-    
-    onSubmit(value.trim())
-    setValue('') // 清空输入框
-  }
+    e.preventDefault();
+
+    if (!value.trim() || isLoading) return;
+
+    onSubmit(value.trim());
+    setValue(''); // 清空输入框
+  };
 
   return (
     <div
@@ -61,29 +63,56 @@ export function AIPromptInput({
         className
       )}
     >
-      <form
+      <motion.form
         onSubmit={handleSubmit}
+        initial={false}
+        animate={
+          isFocused
+            ? {
+                scale: 1.02,
+                y: -6,
+                boxShadow: '0 0 0 2px hsl(var(--primary)), 0 24px 48px -12px rgba(0, 0, 0, 0.15)',
+              }
+            : {
+                scale: 1,
+                y: 0,
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+              }
+        }
+        whileHover={
+          !isFocused
+            ? { scale: 1.015, y: -2, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.08)' }
+            : {}
+        }
+        whileTap={{ scale: 0.99 }}
+        transition={{
+          type: 'spring',
+          stiffness: 350,
+          damping: 25,
+          mass: 0.5,
+        }}
         className={cn(
           'flex h-14 items-center gap-3 rounded-[28px] border px-4',
-          'border-border bg-card/80 backdrop-blur-xl',
-          'shadow-lg',
-          'transition-shadow duration-200',
-          'focus-within:shadow-xl'
+          'border-border/50 bg-card/80 backdrop-blur-xl',
+          'transition-colors duration-300 ease-in-out',
+          isFocused ? 'border-primary bg-card' : 'hover:border-border hover:bg-card/90'
         )}
       >
         {/* 左侧图标 */}
-        <MessageSquare className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+        <MessageSquare className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-colors group-focus-within:text-primary" />
 
         {/* 输入框 */}
         <Input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           disabled={isLoading}
           className={cn(
             'h-auto flex-1 border-0 bg-transparent px-0 text-base shadow-none',
-            'placeholder:text-muted-foreground',
+            'placeholder:text-muted-foreground/60',
             'focus-visible:ring-0 focus-visible:ring-offset-0',
             'disabled:cursor-not-allowed disabled:opacity-50'
           )}
@@ -97,24 +126,22 @@ export function AIPromptInput({
           disabled={!value.trim() || isLoading}
           className={cn(
             'h-9 w-9 flex-shrink-0 rounded-full',
-            'bg-accent text-accent-foreground',
-            'transition-all duration-200',
-            'hover:scale-110 hover:bg-accent',
-            'disabled:pointer-events-none disabled:opacity-50',
-            'active:scale-95'
+            'bg-primary text-primary-foreground',
+            'transition-all duration-300',
+            'hover:scale-110 hover:shadow-md hover:shadow-primary/20',
+            'disabled:pointer-events-none disabled:opacity-30',
+            'active:scale-90'
           )}
           aria-label="发送"
         >
           <ArrowUp className="h-5 w-5" />
         </Button>
-      </form>
+      </motion.form>
 
       {/* 提示文字（可选） */}
       {isLoading && (
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          AI 正在思考...
-        </p>
+        <p className="mt-2 text-center text-xs text-muted-foreground">AI 正在思考...</p>
       )}
     </div>
-  )
+  );
 }
