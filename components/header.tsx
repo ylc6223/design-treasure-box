@@ -58,9 +58,10 @@ export function Header({ className, profile, onAskAI }: HeaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={onAskAI}
-                className="justify-start md:justify-center font-medium"
+                className="justify-start md:justify-center font-medium gap-1"
               >
                 <Sparkles className="h-5 w-5" />
+                <span>问AI</span>
               </Button>
 
               <Button
