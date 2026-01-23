@@ -84,11 +84,18 @@ export async function POST(request: NextRequest) {
     // 创建搜索函数
     const searchFn = async (q: string, f?: SearchFilters) => {
       const results = await vectorSearch.search(q, {
-        maxResults: f?.maxResults || filters?.maxResults || 5,
+        limit: f?.maxResults || filters?.maxResults || 5,
         minSimilarity: 0.3,
-        filters: f || filters,
+        categoryFilter: f?.categories,
+        minRating: f?.minRating,
       });
-      return results;
+
+      // 转换为 SearchResult 格式（添加 matchReason）
+      return results.map((match) => ({
+        resource: match.resource,
+        similarity: match.similarity,
+        matchReason: `Similarity: ${(match.similarity * 100).toFixed(0)}%`,
+      }));
     };
 
     // 执行增强搜索（包含意图识别、澄清、缓存等）

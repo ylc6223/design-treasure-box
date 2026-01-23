@@ -66,9 +66,8 @@ export async function enhancedSearch(
   query: string,
   searchFn: (query: string, filters?: SearchFilters) => Promise<SearchResult[]>,
   sessionContext: SearchDimensions = {},
-  options: EnhancedSearchOptions = {}
+  _options: EnhancedSearchOptions = {}
 ): Promise<EnhancedSearchResponse> {
-  const _options = options; // Suppress unused warning
   const startTime = Date.now();
   const cacheManager = getCacheManager();
 

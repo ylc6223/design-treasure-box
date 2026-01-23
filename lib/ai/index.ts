@@ -15,9 +15,6 @@ export * from './clarification-generator';
 export * from './cache-manager';
 export * from './swimlane-organizer';
 
-// 重新导出类型
-export * from '@/types/ai-chat';
-
 import { getAIServiceManager } from './service-manager';
 
 /**
