@@ -104,21 +104,17 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* 2. 推荐板块 (热门 + 最新) 
-            策略：仅在未选择特定分类时（即“全部”视图）展示，保持界面简洁 
-        */}
-        {!activeCategory && (
-          <FeaturedSections
-            hotResources={hotResources}
-            latestResources={latestResources}
-            isFavorited={isFavorited}
-            onFavorite={handleFavorite}
-            onVisit={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
-          />
-        )}
+        {/* 2. 推荐板块 (热门 + 最新) */}
+        <FeaturedSections
+          hotResources={hotResources}
+          latestResources={latestResources}
+          isFavorited={isFavorited}
+          onFavorite={handleFavorite}
+          onVisit={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
+        />
 
         {/* 3. 分类筛选栏 */}
-        <div className="mb-8">
+        <div className="mb-6 sticky top-16 z-30 bg-background/95 backdrop-blur-md py-4 -mx-4 px-4 border-b border-border/40 transition-all">
           <CategoryFilter
             categories={categories}
             activeCategory={activeCategory}
